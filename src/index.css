@@ -8,8 +8,9 @@
     font-family: sans-serif;
 }
 
-.container{
-    width: 1000vw;
+.app-container{
+    width: 100%;
+    max-width: none;
     min-height: 100vh;
     background-color: #ced8ff;
 }
