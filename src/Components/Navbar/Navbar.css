@@ -4,13 +4,15 @@
     align-items: center;
     justify-content: space-between;
     background-color: #fff;
-    padding: 5px 2%;
+    padding:0 0;
+    border: 1px solid;
 }
 
 .navbar_logo{
     display: flex;
     align-items: center;
-    padding-right: 5vw;
+    padding-right: 2vw;
+    padding-left: 2vw;
     margin-right: 2vw;
     border-right: 1px solid;
 }
@@ -22,7 +24,6 @@
     flex: 1;
     list-style: none;
     text-align: left;
-    margin-left: 2vw;
 }
 ul li{
     display: inline-block;
