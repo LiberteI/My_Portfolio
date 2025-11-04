@@ -13,7 +13,7 @@ const Navbar = () => {
           <li>Home</li>
           <li>About</li>
         </ul>
-        <ul className='navbar_menu'>
+        <ul className='navbar_icons'>
           <li>Projects</li>
           <li>Performances</li>
           <li>Contact</li>
