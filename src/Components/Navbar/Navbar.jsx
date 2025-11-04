@@ -10,7 +10,6 @@ const Navbar = () => {
         </div>
         
         <ul className='navbar_menu'>
-          <li>Home</li>
           <li>About</li>
         </ul>
         <ul className='navbar_icons'>

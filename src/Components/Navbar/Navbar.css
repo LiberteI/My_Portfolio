@@ -19,9 +19,16 @@
     position: relative;
 }
 .Logo{
+    cursor: pointer;
     width: 80px;
     display: block;
+    transition: color 0.2s ease, transform 0.2s ease, text-shadow 0.2s ease;
+    filter: brightness(1.8);
+}
+.Logo:hover{
     filter: drop-shadow(0 0 12px rgba(148, 163, 184, 0.9));
+    filter: brightness(2) drop-shadow(0 0 14px rgba(210, 218, 235, 0.85));
+    transform: scale(1.2);
 }
 
 .navbar_menu{
@@ -30,8 +37,7 @@
     text-align: center;
     color: inherit;
     display: flex;
-    gap: 1.5rem;
-    margin: 0 2.5rem 0 3rem;
+    margin: 0 2.5rem 0 1rem;
     padding: 0;
 }
 
