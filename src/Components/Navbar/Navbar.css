@@ -7,6 +7,9 @@
     color: #cbd5f5;
     padding: 0 0;
     border: 1px solid rgba(107, 114, 128, 0.4);
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .navbar_logo{
@@ -51,7 +54,7 @@
 .navbar_menu li:hover{
     color: #f8fafc;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
-    transform: scale(1.05);
+    transform: scale(1.2);
 }
 
 .navbar_icons{
@@ -72,5 +75,5 @@
 .navbar_icons li:hover{
     color: #f8fafc;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
-    transform: scale(1.05);
+    transform: scale(1.2);
 }
