@@ -3,6 +3,7 @@ import './Navbar.css'
 import logo from '../../assets/LOGO_dark.png'
 const Navbar = () => {
   const [isHidden, setIsHidden] = useState(false)
+  const [button, setButton] = useState(null)
   const handleClickLogo = (event) => {
     event.preventDefault()
     const target = document.getElementById('home')
@@ -13,6 +14,9 @@ const Navbar = () => {
       window.scrollTo({top: 0, behavior:'smooth'})
     }
   }
+  const handleClick = () => {
+    
+  } 
   useEffect(() => {
     // Track scroll direction to hide the navbar when scrolling down and reveal it on scroll up.
     let lastScrollY = window.scrollY
