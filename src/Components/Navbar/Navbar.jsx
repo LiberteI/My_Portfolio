@@ -6,6 +6,7 @@ const Navbar = () => {
   const [isHidden, setIsHidden] = useState(false)
 
   useEffect(() => {
+    // Track scroll direction to hide the navbar when scrolling down and reveal it on scroll up.
     let lastScrollY = window.scrollY
 
     const handleScroll = () => {
@@ -26,6 +27,37 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [isHidden])
 
+  useEffect(() => {
+    // when mouse touches the upper side of the viewport, show the navbar again
+    const handlePointerNearTop = (event) => {
+      let clientY = Infinity
+
+      if (event.touches && event.touches.length > 0) {
+        clientY = event.touches[0].clientY
+      } else if (typeof event.clientY === 'number') {
+        clientY = event.clientY
+      }
+      // show
+      if (clientY <= 80) {
+        if (isHidden) {
+          setIsHidden(false)
+        }
+      // hide
+      } else if (clientY > 140 && window.scrollY > 120) {
+        if (!isHidden) {
+          setIsHidden(true)
+        }
+      }
+    }
+
+    window.addEventListener('mousemove', handlePointerNearTop, { passive: true })
+    window.addEventListener('touchstart', handlePointerNearTop, { passive: true })
+
+    return () => {
+      window.removeEventListener('mousemove', handlePointerNearTop)
+      window.removeEventListener('touchstart', handlePointerNearTop)
+    }
+  }, [isHidden])
   return (
     <nav className={`navbar ${isHidden ? 'navbar--hidden' : ''}`}>
         <div className='navbar_logo'>
