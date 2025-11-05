@@ -56,6 +56,7 @@ const Home = () => {
                 running = false;
             });
         };
+        // runs once when the effect fires and not call event.preventDefault()
         window.addEventListener('scroll', handleScroll, {passive: true});
 
         return () => window.removeEventListener('scroll', handleScroll);

@@ -24,6 +24,13 @@
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    animation: sky-pan 30s linear infinite;
+    background-position: 0 0;
+}
+
+@keyframes sky-pan{
+    from { transform:translate3d(0, 0, 0);}
+    to { transform: translate3d(-50%, 0, 0);}
 }
 
 .home-bg-moon{
