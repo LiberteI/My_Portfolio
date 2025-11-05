@@ -5,7 +5,7 @@ const Contact = () => {
         console.log("send to backend");
     }
     return (
-        <div className="contact">
+        <div id="contact" className="contact">
             <h1>Get In Touch</h1>
             <form className="contact-form" action="">
                 <input className="contact-input-name" type="text" placeholder="Your Name"/>

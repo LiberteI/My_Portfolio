@@ -3,20 +3,18 @@ import './Navbar.css'
 import logo from '../../assets/LOGO_dark.png'
 const Navbar = () => {
   const [isHidden, setIsHidden] = useState(false)
-  const [button, setButton] = useState(null)
-  const handleClickLogo = (event) => {
+  
+  const handleClick = (event, targetID) => {
     event.preventDefault()
-    const target = document.getElementById('home')
-    if(target){
-      target.scrollIntoView({behavior:'smooth'})
+    const element = document.getElementById(targetID)
+    if(element){
+      element.scrollIntoView({behavior:'smooth'})
     }
     else{
       window.scrollTo({top: 0, behavior:'smooth'})
     }
   }
-  const handleClick = () => {
-    
-  } 
+  
   useEffect(() => {
     // Track scroll direction to hide the navbar when scrolling down and reveal it on scroll up.
     let lastScrollY = window.scrollY
@@ -72,17 +70,22 @@ const Navbar = () => {
   }, [isHidden])
   return (
     <nav className={`navbar ${isHidden ? 'navbar--hidden' : ''}`}>
-        <a className='navbar_logo' href='#home' onClick={handleClickLogo} aria-label='Go to homepage'>
+        <a className='navbar_logo' href='#home' onClick={(e) => handleClick(e, 'home')} aria-label='Go to homepage'>
           <img src={logo} alt="Home" className='Logo'/>
         </a>
         
         <ul className='navbar_menu'>
           <li>About</li>
         </ul>
+
         <ul className='navbar_icons'>
           <li>Projects</li>
           <li>Performances</li>
-          <li>Contact</li>
+
+          <a href="#contact" onClick={(e) => handleClick(e, 'contact')} aria-label='Go to contact'>
+            <li>Contact</li>
+          </a>
+          
         </ul> 
         
     </nav>
