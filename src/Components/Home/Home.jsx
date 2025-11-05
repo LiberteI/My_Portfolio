@@ -2,6 +2,7 @@ import './Home.css'
 import React, { useEffect, useRef } from 'react'
 import moon from '../../assets/City/bg/Moon.png'
 import sky from '../../assets/City/bg/Sky.png'
+import skyFlip from '../../assets/City/bg/flip.png'
 import buildingBack from '../../assets/City/bg/buildingBack.png'
 import buildingFar from '../../assets/City/bg/buildingFar.png'
 import buildingMid from '../../assets/City/bg/buildingMid.png'
@@ -15,6 +16,7 @@ const Home = () => {
     const closeRef = useRef(null);
     const skyRef = useRef(null);
     const moonRef = useRef(null);
+    const skyDupRef = useRef(null);
 
     useEffect(()=> {
         // prevent multiple fires at once
@@ -30,6 +32,7 @@ const Home = () => {
                 const layers = [
                     { ref: moonRef, speed: -0, base: 'scale(1.2) translate(20%, -10%)'},
                     { ref: skyRef, speed: 0.05, base: ''},
+                    { ref: skyDupRef, speed: 0.05, base: 'translateX(100%)'},
                     { ref: backRef, speed: 0.08, base: 'translateY(-30%) scale(1.3)'},
                     { ref: farRef, speed: 0.12, base: 'translateY(-25%)'},
                     { ref: midRef, speed: 0.18, base: 'translateY(-20%)'},
@@ -67,6 +70,7 @@ const Home = () => {
             <section className='home-scene'>
                 
                 <img className='home-bg-sky' ref={skyRef} src={sky} alt="sky" />
+                <img className='home-bg-sky-dup' ref={skyDupRef} src={skyFlip} alt="sky" />
                 <img className='home-bg-moon' ref={moonRef} src={moon} alt="moon" />
                 <img className='home-bg-building-far' ref={farRef} src={buildingFar} alt="Far skyline" />
                 <img className='home-bg-building-mid' ref={midRef} src={buildingMid} alt="Mid skyline" />

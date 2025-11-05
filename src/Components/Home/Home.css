@@ -24,13 +24,27 @@
     height: 100%;
     object-fit: cover;
     z-index: 0;
-    animation: sky-pan 30s linear infinite;
+    animation: sky-pan 150s linear infinite;
     background-position: 0 0;
+}
+.home-bg-sky-dup{
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    animation: sky-pan-right 150s linear infinite;
+    background-position: 0 0;
+    transform: translateX(100%);
 }
 
 @keyframes sky-pan{
     from { transform:translate3d(0, 0, 0);}
     to { transform: translate3d(-50%, 0, 0);}
+}
+@keyframes sky-pan-right{
+    from { transform:translate3d(99%, 0, 0);}
+    to { transform: translate3d(50%, 0, 0);}
 }
 
 .home-bg-moon{
@@ -53,14 +67,14 @@
 .home-bg-building-back{
     width: 135%;
     z-index: 2;
-    transform: translateY(-25%) scale(1.3);
+    transform: translateY(-30%) scale(1.3);
     opacity: 0.90;
 }
 
 .home-bg-building-far{
     width: 100%;
     z-index: 3;
-    transform: translateY(-20%) scale();
+    transform: translateY(-25%);
     opacity: 0.95;
 }
 
