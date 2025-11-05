@@ -12,6 +12,7 @@
     font-size: clamp(2.5rem, 1vw, 3.5rem);
     letter-spacing: 1px;
     text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
 }
 
 .contact-form{
