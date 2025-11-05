@@ -13,6 +13,8 @@ const Home = () => {
     const midRef = useRef(null);
     const backRef = useRef(null);
     const closeRef = useRef(null);
+    const skyRef = useRef(null);
+    const moonRef = useRef(null);
 
     useEffect(()=> {
         // prevent multiple fires at once
@@ -26,10 +28,12 @@ const Home = () => {
 
             window.requestAnimationFrame(() => {
                 const layers = [
-                    { ref: backRef, speed: 0.1, base: 'translateY(-25%) scale(1.3)'},
-                    { ref: farRef, speed: 0.15, base: 'translateY(-20%)'},
-                    { ref: midRef, speed: 0.2, base: 'translateY(-20%)'},
-                    { ref: closeRef, speed: 0.25, base: 'translateY(-10%)'},
+                    { ref: moonRef, speed: 0, base: 'scale(1.2) translate(20%, -10%)'},
+                    { ref: skyRef, speed: 0.02, base: ''},
+                    { ref: backRef, speed: 0.12, base: 'translateY(-25%) scale(1.3)'},
+                    { ref: farRef, speed: 0.14, base: 'translateY(-20%)'},
+                    { ref: midRef, speed: 0.16, base: 'translateY(-20%)'},
+                    { ref: closeRef, speed: 0.18, base: 'translateY(-10%)'},
                 ];
 
                 layers.forEach(({ref, speed, base}) => {
@@ -61,8 +65,8 @@ const Home = () => {
         <main className='home'>
             <section className='home-scene'>
                 
-                <img className='home-bg-sky' src={sky} alt="sky" />
-                <img className='home-bg-moon' src={moon} alt="moon" />
+                <img className='home-bg-sky' ref={skyRef} src={sky} alt="sky" />
+                <img className='home-bg-moon' ref={moonRef} src={moon} alt="moon" />
                 <img className='home-bg-building-far' ref={farRef} src={buildingFar} alt="Far skyline" />
                 <img className='home-bg-building-mid' ref={midRef} src={buildingMid} alt="Mid skyline" />
                 <img className='home-bg-building-back' ref={backRef} src={buildingBack} alt="Back skyline" />
