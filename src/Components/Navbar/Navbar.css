@@ -29,7 +29,6 @@
     filter: brightness(1.8);
 }
 .Logo:hover{
-    filter: drop-shadow(0 0 12px rgba(148, 163, 184, 0.9));
     filter: brightness(2) drop-shadow(0 0 14px rgba(210, 218, 235, 0.85));
     transform: scale(1.2);
 }

@@ -1,30 +1,75 @@
 .home{
     display: flex;
-    flex: 1;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 200vh;
+    padding-top: 12vh;
+    min-height: 100vh;
     color: inherit;
 }
 
 .home-scene{
     position: relative;
     width: 100%;
-    padding: 0;
+    max-width: 960px;
+    aspect-ratio: 16 / 9;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.home-scene img{
+    position: absolute;
+    display: block;
+    pointer-events: none;
 }
 
 .home-bg-sky{
-    position: absolute;
     inset: 0;
-    display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
 }
+
 .home-bg-moon{
-    position: absolute;
-    inset: 1;
-    display: block;
-    width: 120%;
+    top: 8%;
+    left: 50%;
+    width: 60%;
     height: auto;
-    filter: brightness(1.4);
+    transform: translateX(-50%) scale(1.2);
+    transform-origin: center;
+    filter: brightness(1.35) drop-shadow(0 0 45px rgba(191, 211, 241, 0.85));
+    z-index: 1;
+}
+
+.home-bg-building-far,
+.home-bg-building-mid,
+.home-bg-building-back,
+.home-bg-building-close{
+    bottom: 0;
+    left: 50%;
+    height: auto;
+    transform: translateX(-50%);
+    object-fit: contain;
+}
+
+.home-bg-building-far{
+    width: 115%;
+    z-index: 2;
+    opacity: 0.65;
+}
+
+.home-bg-building-mid{
+    width: 125%;
+    z-index: 3;
+    opacity: 0.8;
+}
+
+.home-bg-building-back{
+    width: 135%;
+    z-index: 4;
+}
+
+.home-bg-building-close{
+    width: 150%;
+    z-index: 5;
+    filter: drop-shadow(0 18px 45px rgba(0, 0, 0, 0.55));
 }
