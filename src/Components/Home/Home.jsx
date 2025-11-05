@@ -66,7 +66,7 @@ const Home = () => {
     }, [])
 
     return(
-        <main className='home'>
+        <main id='home' className='home'>
             <section className='home-scene'>
                 
                 <img className='home-bg-sky' ref={skyRef} src={sky} alt="sky" />

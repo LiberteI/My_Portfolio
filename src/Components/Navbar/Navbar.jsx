@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import './Navbar.css'
 import logo from '../../assets/LOGO_dark.png'
-
 const Navbar = () => {
   const [isHidden, setIsHidden] = useState(false)
-
+  const handleClickLogo = (event) => {
+    event.preventDefault()
+    const target = document.getElementById('home')
+    if(target){
+      target.scrollIntoView({behavior:'smooth'})
+    }
+    else{
+      window.scrollTo({top: 0, behavior:'smooth'})
+    }
+  }
   useEffect(() => {
     // Track scroll direction to hide the navbar when scrolling down and reveal it on scroll up.
     let lastScrollY = window.scrollY
@@ -60,9 +68,9 @@ const Navbar = () => {
   }, [isHidden])
   return (
     <nav className={`navbar ${isHidden ? 'navbar--hidden' : ''}`}>
-        <div className='navbar_logo'>
-          <img src={logo} alt="" className='Logo'/>
-        </div>
+        <a className='navbar_logo' href='#home' onClick={handleClickLogo} aria-label='Go to homepage'>
+          <img src={logo} alt="Home" className='Logo'/>
+        </a>
         
         <ul className='navbar_menu'>
           <li>About</li>
