@@ -1,12 +1,13 @@
 import './Performance.css'
 const Performace = () => {
     const performances = [
-        {
-            title: 'title1', 
-            date: 'mar 13',
-            description: 'this is a performace',
-            link: '#',
-        },
+        // {
+        //     title: 'title1', 
+        //     date: 'mar 13',
+        //     description: 'this is a performace',
+        //     link: '#',
+        //     thumbnail: null,
+        // },
     ]
     return (
         <section className="performance"  id="performance">
@@ -17,6 +18,7 @@ const Performace = () => {
                     <article className="performance-card" key={performance.title}>
                         <h3>{performance.title}</h3>
                         <p className="performance-date">{performance.date}</p>
+                        <img className="performance-thumbnail" src={performance.thumbnail} alt="thumbnail" />
                         <p>{performance.description}</p>
                         {performance.link && (
                             <a href={performance.link} className="performance-link">View Details</a>
