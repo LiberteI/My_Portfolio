@@ -1,21 +1,23 @@
 import './Performance.css'
+import { useState } from 'react'
 const Performace = () => {
-    const performances = [
-        {
-            title: 'title1', 
-            date: 'mar 13',
-            description: 'this is a performace',
-            link: '#',
-            thumbnail: null,
-        },
-    ]
-    const handleClick = () => {
-        console.log("hello!");
-    }
+    // video array
+    const [performances, setPerformances] = useState([]);
+    // loading success error
+    const [status, setStatus] = useState(null);
+
+   
+    
     return (
         <section className="performance"  id="performance">
             <h1>My Performances</h1>
-            <div className="performance-grid" onClick={handleClick}>
+            
+            {status === 'loading' && <p>Loading Performances</p>}
+            {status === 'error' && <p>Fail to load performances</p>}
+
+            <div className="performance-grid">
+
+
                 {/* loop through performances array and create performance cards */}
                 { performances.map((performance) => (
                     <article className="performance-card" key={performance.title}>
@@ -28,6 +30,8 @@ const Performace = () => {
                         )}
                     </article>
                 ))}
+
+
             </div>
         </section>
     )
