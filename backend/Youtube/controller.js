@@ -5,10 +5,14 @@ export const getVideo = async (req, res) => {
     try{
         // get api key
         const apiKey = process.env.YT_API_KEY
-        // get video id
-        const videoID = process.env.VIVA_LA_VIDA_ID
-        // get video path
-        const YT_URL = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${videoID}&part=snippet,statistics`
+        // get video ids
+        const videoIDs = [
+            process.env.VIVA_LA_VIDA_ID,
+            process.env.FLOWER_DANCE_ID,
+        ].filter(Boolean)
+
+        const idParam = videoIDs.join(',')
+        const YT_URL = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${idParam}&part=snippet,statistics`
         // get response after fetching
         response = await fetch(YT_URL)
         // get json snippet from response
@@ -67,8 +71,10 @@ export const getVideo = async (req, res) => {
                 }
 
                 return {
+                    id: videoId,
                     title,
                     description,
+                    publishedAt,
                     thumbnail,
                 }
             })
