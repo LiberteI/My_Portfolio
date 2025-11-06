@@ -26,10 +26,11 @@
     background: rgba(30, 41, 59, 0.7);
     border: 1px solid rgba(148, 163, 184, 0.25);
     border-radius: 16px;
-    padding: 2.25rem 1.75rem 2rem;
+    padding: 2rem 1rem;
     box-shadow: 0 20px 30px -25px rgba(15, 23, 42, 0.75);
     text-align: center;
-    min-height: 100%;
+    width: 100%;
+    
 }
 
 .performance-card h3{
@@ -38,9 +39,10 @@
 }
 
 .performance-thumbnail{
-    width: 100%;
+    width: 80%;
     border-radius: 10px;
     object-fit: cover;
+    align-self: center;
 }
 
 .performance-date{
@@ -56,6 +58,6 @@
     font-weight: 600;
     text-decoration: none;
 }
-.performance-link:hover{
-    text-decoration: underline;
+.performance-card:hover{
+    cursor: pointer;
 }

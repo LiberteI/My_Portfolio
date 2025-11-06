@@ -1,62 +1,73 @@
 import './Performance.css'
 import { useEffect, useState } from 'react'
-const Performace = () => {
-    // video array
-    const [performances, setPerformances] = useState([]);
-    // loading success error
-    const [status, setStatus] = useState('idle');
 
-    useEffect(() =>{
-        const fetchVideo = async () => {
-            setStatus('loading');
+const Performance = () => {
+  const [videos, setVideos] = useState([])
+  const [status, setStatus] = useState('idle')
 
-            try{
-                const response = await fetch('http://localhost:8080/api/youtube');
-                if(!response.ok){
-                    throw new Error('Request failed');
-                }
-                // get json data
-                const data = await response.json();
-                
-                let items = [];
-                if(data && Array.isArray(data.videos)){
-                    items = data.videos;
-                }
-                // get title, date, thumbnail, description from data
-                setPerformances(items);
-                setStatus('success');
-            } catch(error){
-                console.error(error);
-                setStatus('error');
-            }
+  useEffect(() => {
+    const fetchVideos = async () => {
+      setStatus('loading')
+
+      try {
+        const response = await fetch('http://localhost:8080/api/youtube')
+        if (!response.ok) {
+          throw new Error('Request failed')
         }
-        fetchVideo();
-        //[]: to run once
-    }, [])
-   
-    
-    return (
-        <section className="performance"  id="performance">
-            <h1>My Performances</h1>
-            
-            {status === 'loading' && <p>Loading Performances</p>}
-            {status === 'error' && <p>Fail to load performances</p>}
 
-            <div className="performance-grid">
+        const data = await response.json()
+        let items = []
+        if (data && Array.isArray(data.videos)) {
+          items = data.videos
+        }
+        setVideos(items)
+        setStatus('success')
+      } catch (error) {
+        console.error(error)
+        setStatus('error')
+      }
+    }
 
+    fetchVideos()
+  }, [])
 
-                {/* loop through performances array and create performance cards */}
-                { performances.map((performance) => (
-                    <article className="performance-card" key={performance.title}>
-                        <h3>{performance.title}</h3>
-                        <img className="performance-thumbnail" src={performance.thumbnail} alt="thumbnail" />
-                        <p>{performance.description}</p>
-                    </article>
-                ))}
+  const handleCardClick = (videoId) => {
+    if (!videoId) {
+      return
+    }
 
+    const url = `https://www.youtube.com/watch?v=${videoId}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
 
-            </div>
-        </section>
-    )
+  return (
+    <section className='performance' id='performance'>
+      <h1>My Performances</h1>
+
+      {status === 'loading' && <p>Loading Performances</p>}
+      {status === 'error' && <p>Fail to load performances</p>}
+
+      <div className='performance-grid'>
+        {videos.map((video) => (
+          <article
+            className='performance-card'
+            key={video.id || video.title}
+            onClick={() => handleCardClick(video.id)}
+          >
+            <h3>{video.title}</h3>
+            {video.thumbnail && (
+              <img
+                className='performance-thumbnail'
+                src={video.thumbnail}
+                alt={video.title}
+              />
+            )}
+            <p>{video.description}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
 }
-export default Performace
+
+export default Performance
