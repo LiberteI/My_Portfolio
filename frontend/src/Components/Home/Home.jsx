@@ -8,6 +8,10 @@ import buildingFar from '../../assets/City/bg/buildingFar.png'
 import buildingMid from '../../assets/City/bg/buildingMid.png'
 import buildingClose from '../../assets/City/bg/buildingClose.png'
 
+import scene1 from '../../assets/City/bg/Scene1.png'
+import scene2 from '../../assets/City/bg/Scene2.gif'
+import scene3 from '../../assets/City/bg/Scene3.png'
+
 const Home = () => {
     // store refs so that we can directly access DOM
     const farRef = useRef(null);
