@@ -67,10 +67,8 @@ export const getVideo = async (req, res) => {
                 }
 
                 return {
-                    id: videoId,
                     title,
                     description,
-                    publishedAt,
                     thumbnail,
                 }
             })
