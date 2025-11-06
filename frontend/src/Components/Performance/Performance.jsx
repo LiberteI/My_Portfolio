@@ -1,11 +1,38 @@
 import './Performance.css'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 const Performace = () => {
     // video array
     const [performances, setPerformances] = useState([]);
     // loading success error
-    const [status, setStatus] = useState(null);
+    const [status, setStatus] = useState('idle');
 
+    useEffect(() =>{
+        const fetchVideo = async () => {
+            setStatus('loading');
+
+            try{
+                const response = await fetch('http://localhost:8080/api/youtube');
+                if(!response.ok){
+                    throw new Error('Request failed');
+                }
+                // get json data
+                const data = await response.json();
+                
+                let items = [];
+                if(data && Array.isArray(data.videos)){
+                    items = data.videos;
+                }
+                // get title, date, thumbnail, description from data
+                setPerformances(items);
+                setStatus('success');
+            } catch(error){
+                console.error(error);
+                setStatus('error');
+            }
+        }
+        fetchVideo();
+        //[]: to run once
+    }, [])
    
     
     return (
@@ -22,7 +49,7 @@ const Performace = () => {
                 { performances.map((performance) => (
                     <article className="performance-card" key={performance.title}>
                         <h3>{performance.title}</h3>
-                        <p className="performance-date">{performance.date}</p>
+                        {/* <p className="performance-date">{performance.date}</p> */}
                         <img className="performance-thumbnail" src={performance.thumbnail} alt="thumbnail" />
                         <p>{performance.description}</p>
                         {performance.link && (
