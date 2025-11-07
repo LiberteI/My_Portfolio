@@ -47,8 +47,8 @@ const Home = () => {
                     { ref: skyDupRef, speed: 0.33, base: 'translateX(100%)'},
                     { ref: backRef, speed: 0.28, base: 'translateY(-30%) scale(1.3)'},
                     { ref: farRef, speed: 0.18, base: 'translateY(-25%)'},
-                    { ref: midRef, speed: 0.1, base: 'translateY(-20%)'},
-                    { ref: closeRef, speed: 0, base: ''},
+                    { ref: midRef, speed: 0.22, base: 'translateY(-20%)'},
+                    { ref: closeRef, speed: 0.1, base: ''},
                     { ref: fore, speed: 0, base: 'scale(1.6) translateY(21%)'},
                     
                 ];
@@ -80,10 +80,15 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
+        const myIdle = document.querySelector('.me.idle');
+        const myIdle2 = document.querySelector('.me.idle2');
+        const myWalk = document.querySelector('.me.walk');
+        myWalk.style.display = 'none';
+        myIdle2.style.display = 'none';
+
         const handleKey = (e) => {
             if(e.key === 'a'){
                 console.log("go left");
-                
             }
             else if(e.key === 'd'){
                 console.log("go right");
