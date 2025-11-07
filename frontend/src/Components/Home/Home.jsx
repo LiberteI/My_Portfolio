@@ -9,6 +9,7 @@ import buildingMid from '../../assets/City/bg/buildingMid.png'
 import buildingClose from '../../assets/City/bg/buildingClose.png'
 
 import tile from '../../assets/City/bg/tile.png'
+import foregound from '../../assets/City/bg/foreground.png'
 import scene1 from '../../assets/City/bg/Scene1.png'
 import scene2 from '../../assets/City/bg/Scene2.gif'
 import scene3 from '../../assets/City/bg/Scene3.png'
@@ -22,6 +23,7 @@ const Home = () => {
     const skyRef = useRef(null);
     const moonRef = useRef(null);
     const skyDupRef = useRef(null);
+    const fore = useRef(null);
 
     useEffect(()=> {
         // prevent multiple fires at once
@@ -41,7 +43,8 @@ const Home = () => {
                     { ref: backRef, speed: 0.28, base: 'translateY(-30%) scale(1.3)'},
                     { ref: farRef, speed: 0.18, base: 'translateY(-25%)'},
                     { ref: midRef, speed: 0.1, base: 'translateY(-20%)'},
-                    { ref: closeRef, speed: 0, base: 'translateY(-10%)'},
+                    { ref: closeRef, speed: 0, base: ''},
+                    
                 ];
 
                 layers.forEach(({ref, speed, base}) => {
@@ -82,6 +85,7 @@ const Home = () => {
                 <img className='home-bg-building-back' ref={backRef} src={buildingBack} alt="Back skyline" />
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
+                <img className='home-foreground' ref={fore} src={foregound} alt="" />
             </section>
         </main>
     )
