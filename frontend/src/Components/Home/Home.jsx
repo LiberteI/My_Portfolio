@@ -11,6 +11,10 @@ import buildingClose from '../../assets/City/bg/buildingClose.png'
 import tile from '../../assets/City/bg/tile.png'
 import foregound from '../../assets/City/bg/foreground.png'
 
+// import me-animation
+import meIdle from '../../assets/Animations/Me/Idle.gif'
+import meIdle2 from '../../assets/Animations/Me/Idle2.gif'
+import meWalk from '../../assets/Animations/Me/Walk.gif'
 const Home = () => {
     // store refs so that we can directly access DOM
     const farRef = useRef(null);
@@ -82,8 +86,14 @@ const Home = () => {
                 <img className='home-bg-building-back' ref={backRef} src={buildingBack} alt="Back skyline" />
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
-                <img className='home-foreground' ref={fore} src={foregound} alt="" />
+                {/* <img className='home-foreground' ref={fore} src={foregound} alt="" /> */}
             </section>
+            <div className='me-container'>
+                <img className='me idle' src={meIdle} alt="" />
+                <img className='me idle2' src={meIdle2} alt="" />
+                <img className='me walk' src={meWalk} alt="" />
+            </div>
+            <div className='chatbot-container'></div>
         </main>
     )
 
