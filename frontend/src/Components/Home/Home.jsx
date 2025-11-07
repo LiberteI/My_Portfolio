@@ -30,7 +30,7 @@ const Home = () => {
     const meIdle2Ref = useRef(null);
     const meWalkRef = useRef(null);
 
-    
+    // vertical parallax
     useEffect(() => {
         // prevent multiple fires at once
         let running = false;
@@ -82,18 +82,20 @@ const Home = () => {
 
     const [myState, setMyState] = useState('idle');
     
+    const [keyHeld, setKeyHeld] = useState(null);
+
     useEffect(() => {
-        let held = null;
-        
+    
         const handleKeyDown = (e) => {
             if(e.key === 'a' || e.key === 'd'){
-                held = e.key;
+                setKeyHeld(e.key);
                 setMyState('walk');
             }
+            
         };
         const handleKeyUp = (e) => {
             if(e.key === 'a' || e.key === 'd'){
-                held = null;
+                setKeyHeld(null);
                 setMyState('idle');
             }
         }
@@ -121,7 +123,51 @@ const Home = () => {
             walk.style.display = 'block';
             idle2.style.display = 'none';
         }
-    }, [myState]);
+        // render once and do it again when mystate changes
+    }, [myState, keyHeld]);
+
+    const walkSpeed = 1;
+    const [isFacingRight, setIsFacingRight] = useState(true);
+    const heldRef = useRef(null);
+    useEffect(() => {
+        const idle = meIdleRef.current;
+        const walk = meWalkRef.current;
+        const idle2 = meIdle2Ref.current;
+        let shouldFaceRight = isFacingRight;
+
+        if(!idle || !walk || !idle2){
+            return;
+        }
+
+        if(myState === 'walk'){
+            
+            if(keyHeld === 'a'){
+                shouldFaceRight = false;
+                
+            }
+            else if(keyHeld === 'd'){
+                
+                shouldFaceRight = true;
+            }
+        }
+        else if(myState === 'idle'){
+           
+        }
+
+        if(shouldFaceRight != isFacingRight){
+            setIsFacingRight(shouldFaceRight);
+        }
+        console.log("shoud face right: ",shouldFaceRight);
+        console.log("is facing right: ",isFacingRight);
+        const separator = ' ';
+        const base = 'scale(0.8) translateY(-50%)';
+        const flip = shouldFaceRight ? 'scaleX(1)' : 'scaleX(-1)';
+        const transform = `${base} ${flip}`;
+        idle.style.transform = transform;
+        walk.style.transform = transform;
+        idle2.style.transform = transform;
+        
+    }, [myState, isFacingRight, keyHeld])
     return(
         <main id='home' className='home'>
             <section className='home-scene'>
