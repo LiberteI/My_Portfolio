@@ -84,12 +84,7 @@ const Home = () => {
     
     useEffect(() => {
         let held = null;
-        const myIdle = document.querySelector('.me.idle');
-        const myIdle2 = document.querySelector('.me.idle2');
-        const myWalk = document.querySelector('.me.walk');
-        myWalk.style.display = 'none';
-        myIdle2.style.display = 'none';
-
+        
         const handleKeyDown = (e) => {
             if(e.key === 'a' || e.key === 'd'){
                 held = e.key;
