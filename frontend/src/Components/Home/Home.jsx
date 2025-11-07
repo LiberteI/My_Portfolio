@@ -26,7 +26,11 @@ const Home = () => {
     const skyDupRef = useRef(null);
     const fore = useRef(null);
 
-    useEffect(()=> {
+    const meIdleRef = useRef(null);
+    const meIdle2Ref = useRef(null);
+    const meWalkRef = useRef(null);
+
+    useEffect(() => {
         // prevent multiple fires at once
         let running = false;
 
@@ -45,6 +49,7 @@ const Home = () => {
                     { ref: farRef, speed: 0.18, base: 'translateY(-25%)'},
                     { ref: midRef, speed: 0.1, base: 'translateY(-20%)'},
                     { ref: closeRef, speed: 0, base: ''},
+                    { ref: fore, speed: 0, base: 'scale(1.6) translateY(21%)'},
                     
                 ];
 
@@ -74,6 +79,19 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
+    useEffect(() => {
+        const handleKey = (e) => {
+            if(e.key === 'a'){
+                console.log("go left");
+                
+            }
+            else if(e.key === 'd'){
+                console.log("go right");
+            }
+        };
+        window.addEventListener('keydown', handleKey);
+        return () => window.removeEventListener('keydown', handleKey);
+    }, []);
     return(
         <main id='home' className='home'>
             <section className='home-scene'>
@@ -86,12 +104,12 @@ const Home = () => {
                 <img className='home-bg-building-back' ref={backRef} src={buildingBack} alt="Back skyline" />
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
-                {/* <img className='home-foreground' ref={fore} src={foregound} alt="" /> */}
+                <img className='home-foreground' ref={fore} src={foregound} alt="" />
             </section>
             <div className='me-container'>
-                <img className='me idle' src={meIdle} alt="" />
-                <img className='me idle2' src={meIdle2} alt="" />
-                <img className='me walk' src={meWalk} alt="" />
+                <img className='me idle' ref={meIdleRef} src={meIdle} alt="" />
+                <img className='me idle2' ref={meIdle2Ref} src={meIdle2} alt="" />
+                <img className='me walk' ref={meWalkRef} src={meWalk} alt="" />
             </div>
             <div className='chatbot-container'></div>
         </main>
