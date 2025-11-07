@@ -1,5 +1,5 @@
 import './Home.css'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import moon from '../../assets/City/bg/Moon.png'
 import sky from '../../assets/City/bg/Sky.png'
 import skyFlip from '../../assets/City/bg/flip.png'
@@ -30,6 +30,7 @@ const Home = () => {
     const meIdle2Ref = useRef(null);
     const meWalkRef = useRef(null);
 
+    
     useEffect(() => {
         // prevent multiple fires at once
         let running = false;
@@ -79,24 +80,53 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
+    const [myState, setMyState] = useState('idle');
+    
     useEffect(() => {
+        let held = null;
         const myIdle = document.querySelector('.me.idle');
         const myIdle2 = document.querySelector('.me.idle2');
         const myWalk = document.querySelector('.me.walk');
         myWalk.style.display = 'none';
         myIdle2.style.display = 'none';
 
-        const handleKey = (e) => {
-            if(e.key === 'a'){
-                console.log("go left");
-            }
-            else if(e.key === 'd'){
-                console.log("go right");
+        const handleKeyDown = (e) => {
+            if(e.key === 'a' || e.key === 'd'){
+                held = e.key;
+                setMyState('walk');
             }
         };
-        window.addEventListener('keydown', handleKey);
-        return () => window.removeEventListener('keydown', handleKey);
+        const handleKeyUp = (e) => {
+            if(e.key === 'a' || e.key === 'd'){
+                held = null;
+                setMyState('idle');
+            }
+        }
+        window.addEventListener('keyup', handleKeyUp)
+        window.addEventListener('keydown', handleKeyDown);
+        return () =>{
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+        }
     }, []);
+    useEffect(() => {
+        const idle = meIdleRef.current;
+        const walk = meWalkRef.current;
+        const idle2 = meIdle2Ref.current;
+        if(!idle || !walk || !idle2){
+            return;
+        }
+        if(myState === 'idle'){
+            idle.style.display = 'block';
+            walk.style.display = 'none';
+            idle2.style.display = 'none';
+        }
+        else if(myState === 'walk'){
+            idle.style.display = 'none';
+            walk.style.display = 'block';
+            idle2.style.display = 'none';
+        }
+    }, [myState]);
     return(
         <main id='home' className='home'>
             <section className='home-scene'>
