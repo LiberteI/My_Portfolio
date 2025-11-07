@@ -8,6 +8,7 @@ import buildingFar from '../../assets/City/bg/buildingFar.png'
 import buildingMid from '../../assets/City/bg/buildingMid.png'
 import buildingClose from '../../assets/City/bg/buildingClose.png'
 
+import tile from '../../assets/City/bg/tile.png'
 import scene1 from '../../assets/City/bg/Scene1.png'
 import scene2 from '../../assets/City/bg/Scene2.gif'
 import scene3 from '../../assets/City/bg/Scene3.png'
@@ -80,6 +81,7 @@ const Home = () => {
                 <img className='home-bg-building-mid' ref={midRef} src={buildingMid} alt="Mid skyline" />
                 <img className='home-bg-building-back' ref={backRef} src={buildingBack} alt="Back skyline" />
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
+                <img className='home-tile' src={tile} alt="tilemap" />
             </section>
         </main>
     )
