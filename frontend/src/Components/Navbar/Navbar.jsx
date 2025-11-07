@@ -50,7 +50,7 @@ const Navbar = () => {
       // show
       if (clientY <= 80) {
         if (isHidden) {
-          setIsHidden(false)
+          // setIsHidden(false)
         }
       // hide
       } else if (clientY > 140 && window.scrollY > 120) {
