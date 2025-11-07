@@ -157,10 +157,8 @@ const Home = () => {
         if(shouldFaceRight != isFacingRight){
             setIsFacingRight(shouldFaceRight);
         }
-        console.log("shoud face right: ",shouldFaceRight);
-        console.log("is facing right: ",isFacingRight);
-        const separator = ' ';
-        const base = 'scale(0.8) translateY(-50%)';
+
+        const base = 'scale(0.8) translateY(-24%) translateX(-20%)';
         const flip = shouldFaceRight ? 'scaleX(1)' : 'scaleX(-1)';
         const transform = `${base} ${flip}`;
         idle.style.transform = transform;
