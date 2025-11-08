@@ -1,5 +1,6 @@
 import './Home.css'
 import React, { useEffect, useRef, useState } from 'react'
+// Parallax skyline layers
 import moon from '../../assets/City/bg/Moon.png'
 import sky from '../../assets/City/bg/Sky.png'
 import skyFlip from '../../assets/City/bg/flip.png'
@@ -11,12 +12,12 @@ import buildingClose from '../../assets/City/bg/buildingClose.png'
 import tile from '../../assets/City/bg/tile.png'
 import foregound from '../../assets/City/bg/foreground.png'
 
-// import me-animation
+// Character animation frames
 import meIdle from '../../assets/Animations/Me/Idle.gif'
 import meIdle2 from '../../assets/Animations/Me/Idle2.gif'
 import meWalk from '../../assets/Animations/Me/Walk.gif'
 const Home = () => {
-    // store refs so that we can directly access DOM
+    // Store references to each skyline layer for parallax transforms
     const farRef = useRef(null);
     const midRef = useRef(null);
     const backRef = useRef(null);
@@ -26,15 +27,18 @@ const Home = () => {
     const skyDupRef = useRef(null);
     const fore = useRef(null);
 
+    // Keep refs to each GIF so we can toggle visibility imperatively
     const meIdleRef = useRef(null);
     const meIdle2Ref = useRef(null);
     const meWalkRef = useRef(null);
 
-    // vertical parallax
+    // Handle parallax scrolling by translating each skyline layer at different speeds
     useEffect(() => {
+        // useEffect with [] runs once after mount, ideal for wire-up of global listeners
         // prevent multiple fires at once
         let running = false;
 
+        // Arrow fn: translates each skyline layer according to scroll delta + its speed
         const handleScroll = () => {
             if(running){
                 return;
@@ -80,12 +84,13 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
+    // Track current animation pose plus which key (if any) is held
     const [myState, setMyState] = useState('idle');
-    
     const [keyHeld, setKeyHeld] = useState(null);
-    // update states
+    // Respond to keyboard events to update pose + held key
     useEffect(() => {
     
+        // Arrow fn: transitions to walk state when a/d pressed
         const handleKeyDown = (e) => {
             if(e.key === 'a' || e.key === 'd'){
                 setKeyHeld(e.key);
@@ -93,6 +98,7 @@ const Home = () => {
             }
             
         };
+        // Arrow fn: reverts to idle when movement keys released
         const handleKeyUp = (e) => {
             if(e.key === 'a' || e.key === 'd'){
                 setKeyHeld(null);
@@ -106,8 +112,9 @@ const Home = () => {
             window.removeEventListener('keyup', handleKeyUp);
         }
     }, []);
-    // update animation
+    // Imperatively show the correct GIF whenever the pose changes
     useEffect(() => {
+        // useEffect re-runs whenever myState/keyHeld change thanks to dependency array
         const idle = meIdleRef.current;
         const walk = meWalkRef.current;
         const idle2 = meIdle2Ref.current;
@@ -127,11 +134,13 @@ const Home = () => {
         // render once and do it again when mystate changes
     }, [myState, keyHeld]);
 
-    // update movement
-    const walkSpeed = 1;
+    // Movement + facing direction handling
+    const walkSpeed = 1; // movement speed in px per frame
     const [isFacingRight, setIsFacingRight] = useState(true);
-    const heldRef = useRef(null);
+   
+    // Flip sprite horizontally to match walking direction
     useEffect(() => {
+        // useEffect listens for pose/facing changes; deps ensure it only fires when needed
         const idle = meIdleRef.current;
         const walk = meWalkRef.current;
         const idle2 = meIdle2Ref.current;
@@ -169,12 +178,16 @@ const Home = () => {
         
     }, [myState, isFacingRight, keyHeld])
 
+    // Track how far along the x-axis the character has walked
     const [position, setPosition] = useState(0);
+    // Run an RAF loop to keep nudging position while a/d are held
     useEffect(() => {
+        // useEffect here ties the RAF loop lifecycle to myState/keyHeld changes
         if(myState !== 'walk' || !keyHeld){
             return;
         }
         let frameId;
+        // Arrow fn: per-frame updater that nudges character based on held key
         const step = () => {
             setPosition((prev) => {
                 if(keyHeld === 'a'){
@@ -196,6 +209,7 @@ const Home = () => {
     }, [myState, keyHeld]);
     return(
         <main id='home' className='home'>
+            {/* Parallax skyline stack */}
             <section className='home-scene'>
                 
                 <img className='home-bg-sky' ref={skyRef} src={sky} alt="sky" />
@@ -208,6 +222,7 @@ const Home = () => {
                 <img className='home-tile' src={tile} alt="tilemap" />
                 <img className='home-foreground' ref={fore} src={foregound} alt="" />
             </section>
+            {/* Character wrapper translated via inline style */}
             <div
                 className='me-wrapper'
                 style={{ '--me-offset': `${position}px` }}
@@ -218,7 +233,7 @@ const Home = () => {
                     <img className='me walk' ref={meWalkRef} src={meWalk} alt="" />
                 </div>
             </div>
-            
+            {/* Reserved spot for future chatbot animation */}
             <div className='chatbot-container'></div>
         </main>
     )
