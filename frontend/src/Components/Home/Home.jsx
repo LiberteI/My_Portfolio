@@ -83,7 +83,7 @@ const Home = () => {
     const [myState, setMyState] = useState('idle');
     
     const [keyHeld, setKeyHeld] = useState(null);
-
+    // update states
     useEffect(() => {
     
         const handleKeyDown = (e) => {
@@ -106,6 +106,7 @@ const Home = () => {
             window.removeEventListener('keyup', handleKeyUp);
         }
     }, []);
+    // update animation
     useEffect(() => {
         const idle = meIdleRef.current;
         const walk = meWalkRef.current;
@@ -126,6 +127,7 @@ const Home = () => {
         // render once and do it again when mystate changes
     }, [myState, keyHeld]);
 
+    // update movement
     const walkSpeed = 1;
     const [isFacingRight, setIsFacingRight] = useState(true);
     const heldRef = useRef(null);
@@ -158,7 +160,7 @@ const Home = () => {
             setIsFacingRight(shouldFaceRight);
         }
 
-        const base = 'scale(0.8) translateY(-24%) translateX(-20%)';
+        const base = 'scale(0.8) translateY(-24%) translateX(-30%)';
         const flip = shouldFaceRight ? 'scaleX(1)' : 'scaleX(-1)';
         const transform = `${base} ${flip}`;
         idle.style.transform = transform;
@@ -166,6 +168,32 @@ const Home = () => {
         idle2.style.transform = transform;
         
     }, [myState, isFacingRight, keyHeld])
+
+    const [position, setPosition] = useState(0);
+    useEffect(() => {
+        if(myState !== 'walk' || !keyHeld){
+            return;
+        }
+        let frameId;
+        const step = () => {
+            setPosition((prev) => {
+                if(keyHeld === 'a'){
+                    return prev - walkSpeed;
+                }
+                if(keyHeld === 'd'){
+                    return prev + walkSpeed;
+                }
+
+                return prev;
+            });
+            frameId = requestAnimationFrame(step);
+        };
+
+        frameId = requestAnimationFrame(step);
+
+        return () => cancelAnimationFrame(frameId);
+
+    }, [myState, keyHeld]);
     return(
         <main id='home' className='home'>
             <section className='home-scene'>
@@ -180,11 +208,17 @@ const Home = () => {
                 <img className='home-tile' src={tile} alt="tilemap" />
                 <img className='home-foreground' ref={fore} src={foregound} alt="" />
             </section>
-            <div className='me-container'>
-                <img className='me idle' ref={meIdleRef} src={meIdle} alt="" />
-                <img className='me idle2' ref={meIdle2Ref} src={meIdle2} alt="" />
-                <img className='me walk' ref={meWalkRef} src={meWalk} alt="" />
+            <div
+                className='me-wrapper'
+                style={{ '--me-offset': `${position}px` }}
+            >
+                <div className='me-container'>
+                    <img className='me idle' ref={meIdleRef} src={meIdle} alt="" />
+                    <img className='me idle2' ref={meIdle2Ref} src={meIdle2} alt="" />
+                    <img className='me walk' ref={meWalkRef} src={meWalk} alt="" />
+                </div>
             </div>
+            
             <div className='chatbot-container'></div>
         </main>
     )
