@@ -108,6 +108,7 @@
     bottom: 0;
     width: clamp(140px, 12vw, 220px);
     height: clamp(140px, 12vw, 220px);
+    left: calc(34%);
     transform: translateX(calc(var(--me-offset, 0px)));
     z-index: 7;
 }
