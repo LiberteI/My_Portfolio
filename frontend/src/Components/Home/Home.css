@@ -28,6 +28,7 @@
     z-index: 0;
     animation: sky-pan 150s linear infinite;
     background-position: 0 0;
+    
 }
 .home-bg-sky-dup{
     inset: 0;
@@ -38,6 +39,7 @@
     animation: sky-pan-right 150s linear infinite;
     background-position: 0 0;
     transform: translateX(100%);
+    bottom: 0;
 }
 
 @keyframes sky-pan{
@@ -94,13 +96,21 @@
 }
 
 .home-tile{
+    bottom: 0;
+    left: 50%;
+    width: clamp(110%, 140vw, 200vw);
+    height: auto;
     z-index: 6;
-    transform: translateY(30%);
+    transform: translate(-50%, 0);
 }
 
 .home-foreground{
+    bottom: 0;
+    left: 50%;
     z-index: 10;
-    transform: scale(1.6) translateY(21%);
+    width: clamp(120%, 160vw, 220vw);
+    height: auto;
+    transform: translate(-50%, 4%) scale(1.6);
 }
 
 .me-wrapper{
@@ -117,7 +127,7 @@
     position: relative;
     width: 100%;
     height: 100%;
-    transform: scale(0.8) translateY(-24%) translateX(-30%);
+    transform: scale(0.8) translateY(-10%) translateX(-30%);
     display: grid;
     place-items: center;
 }
@@ -142,7 +152,7 @@
     height: 100%;
     display: grid;
     place-items: center;
-    transform: scale(0.8) translateX(-180%) translateY(-341%);
+    transform: scale(0.8) translateX(-180%) translateY(-282%);
 }
 .chatbot{
     position: absolute;

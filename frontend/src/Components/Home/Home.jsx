@@ -50,7 +50,6 @@ const Home = () => {
                     { ref: farRef, speed: 0.18, base: 'translateY(-25%)'},
                     { ref: midRef, speed: 0.22, base: 'translateY(-20%)'},
                     { ref: closeRef, speed: 0.1, base: ''},
-                    { ref: fore, speed: 0, base: 'scale(1.6) translateY(21%)'},
                     
                 ];
 

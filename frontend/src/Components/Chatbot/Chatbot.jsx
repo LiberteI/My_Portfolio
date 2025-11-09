@@ -6,10 +6,7 @@ import '../Home/Home.css'
 const Chatbot = () => {
 
     return (
-        <div
-            className='chatbot-wrapper'
-            
-        >
+        <div className='chatbot-wrapper'>
             <div className='chatbot-container'>
                 <img className='chatbot idle' src={botIdle} alt="" />
                 <img className='chatbot dialogue' src={botDialogue} alt="" />
