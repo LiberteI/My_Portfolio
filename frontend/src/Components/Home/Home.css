@@ -97,16 +97,13 @@
 
 .home-tile{
     bottom: 0;
-    left: 50%;
     width: clamp(110%, 140vw, 200vw);
     height: auto;
     z-index: 6;
-    transform: translate(-50%, 0);
 }
 
 .home-foreground{
     bottom: 0;
-    left: 50%;
     z-index: 10;
     width: clamp(120%, 160vw, 220vw);
     height: auto;
