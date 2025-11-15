@@ -9,7 +9,7 @@ import buildingBack from '../../assets/City/bg/buildingBack.png'
 import buildingFar from '../../assets/City/bg/buildingFar.png'
 import buildingMid from '../../assets/City/bg/buildingMid.png'
 import buildingClose from '../../assets/City/bg/buildingClose.png'
-
+import Chatbot from '../Chatbot/Chatbot'
 import tile from '../../assets/City/bg/tile.png'
 import foregound from '../../assets/City/bg/foreground.png'
 
@@ -93,6 +93,7 @@ const Home = () => {
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
                 <img className='home-foreground' ref={fore} src={foregound} alt="" />
+                <Chatbot />
             </section>
         </main>
     )
