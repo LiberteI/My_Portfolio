@@ -1,7 +1,6 @@
 import './Home.css'
 import React, { useEffect, useRef } from 'react'
-import Player from '../Player/Player'
-import Chatbot from '../Chatbot/Chatbot'
+
 // Parallax skyline layers
 import moon from '../../assets/City/bg/Moon.png'
 import sky from '../../assets/City/bg/Sky.png'
@@ -95,8 +94,6 @@ const Home = () => {
                 <img className='home-tile' src={tile} alt="tilemap" />
                 <img className='home-foreground' ref={fore} src={foregound} alt="" />
             </section>
-            <Player />
-            <Chatbot />
         </main>
     )
 
