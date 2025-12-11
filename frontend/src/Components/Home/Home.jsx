@@ -11,7 +11,7 @@ import buildingMid from '../../assets/City/bg/buildingMid.png'
 import buildingClose from '../../assets/City/bg/buildingClose.png'
 import Chatbot from '../Chatbot/Chatbot'
 import tile from '../../assets/City/bg/tile.png'
-import foregound from '../../assets/City/bg/foreground.png'
+
 
 
 
@@ -24,7 +24,6 @@ const Home = () => {
     const skyRef = useRef(null);
     const moonRef = useRef(null);
     const skyDupRef = useRef(null);
-    const fore = useRef(null);
 
     
     // Handle parallax scrolling by translating each skyline layer at different speeds
@@ -92,7 +91,7 @@ const Home = () => {
                 <img className='home-bg-building-back' ref={backRef} src={buildingBack} alt="Back skyline" />
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
-                <img className='home-foreground' ref={fore} src={foregound} alt="" />
+                
                 <Chatbot />
             </section>
         </main>
