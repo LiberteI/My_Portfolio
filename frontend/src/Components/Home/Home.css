@@ -1,17 +1,20 @@
 .home{
+    --scene-min-width: 1400px;
     position: relative;
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    width: 100%;
+    width: 100vw;
+    overflow: hidden; /* clip overflow when viewport is narrower than scene */
     color: inherit;
 }
 
 .home-scene{
     position: relative;
-    width: 100%;
+    width: clamp(var(--scene-min-width), 100vw, 1800px); /* don't downscale on small viewports */
+    height: 100vh;
     margin: 0 auto;
-    overflow: hidden;
+    overflow: hidden; /* hide the cropped edges */
 }
 
 .home-scene img{
@@ -97,10 +100,8 @@
 
 .home-tile{
     bottom: 0;
-    width: 100vw;
-
+    width: 100%;
     height: auto;
     z-index: 6;
 }
-
 
