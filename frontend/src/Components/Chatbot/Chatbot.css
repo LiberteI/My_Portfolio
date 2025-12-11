@@ -1,0 +1,13 @@
+/* Keep the NPC anchored to the tile along the bottom of the scene */
+.chatbot{
+    position: absolute;
+    bottom: clamp(2.25rem, 4vw, 4.75rem);
+    left: 50%;
+    transform: translate(-50%, -34%);
+    width: clamp(90px, 9vw, 180px);
+    z-index: 7; 
+    pointer-events: none;
+    image-rendering: pixelated;
+}
+
+
