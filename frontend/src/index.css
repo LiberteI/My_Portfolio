@@ -11,6 +11,7 @@
 body{
     background-color: #040417;
     color: #e5e7eb;
+    overflow-x: hidden; /* prevent horizontal scroll from wide layers */
 }
 
 .app-container{

@@ -25,6 +25,7 @@ const Home = () => {
     const moonRef = useRef(null);
     const skyDupRef = useRef(null);
 
+    const currentText = "hello world";
     
     // Handle parallax scrolling by translating each skyline layer at different speeds
     useEffect(() => {
@@ -91,7 +92,9 @@ const Home = () => {
                 <img className='home-bg-building-back' ref={backRef} src={buildingBack} alt="Back skyline" />
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
-                
+
+                <div className='npc-bubble'>{currentText}</div>
+
                 <Chatbot />
             </section>
         </main>
