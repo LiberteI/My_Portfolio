@@ -11,7 +11,7 @@
 
 .home-scene{
     position: relative;
-    width: clamp(var(--scene-min-width), 100vw, 1800px); /* don't downscale on small viewports */
+    width: clamp(var(--scene-min-width), 100vw, 2000px);
     height: 100vh;
     margin: 0 auto;
     overflow: hidden; /* hide the cropped edges */
