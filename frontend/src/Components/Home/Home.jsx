@@ -76,11 +76,12 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
-    const greetingText = "Hello There! \n (Click Me)";
-    const introductionText = "I am Yiming Yang (Liberte) \n a Game Developer \n Full Stack Developer \n and Pianist";
+    const greetingText = "Hello There!";
+    const introductionText = "I am Yiming Yang (Liberte) \n a Game Developer \n Full Stack Developer \n and Pianist \n (Click Me)";
     const [shouldIdle, setShouldIdle] = useState(false);
+    const [typedText, setTypedText] = useState('');
 
-    const idleInterval = 5000;
+    const idleInterval = 8000;
     const waveInterval = 1700;
     const [currentText, setCurrentText] = useState(greetingText);
 
@@ -104,6 +105,24 @@ const Home = () => {
             setCurrentText(greetingText);
         }
     }, [shouldIdle])
+
+    // Typewriter effect that replays whenever the bubble text changes
+    useEffect(() => {
+        let charIndex = 0;
+        setTypedText('');
+
+        const typingSpeedMs = 20;
+        const intervalId = setInterval(() => {
+            charIndex += 1;
+            setTypedText(currentText.slice(0, charIndex));
+
+            if(charIndex >= currentText.length){
+                clearInterval(intervalId);
+            }
+        }, typingSpeedMs);
+
+        return () => clearInterval(intervalId);
+    }, [currentText]);
     
     return(
         <main id='home' className='home'>
@@ -119,7 +138,7 @@ const Home = () => {
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
 
-                <div className='npc-bubble'>{currentText}</div>
+                <div className='npc-bubble'>{typedText}</div>
 
                 <Chatbot shouldIdle={shouldIdle}/>
             </section>

@@ -114,9 +114,8 @@
     position: absolute; /* keep it inside the home scene only */
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -30%);
-    width: clamp(180px, 30vw, 260px);
-    height: clamp(180px, 30vw, 260px);
+    transform: translate(-50%, -10%);
+    
     background: transparent;
     border: 2px solid #4f46e5;
     border-radius: 14px;
@@ -133,6 +132,7 @@
     font-size: x-large;
     white-space: pre-line;
     text-align: center;
+    padding: 2rem 2rem;    
 }
 
 .npc-bubble::after{

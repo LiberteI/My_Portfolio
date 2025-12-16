@@ -10,7 +10,7 @@
     image-rendering: pixelated;
     filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.35));
     animation: chatbot-pulse 2.4s ease-in-out infinite;
-    
+    transition: transform 180ms ease, filter 180ms ease;
 }
 
 @keyframes chatbot-pulse{
@@ -20,4 +20,6 @@
 
 .chatbot:hover{
     cursor: pointer;
+    transform: translate(-50%, -55%) scale(1.4);
+    filter: drop-shadow(0 0 24px rgba(191, 219, 254, 0.9));
 }
