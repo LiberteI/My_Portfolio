@@ -76,8 +76,8 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
-    const greetingText = "Hello There!";
-    const introductionText = "I am Yiming Yang (Liberte), a Game Developer, Full Stack Developer, and Pianist";
+    const greetingText = "Hello There! \n (Click Me)";
+    const introductionText = "I am Yiming Yang (Liberte) \n a Game Developer \n Full Stack Developer \n and Pianist";
     const [shouldIdle, setShouldIdle] = useState(false);
 
     const idleInterval = 5000;
