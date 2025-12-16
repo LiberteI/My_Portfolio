@@ -77,11 +77,12 @@ const Home = () => {
     }, [])
 
     const greetingText = "Hello There!";
-    const introductionText = "I am Yiming Yang(Liberte), a Game Developer, Full Stack Developer, and Pianist";
+    const introductionText = "I am Yiming Yang (Liberte), a Game Developer, Full Stack Developer, and Pianist";
     const [shouldIdle, setShouldIdle] = useState(false);
-    
-    const idleInterval = 3000;
+
+    const idleInterval = 5000;
     const waveInterval = 1700;
+    const [currentText, setCurrentText] = useState(greetingText);
 
     useEffect(() => {
         const curDelay = shouldIdle ? idleInterval : waveInterval;
@@ -96,7 +97,12 @@ const Home = () => {
 
     // change current text when shouldIdle changes and synchronise npc-bubble width with text's width
     useEffect(() => {
-        console.log(shouldIdle);
+        if(shouldIdle){
+            setCurrentText(introductionText);
+        }
+        else{
+            setCurrentText(greetingText);
+        }
     }, [shouldIdle])
     
     return(
@@ -113,7 +119,7 @@ const Home = () => {
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
 
-                <div className='npc-bubble'>{greetingText}</div>
+                <div className='npc-bubble'>{currentText}</div>
 
                 <Chatbot shouldIdle={shouldIdle}/>
             </section>
