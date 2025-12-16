@@ -79,16 +79,20 @@ const Home = () => {
     const greetingText = "Hello There!";
     const introductionText = "I am Yiming Yang(Liberte), a Game Developer, Full Stack Developer, and Pianist";
     const [shouldIdle, setShouldIdle] = useState(false);
+    
+    const idleInterval = 3000;
+    const waveInterval = 1700;
 
     useEffect(() => {
+        const curDelay = shouldIdle ? idleInterval : waveInterval;
         // toggle shouldIdle every 3 seconds
-        const toggleShouldIdle = setInterval(() => {
+        const toggleShouldIdle = setTimeout(() => {
             setShouldIdle(shouldIdle => !shouldIdle);
-        }, 3000);
+        }, curDelay);
 
         // zero out current interval
-        return () => clearInterval(toggleShouldIdle);
-    }, []);
+        return () => clearTimeout(toggleShouldIdle);
+    }, [shouldIdle]);
 
     // change current text when shouldIdle changes and synchronise npc-bubble width with text's width
     useEffect(() => {
@@ -111,7 +115,7 @@ const Home = () => {
 
                 <div className='npc-bubble'>{greetingText}</div>
 
-                <Chatbot />
+                <Chatbot shouldIdle={shouldIdle}/>
             </section>
         </main>
     )
