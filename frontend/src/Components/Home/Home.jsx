@@ -1,5 +1,5 @@
 import './Home.css'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 // Parallax skyline layers
 import moon from '../../assets/City/bg/Moon.png'
@@ -25,8 +25,6 @@ const Home = () => {
     const moonRef = useRef(null);
     const skyDupRef = useRef(null);
 
-    const currentText = "hello world";
-    
     // Handle parallax scrolling by translating each skyline layer at different speeds
     useEffect(() => {
         // useEffect with [] runs once after mount, ideal for wire-up of global listeners
@@ -78,6 +76,24 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
+    const greetingText = "Hello There!";
+    const introductionText = "I am Yiming Yang(Liberte), a Game Developer, Full Stack Developer, and Pianist";
+    const [shouldIdle, setShouldIdle] = useState(false);
+
+    useEffect(() => {
+        // toggle shouldIdle every 3 seconds
+        const toggleShouldIdle = setInterval(() => {
+            setShouldIdle(shouldIdle => !shouldIdle);
+        }, 3000);
+
+        // zero out current interval
+        return () => clearInterval(toggleShouldIdle);
+    }, []);
+
+    // change current text when shouldIdle changes and synchronise npc-bubble width with text's width
+    useEffect(() => {
+        console.log(shouldIdle);
+    }, [shouldIdle])
     
     return(
         <main id='home' className='home'>
@@ -93,7 +109,7 @@ const Home = () => {
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
 
-                <div className='npc-bubble'>{currentText}</div>
+                <div className='npc-bubble'>{greetingText}</div>
 
                 <Chatbot />
             </section>
