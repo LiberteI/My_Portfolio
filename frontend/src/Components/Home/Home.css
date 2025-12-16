@@ -108,10 +108,10 @@
 
 
 .npc-bubble{
-    position: fixed;
+    position: absolute; /* keep it inside the home scene only */
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -30%);
     width: clamp(180px, 30vw, 260px);
     height: clamp(180px, 30vw, 260px);
     background: transparent;
