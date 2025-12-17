@@ -2,6 +2,8 @@
 
 .about-container{
     width: 100%;
+    position: relative;
+    margin-top: 2rem;
     padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 4vw, 3rem);
     display: flex;
     flex-direction: column;
@@ -10,6 +12,7 @@
     background-color: rgba(4, 10, 26, 0.85);
     
 }
+
 
 .about-container p {
     margin: 0 auto;

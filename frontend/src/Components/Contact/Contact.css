@@ -4,11 +4,30 @@
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 3rem 1rem;
+    padding: clamp(2.5rem, 6vw, 4rem) 1rem 3rem;
     gap: 2rem;
     background-color: rgba(4, 10, 26, 0.85);
+    position: relative;
 }
-
+    
+.contact::before{
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(760px, 90%);
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(148, 163, 184, 0.1) 18%,
+        rgba(255, 255, 255, 0.65) 50%,
+        rgba(148, 163, 184, 0.1) 82%,
+        transparent 100%
+    );
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+}
 .contact h1{
     font-size: clamp(2.5rem, 1vw, 3.5rem);
     letter-spacing: 1px;
