@@ -15,7 +15,7 @@ body{
 }
 
 .app-container{
-    width: 100vw; /* span full root so all sections fill the page */
+    width: 100%; /* span full root so all sections fill the page without overflow */
     margin: 0 auto;
     border-left: 2px solid rgba(107, 114, 128, 0.35);
     border-right: 2px solid rgba(107, 114, 128, 0.35);

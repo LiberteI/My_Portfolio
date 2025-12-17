@@ -1,12 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=VT323&display=swap");
 
 .home{
-    --scene-min-width: 1400px;
+    
     position: relative;
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    width: 100vw;
+    width: 100%;
     overflow: hidden; /* prevent initial horizontal scroll from wide layers */
     
     color: inherit;
@@ -15,7 +15,7 @@
 
 .home-scene{
     position: relative;
-    width: clamp(var(--scene-min-width), 100vw, 2000px);
+    width: 100%;
     height: 100vh;
     margin: 0 auto;
     overflow: hidden; /* hide the cropped edges */
