@@ -138,3 +138,43 @@
 .npc-bubble::after{
     display: none;
 }
+
+.socials{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 100%);
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 1.6rem 2rem;
+    background: transparent;
+    border: none;
+    border-radius: 14px;
+    box-shadow: none;
+    min-width: 16rem;
+}
+
+.socials img{
+    position: static; /* reset absolute from .home-scene img */
+    display: block;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    object-fit: contain;
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.35));
+    transition: transform 0.15s ease, filter 0.3s ease;
+    animation: social-glow 2.4s ease-in-out infinite;
+    pointer-events: auto;
+}
+
+.socials img:hover{
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 24px rgba(191, 219, 254, 0.9));
+}
+
+@keyframes social-glow{
+    0%, 100% { filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.35)); }
+    50% { filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.65)); }
+}
