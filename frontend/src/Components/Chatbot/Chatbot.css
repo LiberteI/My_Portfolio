@@ -1,7 +1,7 @@
 /* Keep the NPC anchored to the tile along the bottom of the scene */
 .chatbot{
     position: absolute;
-    bottom: clamp(2.25rem, 4vw, 4.75rem);
+    bottom: clamp(2rem, 4vw, 4.75rem);
     left: 50%;
     transform: translate(-50%, -35%);
     width: clamp(90px, 9vw, 180px);
@@ -11,6 +11,12 @@
     filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.35));
     animation: chatbot-pulse 2.4s ease-in-out infinite;
     transition: transform 180ms ease, filter 180ms ease;
+}
+/* Phone: apply when viewport is <= 640px */
+@media (max-width: 640px){
+  .chatbot{
+    bottom: clamp(0px, 0vw, 4.75rem); /* tweak for mobile */
+  }
 }
 
 @keyframes chatbot-pulse{
