@@ -165,9 +165,11 @@ const Home = () => {
                 )}
 
                 <div className={`socials ${shouldShowSocials ? 'is-visible' : ''}`}>
-                        <img src={youtubeIcon} alt="" />
-                        <img src={githubIcon} alt="" />
-                        <img src={linkedinIcon} alt="" />
+                        <a href="https://www.youtube.com/@Liberteeeee-hd7zg"><img src={youtubeIcon} alt="" /></a>
+                        
+                        <a href="https://github.com/LiberteI"><img src={githubIcon} alt="" /></a>
+                        <a href="https://www.linkedin.com/in/yiming-yang-89a0102a0/"><img src={linkedinIcon} alt="" /></a>
+                        
                 </div>
                 
                 <button className="chatbot-button" onClick={handleClick}>
