@@ -65,6 +65,27 @@
     gap: 1rem;
 }
 
+.language-container{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 0.65rem;
+}
+
+.language-container img{
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.25));
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.language-container img:hover{
+    transform: translateY(-4px);
+    filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.4));
+}
+
 .stack-container > div{
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);

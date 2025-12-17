@@ -52,16 +52,18 @@
 }
 
 .navbar_menu li{
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     color: inherit;
     transition: color 0.2s ease, transform 0.2s ease, text-shadow 0.2s ease;
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.7);
 }
 
 .navbar_menu li:hover{
     color: #f8fafc;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
     transform: scale(1.2);
+    
 }
 
 .navbar_icons{
@@ -74,13 +76,14 @@
 .navbar_icons li{
     display: inline-block;
     margin: 10px 20px;
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     color: inherit;
     transition: color 0.2s ease, transform 0.2s ease, text-shadow 0.2s ease;
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.7);
 }
 .navbar_icons li:hover{
     color: #f8fafc;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
-    transform: scale(1.2);
+    transform: scale(1.3);
 }
