@@ -164,13 +164,11 @@ const Home = () => {
                     <div className='npc-bubble'>{typedText}</div>
                 )}
 
-                {shouldShowSocials && (
-                    <div className='socials'>
+                <div className={`socials ${shouldShowSocials ? 'is-visible' : ''}`}>
                         <img src={youtubeIcon} alt="" />
                         <img src={githubIcon} alt="" />
                         <img src={linkedinIcon} alt="" />
-                    </div>
-                )}
+                </div>
                 
                 <button className="chatbot-button" onClick={handleClick}>
                     <Chatbot clicked={clicked} shouldIdle={shouldIdle}/>

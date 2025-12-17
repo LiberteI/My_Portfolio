@@ -143,17 +143,26 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, 100%);
+    transform: translate(-50%, 40%) scale(0.85);
     z-index: 8;
     display: flex;
     align-items: center;
     gap: 2rem;
     padding: 1.6rem 2rem;
-    background: transparent;
-    border: none;
-    border-radius: 14px;
+    
     box-shadow: none;
     min-width: 16rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 220ms ease, visibility 220ms ease;
+}
+
+.socials.is-visible{
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate(-50%, 40%) scale(1);
 }
 
 .socials img{
@@ -170,7 +179,7 @@
 }
 
 .socials img:hover{
-    transform: scale(1.08);
+    transform: scale(1.2);
     filter: drop-shadow(0 0 24px rgba(191, 219, 254, 0.9));
 }
 
