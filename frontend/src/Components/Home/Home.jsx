@@ -141,7 +141,7 @@ const Home = () => {
         const toggleSocialButtonFlag = setTimeout(() => {
             setShouldShowSocials(false);
 
-        }, 5000);
+        }, 6000);
         // console.log(shouldShowSocials);
     };
 
