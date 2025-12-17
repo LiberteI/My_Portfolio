@@ -11,6 +11,9 @@ import buildingMid from '../../assets/City/bg/buildingMid.png'
 import buildingClose from '../../assets/City/bg/buildingClose.png'
 import Chatbot from '../Chatbot/Chatbot'
 import tile from '../../assets/City/bg/tile.png'
+import youtubeIcon from '../../assets/youtube.png'
+import linkedinIcon from '../../assets/linkedin.png'
+import githubIcon from '../../assets/github.png'
 
 
 
@@ -125,17 +128,24 @@ const Home = () => {
     }, [currentText]);
     
     const [clicked, setClicked] = useState(false);
+    const [shouldShowSocials, setShouldShowSocials] = useState(false);
+
     const handleClick = () => {
         setClicked(true);
-        
+        setShouldShowSocials(true);
         const toggleClicked = setTimeout(() => {
             setClicked(false);
             
         }, 830);
         
+        const toggleSocialButtonFlag = setTimeout(() => {
+            setShouldShowSocials(false);
+
+        }, 5000);
+        // console.log(shouldShowSocials);
     };
 
-
+    
     return(
         <main id='home' className='home'>
             {/* Parallax skyline stack */}
@@ -150,7 +160,18 @@ const Home = () => {
                 <img className='home-bg-building-close' ref={closeRef} src={buildingClose} alt="Close skyline" />
                 <img className='home-tile' src={tile} alt="tilemap" />
 
-                <div className='npc-bubble'>{typedText}</div>
+                {!shouldShowSocials && (
+                    <div className='npc-bubble'>{typedText}</div>
+                )}
+
+                {shouldShowSocials && (
+                    <div className='socials'>
+                        <img src={youtubeIcon} alt="" />
+                        <img src={githubIcon} alt="" />
+                        <img src={linkedinIcon} alt="" />
+                    </div>
+                )}
+                
                 <button className="chatbot-button" onClick={handleClick}>
                     <Chatbot clicked={clicked} shouldIdle={shouldIdle}/>
                 </button>
