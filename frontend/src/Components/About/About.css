@@ -76,6 +76,7 @@
     gap: 0.9rem;
     margin-top: 0.65rem;
     padding: auto;
+    overflow: visible;
 }
 
 .language-container img,
@@ -86,6 +87,10 @@
     object-fit: contain;
     filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.25));
     transition: transform 0.15s ease, filter 0.15s ease;
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .language-container img:hover,
@@ -93,6 +98,31 @@
 .devtools-container img:hover{
     transform: translateY(-4px);
     filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.4));
+}
+
+.tech-icon::after{
+    content: attr(title);
+    position: absolute;
+    bottom: -1.9rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.92);
+    color: #e5e7eb;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 2;
+}
+
+.tech-icon:hover::after{
+    opacity: 1;
+    transform: translate(-50%, -6px);
 }
 
 .stack-container > div{

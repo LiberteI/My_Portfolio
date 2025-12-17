@@ -38,12 +38,12 @@ const About = () => {
                 <div>
                     <h3>Languages</h3>
                     <div className='language-container'>
-                        <img src={csharpIcon} alt="C#" title="C#" />
-                        <img src={cppIcon} alt="C++" title="C++" />
-                        <img src={javaIcon} alt="Java" title="Java" />
-                        <img src={jsIcon} alt="JavaScript" title="JavaScript" />
-                        <img src={pythonIcon} alt="Python" title="Python" />
-                        <img src={tsIcon} alt="TypeScript" title="TypeScript" />
+                        <img className="tech-icon" src={csharpIcon} alt="C#" title="C#" />
+                        <img className="tech-icon" src={cppIcon} alt="C++" title="C++" />
+                        <img className="tech-icon" src={javaIcon} alt="Java" title="Java" />
+                        <img className="tech-icon" src={jsIcon} alt="JavaScript" title="JavaScript" />
+                        <img className="tech-icon" src={pythonIcon} alt="Python" title="Python" />
+                        <img className="tech-icon" src={tsIcon} alt="TypeScript" title="TypeScript" />
                         
                     </div>
                 </div>
@@ -51,27 +51,27 @@ const About = () => {
                 <div>
                     <h3>Frameworks</h3>
                     <div className='framework-container'>
-                        <img src={reactIcon} alt="React" title="React" />
-                        <img src={nodeIcon} alt="Node.js" title="Node.js" />
-                        <img src={firebaseIcon} alt="Firebase" title="Firebase" />
-                        <img src={mongodbIcon} alt="MongoDB" title="MongoDB" />
-                        <img src={unityIcon} alt="Unity" title="Unity" />
-                        <img src={unrealIcon} alt="Unreal Engine" title="Unreal Engine" />
-                        <img src={androidStudioIcon} alt="Android Studio" title="Android Studio" />
-                        <img src={openglIcon} alt="OpenGL" title="OpenGL" />
-                        <img src={sqlIcon} alt="SQL" title="SQL" />
-                        <img src={n8nIcon} alt="n8n" title="n8n" />
-                        <img src={musescoreIcon} alt="MuseScore" title="MuseScore" />
+                        <img className="tech-icon" src={reactIcon} alt="React" title="React" />
+                        <img className="tech-icon" src={nodeIcon} alt="Node.js" title="Node.js" />
+                        <img className="tech-icon" src={firebaseIcon} alt="Firebase" title="Firebase" />
+                        <img className="tech-icon" src={mongodbIcon} alt="MongoDB" title="MongoDB" />
+                        <img className="tech-icon" src={unityIcon} alt="Unity" title="Unity" />
+                        <img className="tech-icon" src={unrealIcon} alt="Unreal Engine" title="Unreal Engine" />
+                        <img className="tech-icon" src={androidStudioIcon} alt="Android Studio" title="Android Studio" />
+                        <img className="tech-icon" src={openglIcon} alt="OpenGL" title="OpenGL" />
+                        <img className="tech-icon" src={sqlIcon} alt="SQL" title="SQL" />
+                        <img className="tech-icon" src={n8nIcon} alt="n8n" title="n8n" />
+                        <img className="tech-icon" src={musescoreIcon} alt="MuseScore" title="MuseScore" />
                     </div>
                 </div>
 
                 <div>
                     <h3>Dev Tools</h3>
                     <div className='devtools-container'>
-                        <img src={gitIcon} alt="Git" title="Git" />
-                        <img src={githubIcon} alt="GitHub" title="GitHub" />
-                        <img src={gitlabIcon} alt="GitLab" title="GitLab" />
-                        <img src={postmanIcon} alt="Postman" title="Postman" />
+                        <img className="tech-icon" src={gitIcon} alt="Git" title="Git" />
+                        <img className="tech-icon" src={githubIcon} alt="GitHub" title="GitHub" />
+                        <img className="tech-icon" src={gitlabIcon} alt="GitLab" title="GitLab" />
+                        <img className="tech-icon" src={postmanIcon} alt="Postman" title="Postman" />
                     </div>
                 </div>
             </div>
