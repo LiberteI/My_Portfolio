@@ -73,20 +73,20 @@ const Navbar = () => {
         <a className='navbar_logo' href='#home' onClick={(e) => handleClick(e, 'home')} aria-label='Go to homepage'>
           <img src={logo} alt="Home" className='Logo'/>
         </a>
-        
         <ul className='navbar_menu'>
-          <li>About</li>
+          <li className='navbar_item navbar_item--left'>
+            <a href="#about" onClick={(e) => handleClick(e, 'about')} aria-label='Go to about'>About</a>
+          </li>
+          <li className='navbar_item'>
+            <a href="#projects" onClick={(e) => handleClick(e, 'projects')} aria-label='Go to projects'>Projects</a>
+          </li>
+          <li className='navbar_item'>
+            <a href="#performance" onClick={(e) => handleClick(e, 'performance')} aria-label='Go to performances'>Performances</a>
+          </li>
+          <li className='navbar_item'>
+            <a href="#contact" onClick={(e) => handleClick(e, 'contact')} aria-label='Go to contact'>Contact</a>
+          </li>
         </ul>
-
-        <ul className='navbar_icons'>
-          <li>Projects</li>
-          <li>Performances</li>
-
-          <a href="#contact" onClick={(e) => handleClick(e, 'contact')} aria-label='Go to contact'>
-            <li>Contact</li>
-          </a>
-          
-        </ul> 
         
     </nav>
     

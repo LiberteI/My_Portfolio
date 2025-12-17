@@ -23,7 +23,7 @@ import postmanIcon from '../../assets/devTools/postman.png'
 const About = () => {
 
     return(
-        <section className="about-container">
+        <section className="about-container" id="about">
             <h1>About Me</h1>
             <article className='paragraph-container'>
                 <p>  My name is Yiming Yang (Liberte), a third-year Computer Science student at Dalhousie University.</p>
