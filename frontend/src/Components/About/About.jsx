@@ -38,12 +38,12 @@ const About = () => {
                 <div>
                     <h3>Languages</h3>
                     <div className='language-container'>
-                        <img src={csharpIcon} alt="C#" />
-                        <img src={cppIcon} alt="C++" />
-                        <img src={javaIcon} alt="Java" />
-                        <img src={jsIcon} alt="JavaScript" />
-                        <img src={pythonIcon} alt="Python" />
-                        <img src={tsIcon} alt="TypeScript" />
+                        <img src={csharpIcon} alt="C#" title="C#" />
+                        <img src={cppIcon} alt="C++" title="C++" />
+                        <img src={javaIcon} alt="Java" title="Java" />
+                        <img src={jsIcon} alt="JavaScript" title="JavaScript" />
+                        <img src={pythonIcon} alt="Python" title="Python" />
+                        <img src={tsIcon} alt="TypeScript" title="TypeScript" />
                         
                     </div>
                 </div>
@@ -51,27 +51,27 @@ const About = () => {
                 <div>
                     <h3>Frameworks</h3>
                     <div className='framework-container'>
-                        <img src={reactIcon} alt="React" />
-                        <img src={nodeIcon} alt="Node.js" />
-                        <img src={firebaseIcon} alt="Firebase" />
-                        <img src={mongodbIcon} alt="MongoDB" />
-                        <img src={unityIcon} alt="Unity" />
-                        <img src={unrealIcon} alt="Unreal Engine" />
-                        <img src={androidStudioIcon} alt="Android Studio" />
-                        <img src={openglIcon} alt="OpenGL" />
-                        <img src={sqlIcon} alt="SQL" />
-                        <img src={n8nIcon} alt="n8n" />
-                        <img src={musescoreIcon} alt="MuseScore" />
+                        <img src={reactIcon} alt="React" title="React" />
+                        <img src={nodeIcon} alt="Node.js" title="Node.js" />
+                        <img src={firebaseIcon} alt="Firebase" title="Firebase" />
+                        <img src={mongodbIcon} alt="MongoDB" title="MongoDB" />
+                        <img src={unityIcon} alt="Unity" title="Unity" />
+                        <img src={unrealIcon} alt="Unreal Engine" title="Unreal Engine" />
+                        <img src={androidStudioIcon} alt="Android Studio" title="Android Studio" />
+                        <img src={openglIcon} alt="OpenGL" title="OpenGL" />
+                        <img src={sqlIcon} alt="SQL" title="SQL" />
+                        <img src={n8nIcon} alt="n8n" title="n8n" />
+                        <img src={musescoreIcon} alt="MuseScore" title="MuseScore" />
                     </div>
                 </div>
 
                 <div>
                     <h3>Dev Tools</h3>
                     <div className='devtools-container'>
-                        <img src={gitIcon} alt="Git" />
-                        <img src={githubIcon} alt="GitHub" />
-                        <img src={gitlabIcon} alt="GitLab" />
-                        <img src={postmanIcon} alt="Postman" />
+                        <img src={gitIcon} alt="Git" title="Git" />
+                        <img src={githubIcon} alt="GitHub" title="GitHub" />
+                        <img src={gitlabIcon} alt="GitLab" title="GitLab" />
+                        <img src={postmanIcon} alt="Postman" title="Postman" />
                     </div>
                 </div>
             </div>
