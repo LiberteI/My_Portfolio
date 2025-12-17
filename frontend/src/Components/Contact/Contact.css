@@ -43,7 +43,7 @@
     border-radius: 10px;
     border: none;
     background: #0d4092;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.902);
     font-weight: 600;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.55);
@@ -51,6 +51,6 @@
 
 .contact-button:hover{
     cursor: pointer;
-    transform: translateY(-2px);
+    transform: translateY(-10px);
     box-shadow: 0 12px 25px -12px rgba(59, 130, 246, 0.55);
 }

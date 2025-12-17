@@ -4,12 +4,12 @@ const About = () => {
     return(
         <section className="about-container">
             <h1>About Me</h1>
-            <article>
-                <p>My name is Yiming Yang (Liberte), a third-year Computer Science student at Dalhousie University.</p>
+            <article className='paragraph-container'>
+                <p>  My name is Yiming Yang (Liberte), a third-year Computer Science student at Dalhousie University.</p>
 
-                <p>I am a programmer with interests in game development, full-stack development, and AI & machine learning.</p>
+                <p>  I am a programmer with interests in game development, full-stack development, and AI & machine learning.</p>
 
-                <p>Beyond programming, I am a trained pianist, and my favorite composer is Ludwig van Beethoven.</p>
+                <p>  Beyond programming, I am a trained pianist, and my favorite composer is Ludwig van Beethoven.</p>
 
             </article>
             <h2>My Tech Stack</h2>

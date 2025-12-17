@@ -2,38 +2,57 @@
 
 .about-container{
     width: 100%;
-    
-    
     padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 4vw, 3rem);
     display: flex;
     flex-direction: column;
     gap: 1.75rem;
     font-family: 'Inter', system-ui, sans-serif;
     background-color: rgba(4, 10, 26, 0.85);
+    
+}
+
+.about-container p {
+    margin: 0 auto;
 }
 
 .about-container h1{
     font-size: clamp(2rem, 4vw, 2.8rem);
     letter-spacing: 0.02em;
     color: #f8fafc;
+    align-self: center;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.75);
 }
 
 .about-container h2{
     font-size: clamp(1.4rem, 2.5vw, 1.8rem);
     color: #e2e8f0;
     margin-top: 0.5rem;
+    align-self: center;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
 }
+
 
 .about-container h3{
     font-size: 1.05rem;
     color: #cbd5e1;
     margin-bottom: 0.4rem;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.55);
 }
 
 .about-container p{
     color: #cbd5e1;
     line-height: 1.7;
     max-width: 60ch;
+}
+
+.paragraph-container{
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 1.75rem 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    max-width: 68ch;
+    margin: 0 auto;
 }
 
 .stack-container{
