@@ -1,1 +1,0 @@
-import idleGIF from "../../assets/Animations/Me/"
