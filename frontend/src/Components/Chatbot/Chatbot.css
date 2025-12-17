@@ -18,6 +18,12 @@
     50% { filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.65)); }
 }
 
+.chatbot-btn{
+    background: none;
+    border: none;
+    padding: 0;
+}
+
 .chatbot:hover{
     cursor: pointer;
     transform: translate(-50%, -55%) scale(1.4);

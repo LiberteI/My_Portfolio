@@ -124,6 +124,18 @@ const Home = () => {
         return () => clearInterval(intervalId);
     }, [currentText]);
     
+    const [clicked, setClicked] = useState(false);
+    const handleClick = () => {
+        setClicked(true);
+        
+        const toggleClicked = setTimeout(() => {
+            setClicked(false);
+            
+        }, 830);
+        
+    };
+
+
     return(
         <main id='home' className='home'>
             {/* Parallax skyline stack */}
@@ -139,8 +151,10 @@ const Home = () => {
                 <img className='home-tile' src={tile} alt="tilemap" />
 
                 <div className='npc-bubble'>{typedText}</div>
-
-                <Chatbot shouldIdle={shouldIdle}/>
+                <button className="chatbot-button" onClick={handleClick}>
+                    <Chatbot clicked={clicked} shouldIdle={shouldIdle}/>
+                </button>
+                
             </section>
         </main>
     )
