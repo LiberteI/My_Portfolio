@@ -1,27 +1,33 @@
 import { Link } from 'react-router-dom'
 import "./Project.css"
 import github from "../../assets/github.png"
-const ProjectCard = ({ title, image, slug, canLink, description, topic}) => {
+const ProjectCard = ({ title, image, slug, canLink, description, topic, skills}) => {
   if (canLink) {
     return (
-      <Link to={`/projects/${slug}`} className="project-card">
-
+    <div className="project-card">
+        
         <div className='left-column'>
-            <img src={image} alt={title} />
+            <Link to={`/projects/${slug}`} className="project-card">
+                <img src={image} alt={title} />
+            </Link>
         </div>
 
         <div className='right-column'>
             <h2>{title}</h2>
 
             <p>{topic}</p>
+
+            <p>{skills}</p>
+
             <p>{description}</p>
 
             <a href=""><img src={github} alt="" /></a>
         </div>
-        
-      </Link>
+    </div>
+      
     );
   }
+  
 
   return (
     <div className="project-card">
@@ -33,6 +39,9 @@ const ProjectCard = ({ title, image, slug, canLink, description, topic}) => {
             <h2>{title}</h2>
 
             <p>{topic}</p>
+
+            <p>{skills}</p>
+
             <p>{description}</p>
 
             <a href=""><img src={github} alt="" /></a>

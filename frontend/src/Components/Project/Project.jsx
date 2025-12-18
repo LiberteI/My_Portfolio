@@ -8,7 +8,9 @@ const projects = [
         slug: "knight-of-cinders",
         image: projectThumb,
         canLink: true,
-        description: ""
+        topic: "Game Development",
+        skills: "#GameDev #Unity, ",
+        description: "You are a noble knight who watched an evil witch, now it is your time to take revenge!"
     }
 
 ]
@@ -26,7 +28,12 @@ const Project = () => {
                         title={project.title}
                         slug={project.slug}
                         image={project.image} 
-                        canLink={project.canLink} />
+                        canLink={project.canLink}
+                        topic={project.topic}
+                        skills={project.skills}
+                        description={project.description}
+                    />
+                        
                 ))}
             </div>
 
