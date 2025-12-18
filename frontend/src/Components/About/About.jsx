@@ -5,6 +5,8 @@ import pythonIcon from '../../assets/icons/python.png'
 import javaIcon from '../../assets/icons/java.png'
 import cppIcon from '../../assets/icons/cpp.png'
 import csharpIcon from '../../assets/icons/csharp.png'
+import cssHtmlIcon from '../../assets/icons/csshtml.png'
+import glslIcon from '../../assets/icons/GLSL.png'
 import reactIcon from '../../assets/framework/react.png'
 import nodeIcon from '../../assets/framework/node.png'
 import firebaseIcon from '../../assets/framework/firebase.png'
@@ -42,8 +44,10 @@ const About = () => {
                         <img className="tech-icon" src={cppIcon} alt="C++" title="C++" />
                         <img className="tech-icon" src={javaIcon} alt="Java" title="Java" />
                         <img className="tech-icon" src={jsIcon} alt="JavaScript" title="JavaScript" />
+                        <img className="tech-icon" src={glslIcon} alt="GLSL" title="GLSL" />
                         <img className="tech-icon" src={pythonIcon} alt="Python" title="Python" />
                         <img className="tech-icon" src={tsIcon} alt="TypeScript" title="TypeScript" />
+                        <img className="tech-icon" src={cssHtmlIcon} alt="HTML & CSS" title="HTML & CSS" />
                         
                     </div>
                 </div>
