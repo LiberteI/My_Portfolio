@@ -5,20 +5,38 @@ const ProjectCard = ({ title, image, slug, canLink, description, topic}) => {
   if (canLink) {
     return (
       <Link to={`/projects/${slug}`} className="project-card">
-        <h2>{title}</h2>
-        <img src={image} alt={title} />
-        <img src={github} alt="" />
-        <p>{topic}</p>
-        <p>{description}</p>
+
+        <div className='left-column'>
+            <img src={image} alt={title} />
+        </div>
+
+        <div className='right-column'>
+            <h2>{title}</h2>
+
+            <p>{topic}</p>
+            <p>{description}</p>
+
+            <a href=""><img src={github} alt="" /></a>
+        </div>
+        
       </Link>
     );
   }
 
   return (
     <div className="project-card">
-      <h2>{title}</h2>
-      <img src={image} alt={title} />
-      <img src={github} alt="" />
+      <div className='left-column'>
+            <img src={image} alt={title} />
+        </div>
+
+        <div className='right-column'>
+            <h2>{title}</h2>
+
+            <p>{topic}</p>
+            <p>{description}</p>
+
+            <a href=""><img src={github} alt="" /></a>
+        </div>
     </div>
   );
 };
