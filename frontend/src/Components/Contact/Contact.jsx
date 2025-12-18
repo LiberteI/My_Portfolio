@@ -1,5 +1,7 @@
 import { useState } from "react"
 import './Contact.css'
+import emailIcon from "../../assets/email.png"
+import linkedinIcon from "../../assets/linkedin.png"
 const Contact = () => {
     // state set up
     const [formData, setFormData] = useState({name : '', email : '', message : ''})
@@ -77,6 +79,21 @@ const Contact = () => {
                 {status === 'error' && <p>Something went wrong. Please try again.</p>}
 
             </form>
+            <div className="contact-alternatives">
+                <div className="alternative-email">
+                    <img className="contact-icon" src={emailIcon} alt="Email icon" />
+                    <h2>Email</h2>
+                    <a className="contact-link" href="mailto:liberteix@gmail.com">liberteix@gmail.com</a>
+                    <a className="contact-link" href="mailto:yn265022@dal.ca">yn265022@dal.ca</a>
+                </div>
+                <div className="alternative-linkedin">
+                    <img className="contact-icon" src={linkedinIcon} alt="LinkedIn icon" />
+                    <h2>LinkedIn</h2>
+                    <a className="contact-link" href="https://www.linkedin.com/in/yiming-yang-89a0102a0/" target="_blank" rel="noreferrer">
+                        Connect on LinkedIn
+                    </a>
+                </div>
+            </div>
         </div>
         
     )
