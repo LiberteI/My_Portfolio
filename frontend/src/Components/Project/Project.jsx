@@ -1,6 +1,6 @@
 import "./Project.css"
 import ProjectCard from "./ProjectCard"
-import projectThumb from "../../assets/LOGO_dark.png"
+import projectThumb from "../../assets/ProjectThumbnail/KnightThumbnail.png"
 
 const projects = [
     {
@@ -10,7 +10,8 @@ const projects = [
         canLink: true,
         topic: "Game Development",
         skills: "Unity · Tilemap · Cinemachine · Physics & Raycasting · Singleton Architecture · State-Driven Systems",
-        description: "A dark 2D action game inspired by Souls-like combat, following a fallen knight driven by loss and revenge. The game features deliberate, stamina-based melee combat, multi-phase boss encounters with distinct attack patterns, and adaptive enemy behaviors. Atmospheric environments, parallax-scrolled levels, and cinematic animations reinforce a bleak world shaped by decay and conflict."
+        description: "A dark 2D action game inspired by Souls-like combat, following a fallen knight driven by loss and revenge. The game features deliberate, stamina-based melee combat, multi-phase boss encounters with distinct attack patterns, and adaptive enemy behaviors. Atmospheric parallax-scrolled environments, and cinematic animations.",
+        githubLink: "https://github.com/LiberteI/KnightOfCinders_firstProject"
     }
 
 ]

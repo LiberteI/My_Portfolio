@@ -4,7 +4,7 @@ import github from "../../assets/devTools/github.png"
 
 const ProjectCard = ({ projectData }) => {
 
-  const { title, image, slug, canLink, description, topic, skills } = projectData
+  const { title, image, slug, canLink, description, topic, skills, githubLink } = projectData
   
   if (canLink) {
     return (
@@ -25,8 +25,8 @@ const ProjectCard = ({ projectData }) => {
 
             <p className='project-description'>{description}</p>
 
-            <a href="">
-                <img className='project-github-icon' src={github} alt="" />
+            <a className="project-github-link" href={githubLink}>
+                <img className='project-github-icon' src={github} alt="GitHub" />
             </a>
 
         </div>
@@ -38,7 +38,7 @@ const ProjectCard = ({ projectData }) => {
 
   return (
     <div className="project-card">
-        
+
         <div className='left-column'>
 
             <div className="project-thumbnail">
@@ -56,8 +56,8 @@ const ProjectCard = ({ projectData }) => {
 
             <p className='project-description'>{description}</p>
 
-            <a href="">
-                <img className='project-github-icon' src={github} alt="" />
+            <a className="project-github-link" href={githubLink || ''}>
+                <img className='project-github-icon' src={github} alt="GitHub" />
             </a>
         </div>
     </div>

@@ -180,7 +180,7 @@
 
 .socials img:hover{
     transform: scale(1.2);
-    filter: drop-shadow(0 0 24px rgba(191, 219, 254, 0.9));
+    filter: brightness(4) drop-shadow(0 0 5px rgba(210, 218, 235, 0.4));
 }
 
 @keyframes social-glow{
