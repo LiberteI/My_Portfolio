@@ -59,6 +59,12 @@
     border-radius: 12px;
     object-fit: cover;
     aspect-ratio: 16 / 9;
+    transition: transform 0.2s ease;
+
+}
+
+.project-github-icon:hover{
+    transform: scale(1.03);
 }
 
 .project-card h2{
@@ -67,9 +73,12 @@
 }
 
 .project-card:hover{
-    transform: translateY(-6px);
     border-color: rgba(255, 255, 255, 0.35);
     box-shadow: 0 22px 42px -28px rgba(94, 234, 212, 0.35);
+}
+
+.project-thumbnail:hover img{
+    transform: scale(1.1);
 }
 
 .project-back{

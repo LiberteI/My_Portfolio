@@ -5,9 +5,9 @@ const ProjectCard = ({ title, image, slug, canLink, description, topic, skills})
   if (canLink) {
     return (
     <div className="project-card">
-        
+
         <div className='left-column'>
-            <Link to={`/projects/${slug}`} className="project-card">
+            <Link to={`/projects/${slug}`} className="project-thumbnail">
                 <img src={image} alt={title} />
             </Link>
         </div>
@@ -15,13 +15,16 @@ const ProjectCard = ({ title, image, slug, canLink, description, topic, skills})
         <div className='right-column'>
             <h2>{title}</h2>
 
-            <p>{topic}</p>
+            <p className='project-topic'>{topic}</p>
 
-            <p>{skills}</p>
+            <p className='project-skills'>{skills}</p>
 
-            <p>{description}</p>
+            <p className='project-description'>{description}</p>
 
-            <a href=""><img src={github} alt="" /></a>
+            <a href="">
+                <img className='project-github-icon' src={github} alt="" />
+            </a>
+
         </div>
     </div>
       
@@ -38,13 +41,15 @@ const ProjectCard = ({ title, image, slug, canLink, description, topic, skills})
         <div className='right-column'>
             <h2>{title}</h2>
 
-            <p>{topic}</p>
+            <p className='project-topic'>{topic}</p>
 
-            <p>{skills}</p>
+            <p className='project-skills'>{skills}</p>
 
-            <p>{description}</p>
+            <p className='project-description'>{description}</p>
 
-            <a href=""><img src={github} alt="" /></a>
+            <a href="">
+                <img className='project-github-icon' src={github} alt="" />
+            </a>
         </div>
     </div>
   );
