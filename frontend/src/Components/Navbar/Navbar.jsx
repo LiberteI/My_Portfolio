@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './Navbar.css'
 import logo from '../../assets/LOGO_dark.png'
+
 const Navbar = () => {
   const [isHidden, setIsHidden] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
   
   const handleClick = (event, targetID) => {
     event.preventDefault()
@@ -11,7 +15,7 @@ const Navbar = () => {
       element.scrollIntoView({behavior:'smooth'})
     }
     else{
-      window.scrollTo({top: 0, behavior:'smooth'})
+      navigate('/', { state: { scrollTo: targetID } })
     }
   }
   
@@ -36,6 +40,25 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [isHidden])
+
+  useEffect(() => {
+    if (location.pathname !== '/' || !location.state?.scrollTo) {
+      return
+    }
+
+    const targetID = location.state.scrollTo
+    const targetElement = document.getElementById(targetID)
+
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' })
+    } 
+    else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
+    navigate('.', { replace: true, state: {} })
+    
+  }, [location, navigate])
 
   useEffect(() => {
     // when mouse touches the upper side of the viewport, show the navbar again
@@ -70,22 +93,29 @@ const Navbar = () => {
   }, [isHidden])
   return (
     <nav className={`navbar ${isHidden ? 'navbar--hidden' : ''}`}>
-        <a className='navbar_logo' href='#home' onClick={(e) => handleClick(e, 'home')} aria-label='Go to homepage'>
+        <a className='navbar_logo' href='/' onClick={(e) => handleClick(e, 'home')} aria-label='Go to homepage'>
           <img src={logo} alt="Home" className='Logo'/>
         </a>
+        
+
         <ul className='navbar_menu'>
+          
           <li className='navbar_item navbar_item--left'>
             <a href="#about" onClick={(e) => handleClick(e, 'about')} aria-label='Go to about'>About</a>
           </li>
+
           <li className='navbar_item'>
             <a href="#projects" onClick={(e) => handleClick(e, 'projects')} aria-label='Go to projects'>Projects</a>
           </li>
+
           <li className='navbar_item'>
             <a href="#performance" onClick={(e) => handleClick(e, 'performance')} aria-label='Go to performances'>Performances</a>
           </li>
+
           <li className='navbar_item'>
             <a href="#contact" onClick={(e) => handleClick(e, 'contact')} aria-label='Go to contact'>Contact</a>
           </li>
+
         </ul>
         
     </nav>
