@@ -1,11 +1,15 @@
 import { Link } from 'react-router-dom'
-
-const ProjectCard = ({ title, image, slug, canLink }) => {
+import "./Project.css"
+import github from "../../assets/github.png"
+const ProjectCard = ({ title, image, slug, canLink, description, topic}) => {
   if (canLink) {
     return (
       <Link to={`/projects/${slug}`} className="project-card">
         <h2>{title}</h2>
         <img src={image} alt={title} />
+        <img src={github} alt="" />
+        <p>{topic}</p>
+        <p>{description}</p>
       </Link>
     );
   }
@@ -14,6 +18,7 @@ const ProjectCard = ({ title, image, slug, canLink }) => {
     <div className="project-card">
       <h2>{title}</h2>
       <img src={image} alt={title} />
+      <img src={github} alt="" />
     </div>
   );
 };

@@ -50,8 +50,9 @@
     box-shadow: 0 20px 30px -25px rgba(119, 120, 122, 0.75);
     text-align: center;
     width: 100%;
-    
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
+
 
 .performance-card h3{
     margin-bottom: 0.25rem;
@@ -74,4 +75,8 @@
 
 .performance-card:hover{
     cursor: pointer;
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 22px 42px -28px rgba(94, 234, 212, 0.35);
 }
+

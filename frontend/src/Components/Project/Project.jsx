@@ -7,7 +7,8 @@ const projects = [
         title: "Knight of Cinders",
         slug: "knight-of-cinders",
         image: projectThumb,
-        canLink: true
+        canLink: true,
+        description: ""
     }
 
 ]
@@ -18,16 +19,16 @@ const Project = () => {
 
             <h1>My Projects</h1>
             
-            {projects.map((project) => (
-
-                <ProjectCard 
-                    key={project.slug} 
-                    title={project.title}
-                    slug={project.slug}
-                    image={project.image} 
-                    canLink={project.canLink} />
-                    
-            ))}
+            <div className="project-grid">
+                {projects.map((project) => (
+                    <ProjectCard 
+                        key={project.slug} 
+                        title={project.title}
+                        slug={project.slug}
+                        image={project.image} 
+                        canLink={project.canLink} />
+                ))}
+            </div>
 
         </section>
     )
