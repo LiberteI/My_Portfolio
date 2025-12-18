@@ -7,6 +7,7 @@ import Performances from './Components/Performance/Performance'
 import About from './Components/About/About'
 import Project from './Components/Project/Project'
 import KnightGameThumbnail from './assets/ProjectThumbnail/KnightThumbnail.png'
+import invocation from './assets/Animations/invocation.gif'
 
 
 const App = () => {
@@ -41,7 +42,8 @@ const KnightGame = () => {
         <video src="/knightTrailer.mp4" controls playsInline poster={KnightGameThumbnail}/>
 
         <div className='knightGame-content'>
-          <p>
+          <img className='knightGame-gif' src={invocation} alt="Knight of Cinders invocation animation" />
+          <p className='knightGame-description'>
             Gameplay trailer for <strong>Knight of Cinders</strong>.
             Core combat systems and logic were preserved after a local
             asset deletion incident.
