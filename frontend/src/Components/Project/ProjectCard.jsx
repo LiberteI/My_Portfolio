@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import "./Project.css"
-import github from "../../assets/github.png"
+import github from "../../assets/devTools/github.png"
 
 const ProjectCard = ({ projectData }) => {
 
@@ -38,8 +38,13 @@ const ProjectCard = ({ projectData }) => {
 
   return (
     <div className="project-card">
-      <div className='left-column'>
-            <img src={image} alt={title} />
+        
+        <div className='left-column'>
+
+            <div className="project-thumbnail">
+                <img src={image} alt={title} />
+            </div>
+            
         </div>
 
         <div className='right-column'>
