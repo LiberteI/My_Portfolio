@@ -107,6 +107,7 @@
 .project-card:hover{
     border-color: rgba(255, 255, 255, 0.35);
     box-shadow: 0 22px 42px -28px rgba(94, 234, 212, 0.35);
+    background-color: rgba(10, 20, 42, 0.85);
 }
 
 .project-thumbnail:hover img{
