@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import './Contact.css'
 import emailIcon from "../../assets/email.png"
 import linkedinIcon from "../../assets/linkedin.png"
@@ -43,6 +43,15 @@ const Contact = () => {
             setStatus('error')
         }
     }
+
+    useEffect(() => {
+        if (!status || status === 'loading') {
+            return;
+        }
+        const timer = setTimeout(() => setStatus(null), 3200);
+        return () => clearTimeout(timer);
+    }, [status]);
+
     return (
         <div id="contact" className="contact">
             <h1>Get In Touch</h1>
@@ -75,25 +84,30 @@ const Contact = () => {
                     required
                 />
                 <button className="contact-button" type="submit">Submit Message</button>
-                {status === 'success' && <p>Thanks! I’ll get back to you soon.</p>}
-                {status === 'error' && <p>Something went wrong. Please try again.</p>}
 
             </form>
+
             <div className="contact-alternatives">
+
                 <div className="alternative-email">
                     <img className="contact-icon" src={emailIcon} alt="Email icon" />
                     <h2>Email</h2>
                     <a className="contact-link" href="mailto:liberteix@gmail.com">liberteix@gmail.com</a>
                     <a className="contact-link" href="mailto:yn265022@dal.ca">yn265022@dal.ca</a>
                 </div>
+
                 <div className="alternative-linkedin">
                     <img className="contact-icon" src={linkedinIcon} alt="LinkedIn icon" />
                     <h2>LinkedIn</h2>
                     <a className="contact-link" href="https://www.linkedin.com/in/yiming-yang-89a0102a0/" target="_blank" rel="noreferrer">
                         Connect on LinkedIn
                     </a>
+
                 </div>
             </div>
+
+            {status === 'success' && <div className="snackbar success">Thanks! I’ll get back to you soon.</div>}
+            {status === 'error' && <div className="snackbar error">Something went wrong. Please try again.</div>}
         </div>
         
     )

@@ -22,6 +22,7 @@ app.use("/api/youtube", youtubeRoutes);
 
 const PORT = process.env.PORT || 8080;
 
+// get connect to mongoDB and then start listening
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
         console.log("Mongo connected!");
