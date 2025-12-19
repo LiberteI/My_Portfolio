@@ -106,7 +106,7 @@ const Contact = () => {
                 </div>
             </div>
 
-            {status === 'success' && <div className="snackbar success">Thanks! I’ll get back to you soon.</div>}
+            {status === 'success' && <div className="snackbar success">Message received. Thanks for reaching out.</div>}
             {status === 'error' && <div className="snackbar error">Something went wrong. Please try again.</div>}
         </div>
         

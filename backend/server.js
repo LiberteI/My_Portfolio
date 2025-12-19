@@ -7,18 +7,15 @@ import youtubeRoutes from "./Youtube/route.js"
 
 import mongoose from "mongoose";
 
-
 const app = express();
+
 app.use(cors());
 app.use(express.json());
-
-app.get("/", (_req, res) => {
-    res.send("hello world");
-});
 
 app.use("/api/contact", contactRoutes);
 
 app.use("/api/youtube", youtubeRoutes);
+
 
 const PORT = process.env.PORT || 8080;
 
