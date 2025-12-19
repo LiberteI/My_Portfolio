@@ -1,12 +1,25 @@
 import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
+import dummyIcon from '../../assets/email.png'
 import './Comment.css'
 const comments = [
     {
-        email: "",
-        icon: null,
-        title: "",
-        detail: ""
+        email: "1",
+        icon: dummyIcon,
+        title: "boss",
+        detail: "he is good"
+    },
+    {
+        email: "2",
+        icon: dummyIcon,
+        title: "boss",
+        detail: "he is good"
+    },
+    {
+        email: "3",
+        icon: dummyIcon,
+        title: "boss",
+        detail: "he is good"
     }
 ]
 const Comment = () => {

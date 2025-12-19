@@ -51,7 +51,7 @@
 
 .comment-cta{
     position: absolute;
-    left: clamp(1rem, 3vw, 2rem);
+    left: clamp(2rem, 8vw, 4rem); /* pull closer toward the grid */
     top: 50%;
     transform: translateY(-50%);
     display: flex;
@@ -59,7 +59,7 @@
     align-items: center;
     gap: 0.8rem;
     margin: 0;
-    width: clamp(140px, 18vw, 200px);
+    width: clamp(120px, 14vw, 160px); /* narrower CTA */
 }
 
 .comment-illustration{
@@ -90,11 +90,11 @@
 
 .comment-grid{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1rem;
-    max-width: 840px; /* cap at 3 columns and keep a narrower line length */
+    max-width: 900px; /* allow 3 columns comfortably */
     margin: 0 auto;
-    padding-left: clamp(11rem, 18vw, 220px); /* reserve space for left CTA */
+    padding-left: clamp(9rem, 14vw, 180px); /* reserve space for left CTA, closer to content */
 }
 
 .comment-card{
