@@ -95,7 +95,6 @@
     gap: 1rem;
     max-width: 800px; /* allow 3 columns comfortably */
     margin: 0 auto;
-    
 }
 
 .comment-card{
@@ -137,6 +136,27 @@
     color: #cbd5e1;
 }
 
+@media (max-width: 1100px){
+    .comment-cta{
+        position: static;
+        transform: none;
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1.25rem;
+        margin: 0 auto 2rem;
+    }
+
+    .comment-illustration{
+        width: min(200px, 35vw);
+    }
+
+    .comment-grid{
+        padding-left: 0;
+        max-width: 860px;
+    }
+}
+
 @media (max-width: 820px){
     .comment-cta{
         position: static;
@@ -145,7 +165,7 @@
         flex-direction: row;
         justify-content: center;
         gap: 1.25rem;
-        margin-bottom: 2rem;
+        margin: 0 auto 2rem;
     }
 
     .comment-illustration{
