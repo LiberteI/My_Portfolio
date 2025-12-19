@@ -2,6 +2,7 @@ import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
 import dummyIcon from '../../assets/email.png'
 import './Comment.css'
+import { useEffect } from 'react'
 const comments = [
     {
         email: "1",
@@ -24,13 +25,16 @@ const comments = [
 ]
 const Comment = () => {
 
-    
+    const handleClick = () => {
+        // invoke 3rd party log in route
+    }
+
     return (
         <section className="comment-container">
             <h1>Testimonial</h1>
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
-                <button className="comment-button">Leave A Comment</button>
+                <button onClick={handleClick} className="comment-button">Leave A Comment</button>
             </div>
 
             <div className="comment-grid">
