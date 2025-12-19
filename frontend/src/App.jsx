@@ -4,6 +4,7 @@ import Navbar from './Components/Navbar/Navbar'
 import Home from './Components/Home/Home'
 import Contact from './Components/Contact/Contact'
 import Performances from './Components/Performance/Performance'
+import Comment from './Components/Comment/Comment'
 import About from './Components/About/About'
 import Project from './Components/Project/Project'
 import KnightGameThumbnail from './assets/ProjectThumbnail/KnightThumbnail.png'
@@ -30,6 +31,7 @@ const HomePage = () => {
       <Project />
       <Performances />
       <Contact />
+      <Comment />
     </div>
   )
 }
