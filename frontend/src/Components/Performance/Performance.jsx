@@ -4,14 +4,20 @@ import { useEffect, useState } from 'react'
 const Performance = () => {
   const [videos, setVideos] = useState([])
   const [status, setStatus] = useState('idle')
-  const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+  const apiBase =
+    import.meta.env.VITE_API_BASE_URL ||
+    (import.meta.env.DEV ? 'http://localhost:8080' : window.location.origin)
 
   useEffect(() => {
     const fetchVideos = async () => {
       setStatus('loading')
 
+      const controller = new AbortController()
+      const timeoutMs = 20000 // give the backend more time before timing out
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+
       try {
-        const response = await fetch(`${apiBase}/api/youtube`)
+        const response = await fetch(`${apiBase}/api/youtube`, { signal: controller.signal })
         if (!response.ok) {
           throw new Error('Request failed')
         }
@@ -24,8 +30,14 @@ const Performance = () => {
         setVideos(items)
         setStatus('success')
       } catch (error) {
-        console.error(error)
+        if (error.name === 'AbortError') {
+          console.error(`Performance fetch timed out after ${timeoutMs / 1000}s`)
+        } else {
+          console.error(error)
+        }
         setStatus('error')
+      } finally {
+        clearTimeout(timeoutId)
       }
     }
 
