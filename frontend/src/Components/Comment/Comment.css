@@ -60,6 +60,7 @@
     gap: 0.8rem;
     margin: 0;
     width: clamp(120px, 14vw, 160px); /* narrower CTA */
+    margin-left: 5%;
 }
 
 .comment-illustration{
@@ -92,9 +93,9 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1rem;
-    max-width: 900px; /* allow 3 columns comfortably */
+    max-width: 800px; /* allow 3 columns comfortably */
     margin: 0 auto;
-    padding-left: clamp(9rem, 14vw, 180px); /* reserve space for left CTA, closer to content */
+    
 }
 
 .comment-card{
