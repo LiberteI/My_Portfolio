@@ -7,6 +7,7 @@ const Contact = () => {
     const [formData, setFormData] = useState({name : '', email : '', message : ''})
     // loading / success / error
     const [status, setStatus] = useState(null);
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
     // update formDate
     const handleChange = (event) => {
@@ -25,7 +26,7 @@ const Contact = () => {
         try{
             // fetch is to make HTTP requests
             // wait until get the response
-            const response = await fetch('http://localhost:8080/api/contact', {
+            const response = await fetch(`${apiBase}/api/contact`, {
                 method: 'POST', // POST request
                 headers: { 'Content-Type': 'application/json'}, // sending json data
                 body: JSON.stringify(formData), 

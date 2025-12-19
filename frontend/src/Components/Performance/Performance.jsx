@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react'
 const Performance = () => {
   const [videos, setVideos] = useState([])
   const [status, setStatus] = useState('idle')
+  const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
 
   useEffect(() => {
     const fetchVideos = async () => {
       setStatus('loading')
 
       try {
-        const response = await fetch('http://localhost:8080/api/youtube')
+        const response = await fetch(`${apiBase}/api/youtube`)
         if (!response.ok) {
           throw new Error('Request failed')
         }
