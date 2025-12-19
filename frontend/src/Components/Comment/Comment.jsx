@@ -1,5 +1,6 @@
 import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
+import './Comment.css'
 const comments = [
     {
         email: "",
@@ -14,9 +15,9 @@ const Comment = () => {
     return (
         <section className="comment-container">
             <h1>Testimonial</h1>
-            <div>
-                <img src={samurai} alt="" />
-                <button>Leave A Comment</button>
+            <div className="comment-cta">
+                <img className="comment-illustration" src={samurai} alt="samurai animation" />
+                <button className="comment-button">Leave A Comment</button>
             </div>
 
             <div className="comment-grid">

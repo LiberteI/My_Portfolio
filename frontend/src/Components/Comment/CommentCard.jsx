@@ -3,7 +3,7 @@ const CommentCard = ({ commentData }) => {
     return (
         <div className="comment-card">
             {icon && <img src={icon} alt={title || email || 'Comment icon'} />}
-            <h3>{title || email || 'Anonymous'}</h3>
+            <h3>{title || email }</h3>
             <p>{detail || ''}</p>
         </div>
     )
