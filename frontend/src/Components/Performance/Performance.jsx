@@ -10,11 +10,7 @@ const Performance = () => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      setStatus('loading')
-
-      const controller = new AbortController()
-      const timeoutMs = 20000 // give the backend more time before timing out
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+      setStatus('loading');
 
       try {
         const response = await fetch(`${apiBase}/api/youtube`, { signal: controller.signal })
@@ -30,14 +26,8 @@ const Performance = () => {
         setVideos(items)
         setStatus('success')
       } catch (error) {
-        if (error.name === 'AbortError') {
-          console.error(`Performance fetch timed out after ${timeoutMs / 1000}s`)
-        } else {
-          console.error(error)
-        }
+        console.error(error)
         setStatus('error')
-      } finally {
-        clearTimeout(timeoutId)
       }
     }
 
