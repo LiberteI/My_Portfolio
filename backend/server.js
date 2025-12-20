@@ -3,7 +3,8 @@ import cors from "cors";
 import 'dotenv/config';
 
 import contactRoutes from "./contact/route.js";
-import youtubeRoutes from "./Youtube/route.js"
+import youtubeRoutes from "./Youtube/route.js";
+import googleRoute from "./ThirdParty/GoogleRoute.js"
 
 import mongoose from "mongoose";
 
@@ -16,6 +17,7 @@ app.use("/api/contact", contactRoutes);
 
 app.use("/api/youtube", youtubeRoutes);
 
+app.use("/auth", googleRoute);
 
 const PORT = process.env.PORT || 8080;
 

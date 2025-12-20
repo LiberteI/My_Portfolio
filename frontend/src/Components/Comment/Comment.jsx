@@ -27,6 +27,7 @@ const Comment = () => {
 
     const handleClick = () => {
         // invoke 3rd party log in route
+        window.location.href = "https://api.liberteii.com/auth/google";
     }
 
     return (
