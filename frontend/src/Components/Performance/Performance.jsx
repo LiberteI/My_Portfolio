@@ -10,10 +10,10 @@ const Performance = () => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      setStatus('loading');
+      setStatus('loading')
 
       try {
-        const response = await fetch(`${apiBase}/api/youtube`, { signal: controller.signal })
+        const response = await fetch(`${apiBase}/api/youtube`)
         if (!response.ok) {
           throw new Error('Request failed')
         }
@@ -32,7 +32,7 @@ const Performance = () => {
     }
 
     fetchVideos()
-  }, [])
+  }, [apiBase])
 
   const handleCardClick = (videoId) => {
     if (!videoId) {
