@@ -7,6 +7,8 @@ import Performances from './Components/Performance/Performance'
 import Comment from './Components/Comment/Comment'
 import About from './Components/About/About'
 import Project from './Components/Project/Project'
+import CommentForm from './Components/Comment/CommentForm'
+
 import KnightGameThumbnail from './assets/ProjectThumbnail/KnightThumbnail.png'
 import invocation from './assets/Animations/invocation.gif'
 
@@ -18,6 +20,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<HomePage />}/>
         <Route path='projects/knight-of-cinders' element={<KnightGame/>}/>
+        <Route path='/comment-form' element={<CommentForm/>}/>
       </Routes>
     </div>
   )
