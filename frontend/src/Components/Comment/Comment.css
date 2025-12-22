@@ -179,6 +179,7 @@
     }
 }
 
+
 /* Comment form page */
 .comment-form-container{
     min-height: calc(100vh - 120px);
@@ -188,8 +189,8 @@
     align-items: center;
     gap: 1.5rem;
     background: radial-gradient(circle at 20% 20%, rgba(79, 70, 229, 0.08), transparent 40%),
-                radial-gradient(circle at 80% 10%, rgba(56, 189, 248, 0.1), transparent 35%),
-                rgba(4, 10, 26, 0.92);
+                radial-gradient(circle at 80% 10%, rgba(56, 189, 248, 0.08), transparent 35%),
+                linear-gradient(180deg, rgba(0, 0, 3, 0.98), rgba(1, 3, 12, 0.96));
 }
 
 .comment-form-container h1{
@@ -238,18 +239,15 @@
 }
 
 .comment-form .comment-button{
-    align-self: flex-end;
+
     padding: 0.9rem 1.8rem;
+    width: 100%;
+    text-align: center;
 }
 
 @media (max-width: 640px){
     .comment-form{
         padding: 1.25rem;
-    }
-
-    .comment-form .comment-button{
-        width: 100%;
-        text-align: center;
-        align-self: stretch;
+  
     }
 }
