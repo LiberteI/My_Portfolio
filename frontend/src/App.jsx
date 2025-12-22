@@ -38,6 +38,7 @@ const HomePage = () => {
     </div>
   )
 }
+
 const KnightGame = () => {
   return (
     <div className='app-container'>

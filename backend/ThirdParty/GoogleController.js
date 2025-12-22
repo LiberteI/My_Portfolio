@@ -66,8 +66,10 @@ export const googleAuthCallback = async (req, res) => {
             httpOnly: false,
             secure: true,
             sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000
+            // persists for 10 minutes
+            maxAge: 60 * 1000 * 10 
         });
+
         // redirect to homepage with a query flag the client can consume
         res.redirect(`${frontendOrigin}?loggedIn=1`);
     } catch (err) {
