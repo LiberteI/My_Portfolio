@@ -3,6 +3,9 @@ import samurai from '../../assets/Animations/samurai.gif'
 import dummyIcon from '../../assets/email.png'
 import './Comment.css'
 import { useEffect } from 'react'
+import { useState } from 'react'
+import { useNavigate } from "react-router-dom";
+
 const comments = [
     {
         email: "1",
@@ -24,18 +27,48 @@ const comments = [
     }
 ]
 const Comment = () => {
+    const navigate = useNavigate();
 
+    const [user, setUser] = useState(null);
+    
     const handleClick = () => {
-        // invoke 3rd party log in route
-        window.location.href = "https://api.liberteii.com/auth/google";
+        if(!user){
+            // invoke 3rd party log in route
+            window.location.href = "https://api.liberteii.com/auth/google";
+        }
+        else{
+            navigate("/comment-form");
+        }
+        
     }
+    
+    useEffect(() => {
+        // send a http request and include credentials
+        fetch("https://api.liberteii.com/api/me", { credentials: "include"})
+            //parse response
+            .then(res => res.ok? res.json() : null)
+            // pass jsonfied response to data
+            // a => b function takes a and return b
+            .then(data => setUser(data))
+            .catch(() => setUser(null));
+    }, []);
+
+    const [currentButtonText, setCurrentButtonText] = useState("Log In");
+    useEffect(() => {
+        if(user){
+            setCurrentButtonText("Leave a Comment");
+        }
+        else{
+            setCurrentButtonText("Log In");
+        }
+    }, [user])
 
     return (
         <section className="comment-container">
             <h1>Testimonial</h1>
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
-                <button onClick={handleClick} className="comment-button">Leave A Comment</button>
+                <button onClick={handleClick} className="comment-button">{currentButtonText}</button>
             </div>
 
             <div className="comment-grid">

@@ -56,6 +56,13 @@ export const googleAuthCallback = async (req, res) => {
     // 2. find/create user
     // 3. issue JWT or session
 
+    // set cookie flag
+    res.cookie("auth", user._id.toString(),{
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
     // redirect to homepage
     res.redirect("https://www.liberteii.com");
 };
