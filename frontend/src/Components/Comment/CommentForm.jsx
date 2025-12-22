@@ -90,3 +90,5 @@ const CommentForm = () => {
         </div>
     )
 }
+
+export default CommentForm
