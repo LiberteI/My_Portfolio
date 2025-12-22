@@ -20,7 +20,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<HomePage />}/>
         <Route path='projects/knight-of-cinders' element={<KnightGame/>}/>
-        <Route path='/comment-form' element={<CommentForm/>}/>
+        <Route path='/comment-form' element={<CommentFormPathWay/>}/>
       </Routes>
     </div>
   )
@@ -35,6 +35,15 @@ const HomePage = () => {
       <Performances />
       <Contact />
       <Comment />
+    </div>
+  )
+}
+
+const CommentFormPathWay = () => {
+  return (
+    <div className='app-container'>
+      <Navbar/>
+      <CommentForm />
     </div>
   )
 }
