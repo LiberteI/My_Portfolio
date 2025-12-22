@@ -1,12 +1,60 @@
+import { useEffect } from "react";
 import { useState } from "react"
 
 const CommentForm = () => {
     const [commentData, setCommentData] = useState({name: '', role: '', comment: ''});
     
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
+    const [status, setStatus] = useState(null);
+
+    const handleChange = (event) => {
+        const {name, value} = event.target;
+
+        setCommentData((prev) => ({...prev, [name]: value}));
+    }
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setStatus('loading');
+
+        try{
+            // send http request
+            const response = await fetch(`${apiBase}/api/Comment`, {
+                method: 'POST',
+                headers: { 'Content-Type' : 'application/json' },
+                body: JSON.stringify(commentData)
+            });
+
+            if(!response.ok){
+                throw new Error('Request failed');
+            }
+
+            setStatus('success');
+
+            // reset data
+            setCommentData({name: '', role: '', comment: ''});
+
+        } catch(error) {
+            console.error(error);
+            setStatus('error');
+        }
+    }
+
+    // after status become success or error, show the status for 3.2s and reset
+    useEffect(() => {
+        if(!status || status === 'loading'){
+            return;
+        }
+        const timer = setTimeout(() => setStatus(null), 3200);
+
+        return () => clearTimeout(timer);
+    }, [status])
+
     return (
         <div className="comment-form-container">
             <h1>Please Enter Comment Detail</h1>
-            <form action="" className="comment-form">
+            <form action="" className="comment-form" onSubmit={handleSubmit}>
                 <input 
                     name="name"
                     type="text"
