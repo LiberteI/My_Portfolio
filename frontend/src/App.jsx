@@ -25,6 +25,7 @@ const App = () => {
     </div>
   )
 }
+
 const HomePage = () => {
   return (
     <div className='app-container'>
