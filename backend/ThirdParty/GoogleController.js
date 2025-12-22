@@ -44,10 +44,9 @@ export const googleAuthCallback = async (req, res) => {
     
     if (!tokenRes.ok) {
         const errorText = await tokenRes.text();
-
-        // redirect to home page if failed
-        console.error("Google token exchange failed:", await tokenRes.text());
-        res.redirect("https://www.liberteii.com");
+        
+        // send error code
+        return res.status(502).send(`Token exchange failed: ${errorText}`);
     }
     // get data: email, google userID, name, expiration, audience
     const { id_token } = await tokenRes.json();
@@ -57,6 +56,6 @@ export const googleAuthCallback = async (req, res) => {
     // 2. find/create user
     // 3. issue JWT or session
 
-    // redirect to comment page
-    res.redirect("https://www.liberteii.com/comment-form");
+    // redirect to homepage
+    res.redirect("https://www.liberteii.com");
 };
