@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import 'dotenv/config';
+import cookieParser from "cookie-parser";
 
 import contactRoutes from "./contact/route.js";
 import youtubeRoutes from "./Youtube/route.js";
@@ -10,7 +11,16 @@ import mongoose from "mongoose";
 
 const app = express();
 
-app.use(cors());
+app.use(cookieParser());
+
+// define frontends that are trusted to send cookies
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://www.liberteii.com"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use("/api/contact", contactRoutes);
@@ -19,19 +29,19 @@ app.use("/api/youtube", youtubeRoutes);
 
 app.use("/auth", googleRoute);
 
-app.get("api/me",async (req, res) => {
-    const userID = req.cookies.auth;
-    if(!userID){
-        return res.status(401).end();
-    }
+// app.get("/api/me",async (req, res) => {
+//     const userID = req.cookies.auth;
+//     if(!userID){
+//         return res.status(401).end();
+//     }
     
-    const user = await User.findById(userID).select("name avatar");
-    if(!user){
-        return res.status(401).end();
-    }
+//     const user = await User.findById(userID).select("name avatar");
+//     if(!user){
+//         return res.status(401).end();
+//     }
 
-    res.json(user);
-})
+//     res.json(user);
+// })
 
 const PORT = process.env.PORT || 8080;
 

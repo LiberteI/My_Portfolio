@@ -29,39 +29,38 @@ const comments = [
 const Comment = () => {
     const navigate = useNavigate();
 
-    const [user, setUser] = useState(null);
-    
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     const handleClick = () => {
-        if(!user){
+        if(!isLoggedIn){
             // invoke 3rd party log in route
             window.location.href = "https://api.liberteii.com/auth/google";
-        }
-        else{
+        } else {
             navigate("/comment-form");
         }
-        
-    }
+    };
     
     useEffect(() => {
-        // send a http request and include credentials
-        fetch("https://api.liberteii.com/api/me", { credentials: "include"})
-            //parse response
-            .then(res => res.ok? res.json() : null)
-            // pass jsonfied response to data
-            // a => b function takes a and return b
-            .then(data => setUser(data))
-            .catch(() => setUser(null));
+        // If the backend redirected with ?loggedIn=1, persist that in localStorage.
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("loggedIn") === "1") {
+            localStorage.setItem("isLoggedIn", "true");
+            setIsLoggedIn(true);
+            params.delete("loggedIn");
+            const remaining = params.toString();
+            const newUrl = `${window.location.pathname}${remaining ? `?${remaining}` : ""}`;
+            window.history.replaceState({}, "", newUrl);
+            return;
+        }
+
+        const stored = localStorage.getItem("isLoggedIn") === "true";
+        setIsLoggedIn(stored);
     }, []);
 
     const [currentButtonText, setCurrentButtonText] = useState("Log In");
     useEffect(() => {
-        if(user){
-            setCurrentButtonText("Leave a Comment");
-        }
-        else{
-            setCurrentButtonText("Log In");
-        }
-    }, [user])
+        setCurrentButtonText(isLoggedIn ? "Leave a Comment" : "Log In");
+    }, [isLoggedIn]);
 
     return (
         <section className="comment-container">
