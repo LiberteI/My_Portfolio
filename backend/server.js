@@ -7,6 +7,8 @@ import contactRoutes from "./contact/route.js";
 import youtubeRoutes from "./Youtube/route.js";
 import googleRoute from "./ThirdParty/GoogleRoute.js"
 
+import commentRoute from "./Comment/CommentRoute.js"
+
 import mongoose from "mongoose";
 
 const app = express();
@@ -23,11 +25,17 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// get route from frontend
 app.use("/api/contact", contactRoutes);
 
+// get route from frontend
 app.use("/api/youtube", youtubeRoutes);
 
+// get route from frontend
 app.use("/auth", googleRoute);
+
+// get router from frontend
+app.use("/api/Comment", commentRoute);
 
 // app.get("/api/me",async (req, res) => {
 //     const userID = req.cookies.auth;

@@ -19,7 +19,7 @@ const CommentForm = () => {
         setStatus('loading');
 
         try{
-            // send http request
+            // send http request to backend
             const response = await fetch(`${apiBase}/api/Comment`, {
                 method: 'POST',
                 headers: { 'Content-Type' : 'application/json' },
@@ -34,6 +34,8 @@ const CommentForm = () => {
 
             // reset data
             setCommentData({name: '', role: '', comment: ''});
+
+            window.location.href = "/";
 
         } catch(error) {
             console.error(error);

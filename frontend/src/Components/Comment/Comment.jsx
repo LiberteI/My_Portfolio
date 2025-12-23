@@ -41,20 +41,22 @@ const Comment = () => {
     };
     
     useEffect(() => {
-        // If the backend redirected with ?loggedIn=1, persist that in localStorage.
+        // Only treat this session as logged in when arriving with ?loggedIn=1.
+        // Do not persist across refresh.
+        // reads url after ?
         const params = new URLSearchParams(window.location.search);
         if (params.get("loggedIn") === "1") {
-            localStorage.setItem("isLoggedIn", "true");
             setIsLoggedIn(true);
+            // removes that param from the current query params.
             params.delete("loggedIn");
             const remaining = params.toString();
+            // constructs a clean URL (same path, maybe other params).
             const newUrl = `${window.location.pathname}${remaining ? `?${remaining}` : ""}`;
+            // updates the address bar to the clean URL without causing a navigation.
             window.history.replaceState({}, "", newUrl);
-            return;
+        } else {
+            setIsLoggedIn(false);
         }
-
-        const stored = localStorage.getItem("isLoggedIn") === "true";
-        setIsLoggedIn(stored);
     }, []);
 
     const [currentButtonText, setCurrentButtonText] = useState("Log In");
