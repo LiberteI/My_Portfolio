@@ -273,8 +273,8 @@
 /* Comment bubble */
 .comment-bubble{
     position: absolute; /* keep it inside the home scene only */
-    top: clamp(2.5rem, 7vw, 4.5rem); /* sit above the samurai */
-    left: clamp(2.5rem, 10vw, 6rem);
+    top: 10%;
+    left: 7.5%;
     transform: none;
     background: transparent;
     border: 2px solid #4f46e5;
