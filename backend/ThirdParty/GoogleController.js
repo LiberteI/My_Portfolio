@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import userCRUD from "../DatabaseModel/User"
+import userCRUD from "../DatabaseModel/User.js"
 
 export const googleAuthStart = (req, res) => {
     // ask google to authenticate
