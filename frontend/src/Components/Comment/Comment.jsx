@@ -64,9 +64,24 @@ const Comment = () => {
         setCurrentButtonText(isLoggedIn ? "Leave a Comment" : "Log In");
     }, [isLoggedIn]);
 
+
+    const workedWithMe = "Worked With Me?";
+    const leaveAComment = "Leave A Comment!";
+    const [currentBubbleText, setCurrentBubbleText] = useState(workedWithMe);
+    useEffect(() => {
+        const toggleBubbleText = setInterval(() => {
+            setCurrentBubbleText(prev => prev === workedWithMe ? leaveAComment : workedWithMe);
+        }, 2000);
+        return () => clearInterval(toggleBubbleText);
+    }, [])
+
+
     return (
         <section className="comment-container">
             <h1>Testimonial</h1>
+
+            <div>{currentBubbleText}</div>
+
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
                 <button onClick={handleClick} className="comment-button">{currentButtonText}</button>
