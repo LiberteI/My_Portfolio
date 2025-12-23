@@ -98,7 +98,7 @@ const Comment = () => {
         <section className="comment-container">
             <h1>Testimonial</h1>
 
-            <div>{typedText}</div>
+            <div className='comment-bubble'>{typedText}</div>
 
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
