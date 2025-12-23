@@ -55,6 +55,9 @@ export const googleAuthCallback = async (req, res) => {
             // send error code
             return res.status(502).send(`Token exchange failed: ${errorText}`);
         }
+
+        console.log("Token exchange OK");
+
         // get data: email, google userID, name, expiration, audience
         const { id_token } = await tokenRes.json();
 
@@ -62,13 +65,17 @@ export const googleAuthCallback = async (req, res) => {
         // 1. verify id_token
         // 2. find/create user *
         // 3. issue JWT or session 
-        
+
+        console.log("id_token exists:", Boolean(id_token));
+
         // decode id token
         const googlePayLoad = jwt.decode(id_token);
 
         if (!googlePayLoad) {
             return res.status(400).send("Invalid ID token");
         }
+
+        console.log("Google payload:", googlePayLoad);
 
         // extract data from token
         const { name, picture, sub } = googlePayLoad;
