@@ -293,8 +293,14 @@
     white-space: pre-line;
     text-align: center;
     padding: 2rem 2rem;
+    animation: comment-bubble-float 6s ease-in-out infinite;
 }
 
 .comment-bubble::after{
     display: none;
+}
+
+@keyframes comment-bubble-float{
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
 }
