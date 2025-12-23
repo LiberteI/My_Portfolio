@@ -68,6 +68,7 @@ const Comment = () => {
     const workedWithMe = "Worked With Me?";
     const leaveAComment = "Leave A Comment!";
     const [currentBubbleText, setCurrentBubbleText] = useState(workedWithMe);
+    const [typedText, setTypedText] = useState(workedWithMe);
     useEffect(() => {
         const toggleBubbleText = setInterval(() => {
             setCurrentBubbleText(prev => prev === workedWithMe ? leaveAComment : workedWithMe);
@@ -75,12 +76,29 @@ const Comment = () => {
         return () => clearInterval(toggleBubbleText);
     }, [])
 
+    useEffect(() => {
+        let charIndex = 0;
+        setTypedText('');
+
+        const typingSpeedMs = 20;
+        const text = currentBubbleText || "";
+
+        const typeText = setInterval(() => {
+            charIndex ++;
+            setTypedText(text.slice(0, charIndex));
+            if(charIndex >= text.length){
+                clearInterval(typeText);
+            }
+        }, typingSpeedMs);
+
+        return () => clearInterval(typeText);
+    }, [currentBubbleText]);
 
     return (
         <section className="comment-container">
             <h1>Testimonial</h1>
 
-            <div>{currentBubbleText}</div>
+            <div>{typedText}</div>
 
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
