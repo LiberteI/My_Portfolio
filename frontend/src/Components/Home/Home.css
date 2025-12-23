@@ -132,11 +132,17 @@
     font-size: x-large;
     white-space: pre-line;
     text-align: center;
-    padding: 2rem 2rem;    
+    padding: 2rem 2rem;
+    animation: npc-bubble-float 6s ease-in-out infinite;
 }
 
 .npc-bubble::after{
     display: none;
+}
+
+@keyframes npc-bubble-float{
+    0%, 100% { transform: translate(-50%, -10%); }
+    50% { transform: translate(-50%, -14%); }
 }
 
 .socials{
