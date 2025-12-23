@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 const Performance = () => {
   const [videos, setVideos] = useState([])
   const [status, setStatus] = useState('idle')
+  // if remote exists, use it. otherwise, fall back
   const apiBase =
     import.meta.env.VITE_API_BASE_URL ||
     (import.meta.env.DEV ? 'http://localhost:8080' : window.location.origin)
