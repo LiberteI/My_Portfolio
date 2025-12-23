@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import userCRUD from "../DatabaseModel/User"
 
 export const googleAuthStart = (req, res) => {
     // ask google to authenticate
@@ -58,6 +59,8 @@ export const googleAuthCallback = async (req, res) => {
         // 1. verify id_token
         // 2. find/create user
         // 3. issue JWT or session
+
+        
 
         // For now, set a simple flag cookie so the client can flip the button text.
         // This is intentionally not httpOnly since we're not persisting real auth yet.
