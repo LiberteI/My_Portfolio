@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
-import userCRUD from "../DatabaseModel/User.js"
+import { findOrCreateUser } from "../CRUD/UserCRUD.js";
+import jwt from "jsonwebtoken";
 
 export const googleAuthStart = (req, res) => {
     // ask google to authenticate
@@ -22,6 +23,8 @@ export const googleAuthStart = (req, res) => {
 // after passing auth start
 export const googleAuthCallback = async (req, res) => {
     try {
+        console.log(">>> googleAuthCallback HIT");
+
         // ticket from google
         const { code } = req.query;
 
@@ -57,17 +60,33 @@ export const googleAuthCallback = async (req, res) => {
 
         // TODO:
         // 1. verify id_token
-        // 2. find/create user
-        // 3. issue JWT or session
-
+        // 2. find/create user *
+        // 3. issue JWT or session 
         
+        // decode id token
+        const googlePayLoad = jwt.decode(id_token);
+
+        if (!googlePayLoad) {
+            return res.status(400).send("Invalid ID token");
+        }
+
+        // extract data from token
+        const { name, picture, sub } = googlePayLoad;
+
+        const user = await findOrCreateUser({
+            name,
+            avatar : picture,
+            provider: "google",
+            providerId: sub 
+        });
 
         // For now, set a simple flag cookie so the client can flip the button text.
         // This is intentionally not httpOnly since we're not persisting real auth yet.
         const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
-        res.cookie("auth", "ok",{
+        const isProd = frontendOrigin.startsWith("https://");
+        res.cookie("auth", user._id.toString() ,{
             httpOnly: false,
-            secure: true,
+            secure: isProd,
             sameSite: "lax",
             // persists for 10 minutes
             maxAge: 60 * 1000 * 10 

@@ -35,3 +35,12 @@ userSchema.index(
 );
 
 export default mongoose.model("User", userSchema);
+
+/*
+    User.create()
+    User.find()
+    User.findOne()
+    User.findById()
+    User.findByIdAndUpdate()
+    User.deleteOne()
+*/
