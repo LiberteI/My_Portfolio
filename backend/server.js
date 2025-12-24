@@ -40,6 +40,9 @@ app.use("/api/Comment", commentRoute);
 
 app.use("/api/me", userRoute);
 
+app.get("/api/health", (req, res) => {
+    res.sendStatus(200);
+})
 const PORT = process.env.PORT || 8080;
 
 // get connect to mongoDB and then start listening

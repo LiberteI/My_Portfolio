@@ -145,6 +145,21 @@ const Home = () => {
         // console.log(shouldShowSocials);
     };
 
+    const invokeBackend = async () => {
+        const response = await fetch(`${apiBase}/api/me`, {
+            method: "GET",
+            credentials: "include"
+        });
+
+    }
+
+    useEffect(() => {
+        invokeBackend();
+        const keepHealth = setInterval(() => {
+            invokeBackend();
+        }, 5 * 60 * 1000);
+        return () => clearInterval(keepHealth);
+    }, [])
     
     return(
         <main id='home' className='home'>
