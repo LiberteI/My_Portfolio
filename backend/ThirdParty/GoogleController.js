@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { findOrCreateUser } from "../CRUD/UserCRUD.js";
-import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 
 export const googleAuthStart = (req, res) => {
     // ask google to authenticate
@@ -68,8 +68,14 @@ export const googleAuthCallback = async (req, res) => {
 
         console.log("id_token exists:", Boolean(id_token));
 
-        // decode id token
-        const googlePayLoad = jwt.decode(id_token);
+        const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        
+        const ticket = await googleClient.verifyIdToken({
+            idToken: id_token,
+            audience: process.env.GOOGLE_CLIENT_ID
+        });
+
+        const googlePayLoad = ticket.getPayload();
 
         if (!googlePayLoad) {
             return res.status(400).send("Invalid ID token");
@@ -78,15 +84,21 @@ export const googleAuthCallback = async (req, res) => {
         console.log("Google payload:", googlePayLoad);
 
         // extract data from token
-        const { name, picture, sub, email} = googlePayLoad;
+        const { name, picture, sub, email, email_verified} = googlePayLoad;
 
         const user = await findOrCreateUser({
             name,
             avatar : picture,
             provider: "google",
+            // subject identifier
             providerId: sub,
-            email
+            email,
+            email_verified
         });
+        
+        if(!email_verified){
+            return res.status(400).send("Email not verified");
+        }
 
         // For now, set a simple flag cookie so the client can flip the button text.
         // This is intentionally not httpOnly since we're not persisting real auth yet.

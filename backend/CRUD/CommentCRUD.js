@@ -1,5 +1,7 @@
 import Comment from "../DatabaseModel/Comment.js";
 
+// business logic
+
 // CREATE
 export const createComment = async ({ name, role, comment }) => {
     return await Comment.create({

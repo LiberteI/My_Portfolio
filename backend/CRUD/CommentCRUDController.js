@@ -1,5 +1,7 @@
 import { createComment, deleteComment, editComment, findComments } from "./CommentCRUD.js";
 
+// crud backend endpoint
+
 export const postComment = async (data) => {
     return await createComment(data);
 };
