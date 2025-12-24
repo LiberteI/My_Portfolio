@@ -1,6 +1,6 @@
 import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
-import dummyIcon from '../../assets/email.png'
+
 import './Comment.css'
 import { useEffect } from 'react'
 import { useState } from 'react'

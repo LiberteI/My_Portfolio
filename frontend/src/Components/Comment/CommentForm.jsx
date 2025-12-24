@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useState } from "react"
-
+import CommentCard from './AdminCommentCard'
 const CommentForm = () => {
     const [commentData, setCommentData] = useState({name: '', role: '', comment: ''});
     
@@ -52,6 +52,38 @@ const CommentForm = () => {
         return () => clearTimeout(timer);
     }, [status])
 
+    const showComments = () => {
+
+    }
+
+    const [comments, setComments] = useState([]);
+    const tryShowAllComments = async () => {
+        try{
+            const response = await fetch(`${apiBase}/api/Comment/admin/comments`, {
+                method: "GET",
+                credentials: "include"
+            });
+
+            if(response.status === 401 || response.status === 403){
+                console.log("No authorization");
+                return;
+            }
+
+            const dbComments = await response.json();
+
+            setComments(dbComments);
+
+            showComments(comments);
+        } catch(error){
+            console.log("No authorization");
+        }
+    }
+    useEffect(() => {
+    
+        // request for all comments render
+        tryShowAllComments();
+
+    }, [])
 
     return (
         <div className="comment-form-container">
@@ -89,6 +121,15 @@ const CommentForm = () => {
 
                 <button className="comment-button" type="submit">Submit</button>
             </form>
+
+            <div className="admin-comments-container">
+                {comments.map((comment) => (
+                    <CommentCard 
+                        key={comment._id || comment.id || comment.email}
+                        commentData={comment}
+                    />
+                ))}
+            </div>
         </div>
     )
 }
