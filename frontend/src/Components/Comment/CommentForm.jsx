@@ -2,20 +2,25 @@ import { useEffect } from "react";
 import { useState } from "react"
 
 const CommentForm = () => {
-    const [commentData, setCommentData] = useState({name: '', role: '', comment: ''});
+    const [commentData, setCommentData] = useState({name: '', role: '', comment: '', agree: false});
     
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
     const [status, setStatus] = useState(null);
 
     const handleChange = (event) => {
-        const {name, value} = event.target;
+        const {name, value, type, checked} = event.target;
 
-        setCommentData((prev) => ({...prev, [name]: value}));
+        setCommentData((prev) => ({...prev, [name]: type === 'checkbox' ? checked : value}));
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+
+        if(!commentData.agree){
+            return;
+        }
+
         setStatus('loading');
 
         try{
@@ -33,7 +38,7 @@ const CommentForm = () => {
             setStatus('success');
 
             // reset data
-            setCommentData({name: '', role: '', comment: ''});
+            setCommentData({name: '', role: '', comment: '', agree: false});
 
             window.location.href = "/";
 
@@ -52,6 +57,7 @@ const CommentForm = () => {
 
         return () => clearTimeout(timer);
     }, [status])
+
 
     return (
         <div className="comment-form-container">
@@ -87,7 +93,18 @@ const CommentForm = () => {
                     required
                 />
 
-                <button className="comment-button" type="submit">Submit</button>
+                <label className="comment-consent">
+                    <input 
+                        type="checkbox"
+                        name="agree"
+                        checked={commentData.agree}
+                        onChange={handleChange}
+                        required
+                    />
+                    By submitting, I agree my comment and info may be displayed publicly.
+                </label>
+
+                <button className="comment-button" type="submit" disabled={!commentData.agree}>Submit</button>
             </form>
         </div>
     )
