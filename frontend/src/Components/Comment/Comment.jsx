@@ -73,6 +73,9 @@ const Comment = () => {
     }, [userStatus])
 
 
+
+    
+
     const [currentButtonText, setCurrentButtonText] = useState("Log In");
     useEffect(() => {
         setCurrentButtonText(isLoggedIn ? "Leave a Comment" : "Log In");

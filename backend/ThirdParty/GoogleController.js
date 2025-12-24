@@ -119,3 +119,13 @@ export const googleAuthCallback = async (req, res) => {
         res.status(500).send(`Internal error during Google auth: ${err.message}`);
     }
 };
+
+export const googleLogout = () => {
+    res.clearCookie("auth", { 
+        httpOnly: true, 
+        sameSite: "lax", 
+        secure: process.env.NODE_ENV === "production" 
+    });
+
+    res.sendStatus(204);
+}

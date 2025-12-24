@@ -33,7 +33,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/youtube", youtubeRoutes);
 
 // get route from frontend
-app.use("/auth", googleRoute);
+app.use("/auth/google", googleRoute);
 
 // get router from frontend
 app.use("/api/Comment", commentRoute);
