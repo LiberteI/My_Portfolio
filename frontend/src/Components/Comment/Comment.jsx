@@ -13,11 +13,11 @@ const Comment = () => {
     const navigate = useNavigate();
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     const handleClick = () => {
         if(!isLoggedIn){
             // invoke 3rd party log in route
-            window.location.href = "https://api.liberteii.com/auth/google";
+            window.location.href = `${apiBase}/auth/google`;
         } else {
             navigate("/comment-form");
         }
@@ -27,7 +27,6 @@ const Comment = () => {
         // load comments
     }, []);
 
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     const [status, setStatus] = useState(null);
     const [userStatus, setUserStatus] = useState(null);
 
@@ -125,7 +124,7 @@ const Comment = () => {
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
                 <button onClick={handleClick} className="comment-button">{currentButtonText}</button>
 
-                {isLoggedIn && <button onClick={logout} className="logout-button">Logout</button>}
+                {isLoggedIn && <button onClick={logout} className="comment-logout-button">Logout</button>}
                 
             </div>
 
