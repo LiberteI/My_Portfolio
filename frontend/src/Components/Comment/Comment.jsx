@@ -65,7 +65,6 @@ const Comment = () => {
                 credentials: 'include',
             });
             if(response.status === 401){
-                console.log("not logged in");
                 setUserStatus(null);
                 setIsLoggedIn(false);
                 return;
@@ -76,7 +75,7 @@ const Comment = () => {
             setStatus("success");
             setUserStatus({ id: data._id || data.id || null, isAdmin: Boolean(data.isAdmin) });
         } catch (error){
-            console.error(error);
+            
             setStatus('error');
             setUserStatus(null);
         }
