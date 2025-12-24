@@ -52,9 +52,6 @@ const CommentForm = () => {
         return () => clearTimeout(timer);
     }, [status])
 
-    const showComments = () => {
-
-    }
 
     const [comments, setComments] = useState([]);
     const tryShowAllComments = async () => {
@@ -71,9 +68,8 @@ const CommentForm = () => {
 
             const dbComments = await response.json();
 
-            setComments(dbComments);
+            setComments(dbComments || []);
 
-            showComments(comments);
         } catch(error){
             console.log("No authorization");
         }
