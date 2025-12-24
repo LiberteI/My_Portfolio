@@ -1,28 +1,48 @@
 import Comment from "../DatabaseModel/Comment.js";
 
 // CREATE
-export const createComment = async ({ content, author, shouldDisplay}) => {
+export const createComment = async ({ content, author }) => {
 
     let comment = await Comment.create({
         author,
         content,
-        shouldDisplay
+        shouldDisplay: false
     });
 
     return comment;
-}
+};
 
 // READ
-export const findComment = async () => {
+export const findComments = async () => {
     // read comment shouldDisplay = true;
-}
+    return await Comment.find({ shouldDisplay : true })
+        // replace author id with name and avatar
+        .populate("author", "name avatar")
+        .sort({ createdAt: -1 });
+
+};
 
 // UPDATE
-export const editComment = async () => {
-    // edit comment content or shouldDisplay
-}
+// given id and updates
+export const editComment = async ({ commentId, updates }) => {
+    // moderation (admin)
+    // find item with id and apply updates
+    return await Comment.findByIdAndUpdate(
+        commentId,
+        updates,
+        // After updating, give me the updated document.
+        {new: true}
+    );
+};
 
 // DELETE
-export const deleteComment = async () => {
+export const deleteComment = async (commentId) => {
     // censorship
-}
+
+    // find id and set display to false
+    return await Comment.findByIdAndUpdate(
+        commentId,
+        { shouldDisplay: false},
+        { new: true}
+    );
+};
