@@ -100,8 +100,6 @@ export const googleAuthCallback = async (req, res) => {
             return res.status(400).send("Email not verified");
         }
 
-        // For now, set a simple flag cookie so the client can flip the button text.
-        // This is intentionally not httpOnly since we're not persisting real auth yet.
         const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
         const isProd = frontendOrigin.startsWith("https://");
         res.cookie("auth", user._id.toString() ,{
@@ -120,12 +118,12 @@ export const googleAuthCallback = async (req, res) => {
     }
 };
 
-export const googleLogout = () => {
+export const googleLogout = (req, res) => {
     res.clearCookie("auth", { 
         httpOnly: true, 
         sameSite: "lax", 
         secure: process.env.NODE_ENV === "production" 
     });
 
-    res.sendStatus(204);
-}
+    return res.sendStatus(204);
+};

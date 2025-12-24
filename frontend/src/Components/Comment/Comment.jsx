@@ -57,6 +57,19 @@ const Comment = () => {
         }
     };
 
+    const logout = async () => {
+        try{
+            await fetch(`${apiBase}/auth/google/logout`, {
+                method: "POST",
+                credentials: "include",
+            });
+            setUserStatus({ id: null, isAdmin: false });
+            setIsLoggedIn(false);
+        } catch (error){
+            console.error("logout error", error);
+        }
+    };
+
     useEffect(() => {
         // send http to get user
         getUser();
@@ -71,10 +84,6 @@ const Comment = () => {
         }
 
     }, [userStatus])
-
-
-
-    
 
     const [currentButtonText, setCurrentButtonText] = useState("Log In");
     useEffect(() => {
@@ -120,6 +129,9 @@ const Comment = () => {
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
                 <button onClick={handleClick} className="comment-button">{currentButtonText}</button>
+
+                {isLoggedIn && <button onClick={logout} className="logout-button">Logout</button>}
+                
             </div>
 
             <div className="comment-grid">
