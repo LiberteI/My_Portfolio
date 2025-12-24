@@ -29,7 +29,7 @@ const Comment = () => {
 
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     const [status, setStatus] = useState(null);
-    const [userStatus, setUserStatus] = useState({ id: null, isAdmin: false });
+    const [userStatus, setUserStatus] = useState(null);
 
     const getUser = async (event) => {
         event?.preventDefault?.();
@@ -42,6 +42,7 @@ const Comment = () => {
             });
             if(response.status === 401){
                 console.log("not logged in");
+                setUserStatus(null);
                 setIsLoggedIn(false);
                 return;
             }
@@ -53,7 +54,7 @@ const Comment = () => {
         } catch (error){
             console.error(error);
             setStatus('error');
-            setUserStatus({ id: null, isAdmin: false });
+            setUserStatus(null);
         }
     };
 
@@ -76,14 +77,8 @@ const Comment = () => {
     }, [])
 
     useEffect(() => {
-        if(userStatus){
-            setIsLoggedIn(true);
-        }
-        else{
-            setIsLoggedIn(false);
-        }
-
-    }, [userStatus])
+        setIsLoggedIn(Boolean(userStatus?.id));
+    }, [userStatus]);
 
     const [currentButtonText, setCurrentButtonText] = useState("Log In");
     useEffect(() => {

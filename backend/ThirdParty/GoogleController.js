@@ -100,8 +100,13 @@ export const googleAuthCallback = async (req, res) => {
             return res.status(400).send("Email not verified");
         }
 
-        const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
-        const isProd = frontendOrigin.startsWith("https://");
+        const isProd = process.env.NODE_ENV === "production";
+        const frontendOrigin = isProd ? process.env.FRONTEND_ORIGIN  : "http://localhost:5173";
+        console.log("googleAuthCallback env:", {
+            nodeEnv: process.env.NODE_ENV,
+            isProd,
+            frontendOrigin,
+        });
         res.cookie("auth", user._id.toString() ,{
             httpOnly: true,
             secure: isProd,
