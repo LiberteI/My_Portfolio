@@ -14,9 +14,7 @@ const CommentForm = () => {
         setCommentData((prev) => ({...prev, [name]: value}));
     }
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
+    const handleSubmit = async () => {
         setStatus('loading');
 
         try{

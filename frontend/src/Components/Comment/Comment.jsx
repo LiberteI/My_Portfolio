@@ -6,9 +6,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
-const comments = [
-    
-]
+const [comments, setComments] = useState([]);
 const Comment = () => {
     const navigate = useNavigate();
 
@@ -23,8 +21,36 @@ const Comment = () => {
         }
     };
     
+    const populateComments = async (event) => {
+        event.preventDefault();
+
+        setStatus('loading');
+        try{
+            const response = await fetch(`${apiBase}/api/Comment/get-comment`, {
+                method: "GET",
+                credentials: "include"
+            });
+            if(!response.ok){
+                throw new Error("request failed");
+            }
+
+            const data = await response.json();
+
+            // set to [] if undefined or null
+            setComments(data || []);
+
+            setStatus('success');
+
+        } catch (error){
+            console.error(error);
+            setStatus("error");
+            setComments([]);
+        }
+    }
+
     useEffect(() => {
         // load comments
+        populateComments();
     }, []);
 
     const [status, setStatus] = useState(null);

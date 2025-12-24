@@ -1,4 +1,4 @@
-import { postComment } from "../CRUD/CommentCRUDController.js";
+import { postComment, findComments } from "../CRUD/CommentCRUDController.js";
 
 export const submitComment = async (req, res) => {
     // handle submit comment
@@ -18,4 +18,16 @@ export const submitComment = async (req, res) => {
         return res.status(500).send(`Internal error during submitting comment: ${error.message}`);
     }
     
+};
+
+export const getComments = async (req, res) => {
+    try{
+        const data = res.body;
+        if(!data){
+            return res.status(404).send("no comment found");
+        }
+        return data;
+    } catch (error){
+        return res.status(500).send("internal error in comment controller");
+    }
 }
