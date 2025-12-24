@@ -1,4 +1,4 @@
-import { createComment, deleteComment, editComment, findComments } from "./CommentCRUD";
+import { createComment, deleteComment, editComment, findComments } from "./CommentCRUD.js";
 
 export const postComment = async (req, res) => {
     try{
