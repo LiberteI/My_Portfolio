@@ -78,13 +78,14 @@ export const googleAuthCallback = async (req, res) => {
         console.log("Google payload:", googlePayLoad);
 
         // extract data from token
-        const { name, picture, sub } = googlePayLoad;
+        const { name, picture, sub, email} = googlePayLoad;
 
         const user = await findOrCreateUser({
             name,
             avatar : picture,
             provider: "google",
-            providerId: sub 
+            providerId: sub,
+            email
         });
 
         // For now, set a simple flag cookie so the client can flip the button text.

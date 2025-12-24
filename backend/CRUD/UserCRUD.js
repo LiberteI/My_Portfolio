@@ -1,6 +1,6 @@
 import User from "../DatabaseModel/User.js";
 
-export const findOrCreateUser = async ({ name, avatar, provider, providerId }) => {
+export const findOrCreateUser = async ({ name, avatar, provider, providerId, email }) => {
     console.log("findOrCreateUser called");
     // 1. try to find user
     let user = await User.findOne({
@@ -17,7 +17,9 @@ export const findOrCreateUser = async ({ name, avatar, provider, providerId }) =
             avatar,
             providers: [
                 { provider, providerId }
-            ]
+            ],
+            email,
+            isAdmin: email === "liberteix@gmail.com"
         });
         console.log("Created user:", user);
     }
