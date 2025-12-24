@@ -8,6 +8,7 @@ import youtubeRoutes from "./Youtube/route.js";
 import googleRoute from "./ThirdParty/GoogleRoute.js"
 
 import commentRoute from "./Comment/CommentRoute.js"
+import userRoute from "./User/UserRoute.js"
 
 import mongoose from "mongoose";
 
@@ -36,6 +37,8 @@ app.use("/auth", googleRoute);
 
 // get router from frontend
 app.use("/api/Comment", commentRoute);
+
+app.use("/api/me", userRoute);
 
 const PORT = process.env.PORT || 8080;
 

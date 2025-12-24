@@ -26,3 +26,10 @@ export const findOrCreateUser = async ({ name, avatar, provider, providerId, ema
 
     return user;
 }
+
+export const findUser = async (userID) => {
+
+    let user = await User.findById(userID).select("_id").lean();
+    
+    return user;
+}
