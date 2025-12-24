@@ -7,24 +7,7 @@ import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
 const comments = [
-    {
-        email: "1",
-        icon: dummyIcon,
-        title: "boss",
-        detail: "he is good"
-    },
-    {
-        email: "2",
-        icon: dummyIcon,
-        title: "boss",
-        detail: "he is good"
-    },
-    {
-        email: "3",
-        icon: dummyIcon,
-        title: "boss",
-        detail: "he is good"
-    }
+    
 ]
 const Comment = () => {
     const navigate = useNavigate();
