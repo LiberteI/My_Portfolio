@@ -6,12 +6,12 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
-const [comments, setComments] = useState([]);
 const Comment = () => {
     const navigate = useNavigate();
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    const [comments, setComments] = useState([]);
     const handleClick = () => {
         if(!isLoggedIn){
             // invoke 3rd party log in route
@@ -21,8 +21,7 @@ const Comment = () => {
         }
     };
     
-    const populateComments = async (event) => {
-        event.preventDefault();
+    const populateComments = async () => {
 
         setStatus('loading');
         try{
