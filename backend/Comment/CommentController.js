@@ -22,11 +22,9 @@ export const submitComment = async (req, res) => {
 
 export const getComments = async (req, res) => {
     try{
-        const data = res.body;
-        if(!data){
-            return res.status(404).send("no comment found");
-        }
-        return data;
+        const comments = await findComments();
+
+        return res.status(200).json(comments);
     } catch (error){
         return res.status(500).send("internal error in comment controller");
     }
