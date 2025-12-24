@@ -1,25 +1,19 @@
 import Comment from "../DatabaseModel/Comment.js";
 
 // CREATE
-export const createComment = async ({ content, author }) => {
-
-    let comment = await Comment.create({
-        author,
-        content,
+export const createComment = async ({ name, role, comment }) => {
+    return await Comment.create({
+        name,
+        role,
+        comment,
         shouldDisplay: false
     });
-
-    return comment;
 };
 
 // READ
 export const findComments = async () => {
-    // read comment shouldDisplay = true;
     return await Comment.find({ shouldDisplay : true })
-        // replace author id with name and avatar
-        .populate("author", "name avatar")
         .sort({ createdAt: -1 });
-
 };
 
 // UPDATE

@@ -1,16 +1,8 @@
 import { createComment, deleteComment, editComment, findComments } from "./CommentCRUD.js";
 
-export const postComment = async (req, res) => {
-    try{
-        const comment = await createComment(req.body);
-
-        res.status(201).json(comment);
-
-    } catch (error){
-        console.error("Failed to post comments:", error);
-        res.status(500).json({error: error.message});
-    }
-}
+export const postComment = async (data) => {
+    return await createComment(data);
+};
 
 export const getComments = async (req, res) => {
     try{

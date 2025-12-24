@@ -2,15 +2,20 @@ import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema(
   {
-    author: {
-      // map user's id. Points to a document in the User collection
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true
-    },
-    content: {
+    name: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
+    },
+    role: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    comment: {
+      type: String,
+      required: true,
+      trim: true,
     },
     shouldDisplay: {
       type: Boolean,
