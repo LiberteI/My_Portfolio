@@ -62,7 +62,7 @@ export const googleAuthCallback = async (req, res) => {
         const { id_token } = await tokenRes.json();
 
         // TODO:
-        // 1. verify id_token
+        // 1. verify id_token *
         // 2. find/create user *
         // 3. issue JWT or session 
 
@@ -105,15 +105,15 @@ export const googleAuthCallback = async (req, res) => {
         const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
         const isProd = frontendOrigin.startsWith("https://");
         res.cookie("auth", user._id.toString() ,{
-            httpOnly: false,
+            httpOnly: true,
             secure: isProd,
             sameSite: "lax",
             // persists for 10 minutes
             maxAge: 60 * 1000 * 10 
         });
 
-        // redirect to homepage with a query flag the client can consume
-        res.redirect(`${frontendOrigin}?loggedIn=1`);
+        // redirect to homepage
+        res.redirect(`${frontendOrigin}`);
     } catch (err) {
         console.error("googleAuthCallback error", err);
         res.status(500).send(`Internal error during Google auth: ${err.message}`);
