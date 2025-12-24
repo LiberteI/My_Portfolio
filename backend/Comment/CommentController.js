@@ -1,4 +1,5 @@
-import { postComment, findComments } from "../CRUD/CommentCRUDController.js";
+import { findComments } from "../CRUD/CommentCRUD.js";
+import { postComment } from "../CRUD/CommentCRUDController.js";
 
 export const submitComment = async (req, res) => {
     // handle submit comment
