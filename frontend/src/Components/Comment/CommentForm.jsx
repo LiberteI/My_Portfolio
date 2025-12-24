@@ -93,17 +93,6 @@ const CommentForm = () => {
                     required
                 />
 
-                <label className="comment-consent">
-                    <input 
-                        type="checkbox"
-                        name="agree"
-                        checked={commentData.agree}
-                        onChange={handleChange}
-                        required
-                    />
-                    By submitting, I agree my comment and info may be displayed publicly.
-                </label>
-
                 <button className="comment-button" type="submit" disabled={!commentData.agree}>Submit</button>
             </form>
         </div>
