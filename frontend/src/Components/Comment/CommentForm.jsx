@@ -2,30 +2,26 @@ import { useEffect } from "react";
 import { useState } from "react"
 
 const CommentForm = () => {
-    const [commentData, setCommentData] = useState({name: '', role: '', comment: '', agree: false});
+    const [commentData, setCommentData] = useState({name: '', role: '', comment: ''});
     
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
     const [status, setStatus] = useState(null);
 
     const handleChange = (event) => {
-        const {name, value, type, checked} = event.target;
+        const {name, value} = event.target;
 
-        setCommentData((prev) => ({...prev, [name]: type === 'checkbox' ? checked : value}));
+        setCommentData((prev) => ({...prev, [name]: value}));
     }
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if(!commentData.agree){
-            return;
-        }
-
         setStatus('loading');
 
         try{
             // send http request to backend
-            const response = await fetch(`${apiBase}/api/Comment`, {
+            const response = await fetch(`${apiBase}/api/Comment/post`, {
                 method: 'POST',
                 headers: { 'Content-Type' : 'application/json' },
                 body: JSON.stringify(commentData)
@@ -38,7 +34,7 @@ const CommentForm = () => {
             setStatus('success');
 
             // reset data
-            setCommentData({name: '', role: '', comment: '', agree: false});
+            setCommentData({name: '', role: '', comment: ''});
 
             window.location.href = "/";
 
@@ -93,7 +89,7 @@ const CommentForm = () => {
                     required
                 />
 
-                <button className="comment-button" type="submit" disabled={!commentData.agree}>Submit</button>
+                <button className="comment-button" type="submit">Submit</button>
             </form>
         </div>
     )
