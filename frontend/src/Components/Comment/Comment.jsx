@@ -24,23 +24,54 @@ const Comment = () => {
     };
     
     useEffect(() => {
-        // Only treat this session as logged in when arriving with ?loggedIn=1.
-        // Do not persist across refresh.
-        // reads url after ?
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("loggedIn") === "1") {
+        // load comments
+    }, []);
+
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+    const [status, setStatus] = useState(null);
+    const [userStatus, setUserStatus] = useState({ id: null, isAdmin: false });
+
+    const getUser = async (event) => {
+        event?.preventDefault?.();
+        setStatus("loading");
+
+        try{
+            const response = await fetch(`${apiBase}/api/me`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+            if(response.status === 401){
+                console.log("not logged in");
+                setIsLoggedIn(false);
+                return;
+            }
+
+            const data = await response.json();
+
+            setStatus("success");
+            setUserStatus({ id: data._id || data.id || null, isAdmin: Boolean(data.isAdmin) });
+        } catch (error){
+            console.error(error);
+            setStatus('error');
+            setUserStatus({ id: null, isAdmin: false });
+        }
+    };
+
+    useEffect(() => {
+        // send http to get user
+        getUser();
+    }, [])
+
+    useEffect(() => {
+        if(userStatus){
             setIsLoggedIn(true);
-            // removes that param from the current query params.
-            params.delete("loggedIn");
-            const remaining = params.toString();
-            // constructs a clean URL (same path, maybe other params).
-            const newUrl = `${window.location.pathname}${remaining ? `?${remaining}` : ""}`;
-            // updates the address bar to the clean URL without causing a navigation.
-            window.history.replaceState({}, "", newUrl);
-        } else {
+        }
+        else{
             setIsLoggedIn(false);
         }
-    }, []);
+
+    }, [userStatus])
+
 
     const [currentButtonText, setCurrentButtonText] = useState("Log In");
     useEffect(() => {

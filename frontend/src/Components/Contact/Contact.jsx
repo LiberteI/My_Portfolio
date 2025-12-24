@@ -17,7 +17,7 @@ const Contact = () => {
         setFormData((prev) => ({...prev, [name]: value}))
     }
     
-    const handleSubmit = async (event) =>{
+    const handleSubmit = async (event) => {
         // stop page from loading, set flag to loading
         event.preventDefault()
         setStatus('loading')

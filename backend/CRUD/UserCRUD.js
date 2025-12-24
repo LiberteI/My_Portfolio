@@ -29,7 +29,7 @@ export const findOrCreateUser = async ({ name, avatar, provider, providerId, ema
 
 export const findUser = async (userID) => {
 
-    let user = await User.findById(userID).select("_id").lean();
+    let user = await User.findById(userID).select("_id isAdmin").lean();
     
     return user;
 }
