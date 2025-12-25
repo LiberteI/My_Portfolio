@@ -1,8 +1,10 @@
+import { useState } from "react";
+
 const AdminCommentCard = ({ commentData, onChange }) => {
-    const { _id, id, name, role, email, comment, avatar, detail } = commentData;
+    const { _id, id, name, role, email, comment, avatar, shouldDisplay} = commentData;
     const displayName = name || email || "";
-    const subtitle = role || email || "";
-    const body = comment || detail || "";
+    const subtitle = role;
+    const body = comment;
 
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
@@ -37,17 +39,38 @@ const AdminCommentCard = ({ commentData, onChange }) => {
             console.error(error);
         }
     }
+
+    const [isEditing, setIsEditing] = useState(false);
+    
     const startEditing = () => {
         
-        submitEditing(commentData);
+        setIsEditing(true);
         
     }
+
+    const cancelEdit = () => {
+        setIsEditing(false);
+    }
+
+    const saveEdit = () => {
+        
+        submitEditing(commentData);
+        setIsEditing(false);
+    }
+
     return (
         <div className="comment-card">
 
             <div className="admin-actions">
-                <button onClick={handleDelete} data-id={_id || id}>Delete</button>
-                <button onClick={startEditing} data-id={_id || id}>Edit</button>
+                {!isEditing && 
+                <button onClick={handleDelete} data-id={_id || id}>Delete</button>}
+                {!isEditing && 
+                <button onClick={startEditing} data-id={_id || id}>Edit</button>}
+
+                {isEditing &&
+                <button onClick={cancelEdit} data-id={_id || id}>Cancel</button>}
+                {isEditing && 
+                <button onClick={saveEdit} data-id={_id || id}>Save</button>}
             </div>
             
             {avatar && <img src={avatar} alt={displayName} />}

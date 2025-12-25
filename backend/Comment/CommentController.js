@@ -50,14 +50,14 @@ export const getAllComments = async (req, res) => {
 export const moderateComment = async (req, res) => {
     try{
         // get comment id
-        const commentID = req.params.commentId || req.query.commentId;
+        const commentId = req.params.commentId || req.query.commentId;
         const updates = req.body || {};
 
-        if(!commentID){
+        if(!commentId){
             return res.status(400).json({error: "Missing comment ID"});
         }
 
-        const updatedComments = await editComment({commentID, updates});
+        const updatedComments = await editComment({ commentId, updates });
 
         return res.status(200).json(updatedComments);
     } catch (error){
@@ -67,5 +67,5 @@ export const moderateComment = async (req, res) => {
 
 // DELETE
 export const disableComment = async (req, res) => {
-
+    
 }

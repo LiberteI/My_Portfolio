@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { submitComment, getComments, getAllComments} from "./CommentController.js";
+import { submitComment, getComments, getAllComments, disableComment, moderateComment} from "./CommentController.js";
 import { requireAdmin, requireAuth } from "../Middleware/auth.js";
-import { disableComment, moderateComment } from "../CRUD/CommentCRUD.js";
+
 
 const router = Router();
 
@@ -13,8 +13,8 @@ router.get("/get-comment", getComments);
 // use middleware
 router.get("/admin/comments", requireAuth, requireAdmin, getAllComments);
 
-router.patch(`/admin/edit-comment/${commentId}`, requireAuth, requireAdmin, moderateComment);
+router.patch("/admin/edit-comment/:commentId", requireAuth, requireAdmin, moderateComment);
 
-router.patch(`/admin/delete-comment/${commentId}`, requireAuth, requireAdmin, disableComment);
+router.patch("/admin/delete-comment/:commentId", requireAuth, requireAdmin, disableComment);
 
 export default router;
