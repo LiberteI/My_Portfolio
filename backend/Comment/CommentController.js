@@ -2,6 +2,7 @@ import { findComments } from "../CRUD/CommentCRUD.js";
 import { postComment } from "../CRUD/CommentCRUDController.js";
 import Comment from "../DatabaseModel/Comment.js";
 
+// POST
 export const submitComment = async (req, res) => {
     // handle submit comment
     try{
@@ -22,6 +23,7 @@ export const submitComment = async (req, res) => {
     
 };
 
+// GET
 export const getComments = async (req, res) => {
     try{
         const comments = await findComments();
@@ -43,3 +45,7 @@ export const getAllComments = async (req, res) => {
         return res.status(500).send("internal error in comment controller");
     }
 }
+
+// EDIT
+
+// DELETE
