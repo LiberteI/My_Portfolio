@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 const AdminCommentCard = ({ commentData, onChange }) => {
+    // original data (read only)
     const { _id, id, name, role, email, comment, avatar, shouldDisplay} = commentData;
     const displayName = name || email || "";
     const subtitle = role;
@@ -18,13 +19,13 @@ const AdminCommentCard = ({ commentData, onChange }) => {
         }
     }
 
-    const submitEditing = async (editedData) => {
+    const submitEditing = async ({updates: dataDraft}) => {
         try{
             const response = await fetch(`${apiBase}/api/Comment/admin/edit-comment/${_id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify(editedData)
+                body: JSON.stringify({updates: dataDraft})
             });
 
             if(!response.ok){
@@ -40,12 +41,17 @@ const AdminCommentCard = ({ commentData, onChange }) => {
         }
     }
 
+    // UI toggle flag
     const [isEditing, setIsEditing] = useState(false);
-    
+    const [dataDraft, setDataDraft] = useState(
+        {
+            comment,
+            shouldDisplay
+        }
+    )
     const startEditing = () => {
-        
+        setDataDraft({comment, shouldDisplay})
         setIsEditing(true);
-        
     }
 
     const cancelEdit = () => {
@@ -53,8 +59,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
     }
 
     const saveEdit = () => {
-        
-        submitEditing(commentData);
+        submitEditing({updates: dataDraft});
         setIsEditing(false);
     }
 
@@ -73,10 +78,47 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                 <button onClick={saveEdit} data-id={_id || id}>Save</button>}
             </div>
             
-            {avatar && <img src={avatar} alt={displayName} />}
-            <h3>{displayName}</h3>
-            {subtitle && <p className="comment-subtitle">{subtitle}</p>}
-            <p>{body}</p>
+            {!isEditing 
+                &&
+                <>
+                    {avatar && <img src={avatar} alt={displayName} />}
+                    <h3>{displayName}</h3>
+                    {subtitle && <p className="comment-subtitle">{subtitle}</p>}
+                    <p>{body}</p>
+                </>
+            }
+            {isEditing
+                &&
+                <>
+                    {avatar && <img src={avatar} alt={displayName} />}
+                    <h3>{displayName}</h3>
+                    {subtitle && <p className="comment-subtitle">{subtitle}</p>}
+
+                    <textarea 
+                        value={dataDraft.comment}
+                        onChange={(e) => 
+                            setDataDraft((prev) => ({
+                                ...prev, 
+                                comment: e.target.value
+                            }))
+                        }
+                    />
+                    <label>
+                        <input 
+                            type="checkbox" 
+                            checked={dataDraft.shouldDisplay}
+                            onChange={(e) => 
+                                setDataDraft((prev) => ({
+                                    ...prev,
+                                    shouldDisplay: e.target.checked
+                                }))
+                            }
+                        />
+                        Visible to Public
+                    </label>
+                </>
+            }
+            
 
             
         </div>
