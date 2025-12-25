@@ -6,7 +6,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
     const displayName = name || email || "";
     const subtitle = role;
     const body = comment;
-
+    const commentID = _id || id;
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
     const handleDelete = async () => {
@@ -19,13 +19,13 @@ const AdminCommentCard = ({ commentData, onChange }) => {
         }
     }
 
-    const submitEditing = async ({updates: dataDraft}) => {
+    const submitEditing = async ({commentId: commentID, updates: dataDraft}) => {
         try{
-            const response = await fetch(`${apiBase}/api/Comment/admin/edit-comment/${_id}`, {
+            const response = await fetch(`${apiBase}/api/Comment/admin/edit-comment`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({updates: dataDraft})
+                body: JSON.stringify({commentId: commentID, updates: dataDraft})
             });
 
             if(!response.ok){
@@ -59,7 +59,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
     }
 
     const saveEdit = () => {
-        submitEditing({updates: dataDraft});
+        submitEditing({commentId: commentID, updates: dataDraft});
         setIsEditing(false);
     }
 

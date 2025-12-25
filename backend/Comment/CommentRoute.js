@@ -13,8 +13,8 @@ router.get("/get-comment", getComments);
 // use middleware
 router.get("/admin/comments", requireAuth, requireAdmin, getAllComments);
 
-router.patch("/admin/edit-comment/:commentId", requireAuth, requireAdmin, moderateComment);
+router.patch("/admin/edit-comment", requireAuth, requireAdmin, moderateComment);
 
-router.patch("/admin/delete-comment/:commentId", requireAuth, requireAdmin, disableComment);
+router.patch("/admin/delete-comment", requireAuth, requireAdmin, disableComment);
 
 export default router;

@@ -50,8 +50,8 @@ export const getAllComments = async (req, res) => {
 export const moderateComment = async (req, res) => {
     try{
         // get comment id
-        const commentId = req.params.commentId || req.query.commentId;
-        const updates = req.body || {};
+        const commentId = req.body.commentId;
+        const updates = req.body.updates;
 
         if(!commentId){
             return res.status(400).json({error: "Missing comment ID"});
