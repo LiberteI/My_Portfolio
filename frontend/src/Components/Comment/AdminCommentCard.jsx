@@ -78,44 +78,33 @@ const AdminCommentCard = ({ commentData, onChange }) => {
     return (
         <div className="comment-card">
     
-            <div className="admin-actions">
-                {!isEditing && 
-                <button onClick={handleDelete} data-id={_id || id}>Delete</button>}
-                {!isEditing && 
-                <button onClick={startEditing} data-id={_id || id}>Edit</button>}
-
-                {isEditing &&
-                <button onClick={cancelEdit} data-id={_id || id}>Cancel</button>}
-                {isEditing && 
-                <button onClick={saveEdit} data-id={_id || id}>Save</button>}
-            </div>
             {avatarSrc && <img src={avatarSrc} alt={displayName} />}
+            <h3>{displayName}</h3>
+            {subtitle && <p className="comment-subtitle">{subtitle}</p>}
+
             {!isEditing 
                 &&
-                <>
-                    <h3>{displayName}</h3>
-                    {subtitle && <p className="comment-subtitle">{subtitle}</p>}
-                    <p>{body}</p>
-                </>
+                <p>{body}</p>
             }
             {isEditing
                 &&
-                <>
-                    
-                    <h3>{displayName}</h3>
-                    {subtitle && <p className="comment-subtitle">{subtitle}</p>}
-
-                    <textarea 
-                        value={dataDraft.comment}
-                        onChange={(e) => 
-                            setDataDraft((prev) => ({
-                                ...prev, 
-                                comment: e.target.value
-                            }))
-                        }
-                    />
-                </>
+                <textarea 
+                    value={dataDraft.comment}
+                    onChange={(e) => 
+                        setDataDraft((prev) => ({
+                            ...prev, 
+                            comment: e.target.value
+                        }))
+                    }
+                />
             }
+            {!isEditing && dataDraft.shouldDisplay &&
+            <p>Visible</p>
+            }
+            {!isEditing && !dataDraft.shouldDisplay &&
+            <p>Invisible</p>
+            }
+            {isEditing && 
             <label>
                 <input 
                     type="checkbox" 
@@ -128,10 +117,20 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                     }
                 />
                 Visible to Public
-            </label>
+            </label>}
             
 
-            
+            <div className="admin-actions">
+                {!isEditing && 
+                <button onClick={handleDelete} data-id={_id || id}>Delete</button>}
+                {!isEditing && 
+                <button onClick={startEditing} data-id={_id || id}>Edit</button>}
+
+                {isEditing &&
+                <button onClick={cancelEdit} data-id={_id || id}>Cancel</button>}
+                {isEditing && 
+                <button onClick={saveEdit} data-id={_id || id}>Save</button>}
+            </div>
         </div>
     );
 }
