@@ -1,4 +1,4 @@
-import { findComments } from "../CRUD/CommentCRUD.js";
+import { findComments, editComment, deleteComment } from "../CRUD/CommentCRUD.js";
 import { postComment } from "../CRUD/CommentCRUDController.js";
 import Comment from "../DatabaseModel/Comment.js";
 
@@ -46,6 +46,26 @@ export const getAllComments = async (req, res) => {
     }
 }
 
-// EDIT
+// edit comment
+export const moderateComment = async (req, res) => {
+    try{
+        // get comment id
+        const commentID = req.params.commentId || req.query.commentId;
+        const updates = req.body || {};
+
+        if(!commentID){
+            return res.status(400).json({error: "Missing comment ID"});
+        }
+
+        const updatedComments = await editComment({commentID, updates});
+
+        return res.status(200).json(updatedComments);
+    } catch (error){
+        return res.status(500).send("internal error in comment controller");
+    }
+}
 
 // DELETE
+export const disableComment = async (req, res) => {
+
+}

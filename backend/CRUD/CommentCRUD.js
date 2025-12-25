@@ -12,7 +12,7 @@ export const createComment = async ({ name, role, comment }) => {
     });
 };
 
-// READ
+// READ all
 export const findComments = async () => {
     return await Comment.find({ shouldDisplay : true })
         .sort({ createdAt: -1 });

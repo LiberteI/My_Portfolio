@@ -123,6 +123,7 @@ const CommentForm = () => {
                     <CommentCard 
                         key={comment._id || comment.id || comment.email}
                         commentData={comment}
+                        onChange={tryShowAllComments}
                     />
                 ))}
             </div>
