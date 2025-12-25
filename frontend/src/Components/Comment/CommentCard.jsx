@@ -1,3 +1,5 @@
+import './CommentCard.css'
+
 const CommentCard = ({ commentData }) => {
     const { name, role, comment, author, avatar } = commentData;
     const displayName = name;

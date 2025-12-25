@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './CommentCard.css'
 
 const AdminCommentCard = ({ commentData, onChange }) => {
     // original data (read only)
