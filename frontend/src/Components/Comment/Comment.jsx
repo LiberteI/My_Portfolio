@@ -155,7 +155,7 @@ const Comment = () => {
             <div className="comment-grid">
                 {comments.map((comment) => (
                     <CommentCard 
-                        key={comment.email}
+                        key={comment._id || comment.id || comment.email}
                         commentData={comment}
                     />
                 ))}
