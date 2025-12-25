@@ -2,7 +2,7 @@ import { useState } from "react";
 
 const AdminCommentCard = ({ commentData, onChange }) => {
     // original data (read only)
-    const { _id, id, name, role, email, comment, avatar, shouldDisplay} = commentData;
+    const { _id, id, name, role, email, comment, author, shouldDisplay} = commentData;
     const displayName = name || email || "";
     const subtitle = role;
     const body = comment;
@@ -91,7 +91,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
             {!isEditing 
                 &&
                 <>
-                    {avatar && <img src={avatar} alt={displayName} />}
+                    <img src={author} alt={displayName} />
                     <h3>{displayName}</h3>
                     {subtitle && <p className="comment-subtitle">{subtitle}</p>}
                     <p>{body}</p>
@@ -100,7 +100,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
             {isEditing
                 &&
                 <>
-                    {avatar && <img src={avatar} alt={displayName} />}
+                    <img src={avatar} alt={displayName} />
                     <h3>{displayName}</h3>
                     {subtitle && <p className="comment-subtitle">{subtitle}</p>}
 

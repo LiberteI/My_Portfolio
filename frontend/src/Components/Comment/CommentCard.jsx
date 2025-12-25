@@ -1,12 +1,12 @@
 const CommentCard = ({ commentData }) => {
-    const { name, role, email, comment, avatar, detail } = commentData;
-    const displayName = name || email || "";
-    const subtitle = role || email || "";
-    const body = comment || detail || "";
+    const { name, role, comment, author } = commentData;
+    const displayName = name;
+    const subtitle = role;
+    const body = comment;
 
     return (
         <div className="comment-card">
-            {avatar && <img src={avatar} alt={displayName} />}
+            <img src={author} alt={displayName} />
             <h3>{displayName}</h3>
             {subtitle && <p className="comment-subtitle">{subtitle}</p>}
             <p>{body}</p>

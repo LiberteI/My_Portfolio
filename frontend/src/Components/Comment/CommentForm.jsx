@@ -14,15 +14,37 @@ const CommentForm = () => {
         setCommentData((prev) => ({...prev, [name]: value}));
     }
 
-    const handleSubmit = async () => {
+    const populatedAuthor = async () => {
+        try{
+            const response = await fetch(`${apiBase}/api/me`, {
+                method:"GET",
+                credentials:"include"
+            });
+
+            if(!response.ok){
+                console.log("user not logged in!");
+                return null;
+            }
+
+            return await response.json();
+        } catch (error){
+            console.error(error);
+            return null;
+        }
+    }
+
+    const handleSubmit = async (event) => {
+        event?.preventDefault?.();
         setStatus('loading');
 
         try{
+            const author = await populatedAuthor();
+
             // send http request to backend
             const response = await fetch(`${apiBase}/api/Comment/post`, {
                 method: 'POST',
                 headers: { 'Content-Type' : 'application/json' },
-                body: JSON.stringify(commentData)
+                body: JSON.stringify({ ...commentData, author })
             });
 
             if(!response.ok){
@@ -32,7 +54,7 @@ const CommentForm = () => {
             setStatus('success');
 
             // reset data
-            setCommentData({name: '', role: '', comment: ''});
+            setCommentData({name: '', role: '', comment: '', author: null});
 
             window.location.href = "/";
 

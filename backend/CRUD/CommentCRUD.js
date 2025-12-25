@@ -3,12 +3,13 @@ import Comment from "../DatabaseModel/Comment.js";
 // business logic
 
 // CREATE
-export const createComment = async ({ name, role, comment }) => {
+export const createComment = async ({ name, role, comment, author }) => {
     return await Comment.create({
         name,
         role,
         comment,
-        shouldDisplay: false
+        shouldDisplay: false,
+        author
     });
 };
 

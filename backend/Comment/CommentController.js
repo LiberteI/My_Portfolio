@@ -8,12 +8,12 @@ export const submitComment = async (req, res) => {
     try{
 
         // receive data from frontend
-        const { name, role, comment } = req.body;
-        if (!name || !role || !comment) {
+        const { name, role, comment, author } = req.body;
+        if (!name || !role || !comment || !author) {
             return res.status(400).json({ error: "Missing name, role, or comment" });
         }
         // talk to backend
-        const created = await postComment({ name, role, comment });
+        const created = await postComment({ name, role, comment, author });
         return res.status(201).json(created);
 
     } catch (error) {
