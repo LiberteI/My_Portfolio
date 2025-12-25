@@ -103,21 +103,21 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                             }))
                         }
                     />
-                    <label>
-                        <input 
-                            type="checkbox" 
-                            checked={dataDraft.shouldDisplay}
-                            onChange={(e) => 
-                                setDataDraft((prev) => ({
-                                    ...prev,
-                                    shouldDisplay: e.target.checked
-                                }))
-                            }
-                        />
-                        Visible to Public
-                    </label>
                 </>
             }
+            <label>
+                <input 
+                    type="checkbox" 
+                    checked={dataDraft.shouldDisplay}
+                    onChange={(e) => 
+                        setDataDraft((prev) => ({
+                            ...prev,
+                            shouldDisplay: e.target.checked
+                        }))
+                    }
+                />
+                Visible to Public
+            </label>
             
 
             
