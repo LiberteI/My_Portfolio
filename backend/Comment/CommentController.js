@@ -37,8 +37,9 @@ export const getComments = async (req, res) => {
 export const getAllComments = async (req, res) => {
     try{
 
-        const comments = await Comment.find().sort({ createdAt: -1 });
-
+        const comments = await Comment.find().sort({ createdAt: -1 }
+            .populate("author", "avatar name email")
+        );
         return res.status(200).json(comments);
         
     } catch(error){

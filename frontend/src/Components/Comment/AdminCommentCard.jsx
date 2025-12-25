@@ -7,6 +7,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
     const subtitle = role;
     const body = comment;
     const commentID = _id || id;
+    const avatarSrc = author?.avatar || null;
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
     const handleDelete = async () => {
@@ -75,7 +76,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
 
     return (
         <div className="comment-card">
-
+    
             <div className="admin-actions">
                 {!isEditing && 
                 <button onClick={handleDelete} data-id={_id || id}>Delete</button>}
@@ -87,11 +88,10 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                 {isEditing && 
                 <button onClick={saveEdit} data-id={_id || id}>Save</button>}
             </div>
-            
+            {avatarSrc && <img src={avatarSrc} alt={displayName} />}
             {!isEditing 
                 &&
                 <>
-                    <img src={author} alt={displayName} />
                     <h3>{displayName}</h3>
                     {subtitle && <p className="comment-subtitle">{subtitle}</p>}
                     <p>{body}</p>
@@ -100,7 +100,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
             {isEditing
                 &&
                 <>
-                    <img src={avatar} alt={displayName} />
+                    
                     <h3>{displayName}</h3>
                     {subtitle && <p className="comment-subtitle">{subtitle}</p>}
 

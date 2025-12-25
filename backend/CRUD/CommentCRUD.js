@@ -16,7 +16,8 @@ export const createComment = async ({ name, role, comment, author }) => {
 // READ all
 export const findComments = async () => {
     return await Comment.find({ shouldDisplay : true })
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .populate("author", "avatar");
 };
 
 // UPDATE
