@@ -11,9 +11,19 @@ const AdminCommentCard = ({ commentData, onChange }) => {
 
     const handleDelete = async () => {
         try{
-            const response = await fetch(`${apiBase}/api/Comment/admin/delete-comment/${_id}`, {
-
+            const response = await fetch(`${apiBase}/api/Comment/admin/delete-comment`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ commentId: commentID })
             });
+
+            if(!response.ok){
+                console.log("failed to delete comment");
+                return;
+            }
+
+            onChange?.();
         } catch (error){
             console.error(error);
         }

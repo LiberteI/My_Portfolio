@@ -35,10 +35,6 @@ export const editComment = async ({ commentId, updates }) => {
 export const deleteComment = async (commentId) => {
     // censorship
 
-    // find id and set display to false
-    return await Comment.findByIdAndUpdate(
-        commentId,
-        { shouldDisplay: false},
-        { new: true}
-    );
+    // hard delete
+    return await Comment.deleteOne({_id: commentId});
 };

@@ -66,6 +66,18 @@ export const moderateComment = async (req, res) => {
 }
 
 // DELETE
-export const disableComment = async (req, res) => {
-    
+export const hardDeleteComment = async (req, res) => {
+    try{
+        const commentId = req.body.commentId;
+
+        if(!commentId){
+            return res.status(400).json({error : "Missing Comment ID"});
+        }
+
+        const deletedComment = await deleteComment(commentId);
+
+        return res.status(200).json(deletedComment);
+    } catch(error){
+        return res.status(500).send("internal error in deleting comment");
+    }
 }
