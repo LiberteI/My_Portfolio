@@ -12,14 +12,21 @@ const Comment = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     const [comments, setComments] = useState([]);
-    const handleClick = () => {
-        if(!isLoggedIn){
-            // invoke 3rd party log in route
-            window.location.href = `${apiBase}/auth/google`;
-        } else {
-            navigate("/comment-form");
-        }
+    const handleComment = () => {
+        navigate("/comment-form");
     };
+
+    const requestGoogleAuth = () => {
+        window.location.href = `${apiBase}/auth/google`;
+    }
+
+    const requestLinkedInAuth = () => {
+
+    }
+
+    const requestGitHubAuth = () => [
+
+    ]
     
     const populateComments = async () => {
 
@@ -146,8 +153,16 @@ const Comment = () => {
 
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
-                <button onClick={handleClick} className="comment-button">{currentButtonText}</button>
-
+                {!isLoggedIn &&
+                <div>
+                    <button onClick={requestGoogleAuth} className="comment-button">Continue with Google</button>
+                    <button onClick={requestLinkedInAuth} className="comment-button">Continue with LinkedIn</button>
+                    <button onClick={requestGitHubAuth} className="comment-button">Continue with GitHub</button>
+                </div>
+                }
+                
+                
+                {isLoggedIn && <button onClick={handleComment} className="comment-button">Leave A Comment</button>}
                 {isLoggedIn && <button onClick={logout} className="comment-logout-button">Logout</button>}
                 
             </div>
