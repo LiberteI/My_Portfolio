@@ -131,6 +131,7 @@ An authenticated and moderated testimonial system.
 **The frontend and backend will now be running locally.**
 
 ## 🧪 Environment Variables (`.env.example`)
+## backend
 - YT_API_KEY=
 - VIVA_LA_VIDA_ID=
 - FLOWER_DANCE_ID=
@@ -149,5 +150,6 @@ An authenticated and moderated testimonial system.
 - LINKEDIN_CLIENT_ID=
 - LINKEDIN_CLIENT_SECRET=
 - LINKEDIN_CALLBACK_URL=
-
+## frontend
+- VITE_API_BASE_URL=
 
