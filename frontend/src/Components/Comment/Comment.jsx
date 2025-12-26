@@ -1,5 +1,8 @@
 import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
+import googleIcon from '../../assets/google.png';
+import linkedinIcon from '../../assets/linkedin.png';
+import githubIcon from '../../assets/github.png';
 
 import './Comment.css'
 import { useEffect } from 'react'
@@ -155,9 +158,16 @@ const Comment = () => {
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
                 {!isLoggedIn &&
                 <div>
-                    <button onClick={requestGoogleAuth} className="comment-button">Continue with Google</button>
-                    <button onClick={requestLinkedInAuth} className="comment-button">Continue with LinkedIn</button>
-                    <button onClick={requestGitHubAuth} className="comment-button">Continue with GitHub</button>
+                    <h3>Continue with ...</h3>
+                    <button onClick={requestGoogleAuth} className="comment-button">
+                        <img src={googleIcon} alt="google" />
+                    </button>
+                    <button onClick={requestLinkedInAuth} className="comment-button">
+                        <img src={linkedinIcon} alt="linkedin" />
+                    </button>
+                    <button onClick={requestGitHubAuth} className="comment-button">
+                        <img src={githubIcon} alt="github" />
+                    </button>
                 </div>
                 }
                 
