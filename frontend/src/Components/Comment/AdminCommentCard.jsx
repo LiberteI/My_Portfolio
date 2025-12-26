@@ -84,7 +84,12 @@ const AdminCommentCard = ({ commentData, onChange }) => {
 
             {!isEditing 
                 &&
-                <p>{body}</p>
+                <>
+                    <p className={`comment-visibility ${dataDraft.shouldDisplay ? 'is-visible' : 'is-hidden'}`}>
+                        {dataDraft.shouldDisplay ? 'Visible' : 'Invisible'}
+                    </p>
+                    <p>{body}</p>
+                </>
             }
             {isEditing
                 &&
@@ -97,12 +102,6 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                         }))
                     }
                 />
-            }
-            {!isEditing && dataDraft.shouldDisplay &&
-            <p>Visible</p>
-            }
-            {!isEditing && !dataDraft.shouldDisplay &&
-            <p>Invisible</p>
             }
             {isEditing && 
             <label>

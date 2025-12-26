@@ -41,24 +41,52 @@
 
 .comment-card h3{
     margin: -0.55rem 0 0;
-    font-size: 1.05rem;
+    font-size: 1.2rem;
     text-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
     text-align: center;
-    transform: translateY(-150%);
+    transform: translateY(-180%);
 }
 
 .comment-card .comment-subtitle{
     margin: -0.15rem 0 0;
-    color: rgba(226, 232, 240, 0.85);
+    color: #9be8ff;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(155, 232, 255, 0.45);
     text-align: center;
-    transform: translateY(-150%);
+    transform: translateY(-220%);
 }
 
 .comment-card p{
     margin: 0.15rem 0 0;
     line-height: 1.5;
     color: #cbd5e1;
-    transform: translateY(-150%);
+    transform: translateY(-220%);
+}
+
+.comment-visibility{
+    align-self: flex-start;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-transform: uppercase;
+    margin: 0.35rem 0 0;
+}
+
+.comment-visibility.is-visible{
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.5);
+    box-shadow: 0 8px 18px -12px rgba(74, 222, 128, 0.6);
+}
+
+.comment-visibility.is-hidden{
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.5);
+    box-shadow: 0 8px 18px -12px rgba(248, 113, 113, 0.6);
 }
 
 .admin-comments-container{
