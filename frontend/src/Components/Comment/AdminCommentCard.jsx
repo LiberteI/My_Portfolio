@@ -104,7 +104,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                 />
             }
             {isEditing && 
-            <label>
+            <label className="comment-toggle">
                 <input 
                     type="checkbox" 
                     checked={dataDraft.shouldDisplay}
