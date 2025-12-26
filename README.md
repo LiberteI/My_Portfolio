@@ -153,3 +153,5 @@ An authenticated and moderated testimonial system.
 ## frontend
 - VITE_API_BASE_URL=
 
+# Deployed Frontend: https://www.liberteii.com
+# Deployed Backend: https://api.liberteii.com 
