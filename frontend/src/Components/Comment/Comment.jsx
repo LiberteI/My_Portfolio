@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 const Comment = () => {
     const navigate = useNavigate();
 
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     const [comments, setComments] = useState([]);
     const handleComment = () => {
@@ -109,15 +108,7 @@ const Comment = () => {
         getUser();
     }, [])
 
-    useEffect(() => {
-        setIsLoggedIn(Boolean(userStatus?.id));
-    }, [userStatus]);
-
-    const [currentButtonText, setCurrentButtonText] = useState("Log In");
-    useEffect(() => {
-        setCurrentButtonText(isLoggedIn ? "Leave a Comment" : "Log In");
-    }, [isLoggedIn]);
-
+    const isLoggedIn = Boolean(userStatus?.id);
 
     const workedWithMe = "Worked With Me?";
     const leaveAComment = "Leave A Comment!";
