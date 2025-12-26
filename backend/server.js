@@ -39,8 +39,6 @@ app.use("/auth/google", googleRoute);
 
 app.use("/auth/linkedin", linkedinRoute);
 
-// app.use("auth/github", githubRoute)
-
 // get router from frontend
 app.use("/api/Comment", commentRoute);
 

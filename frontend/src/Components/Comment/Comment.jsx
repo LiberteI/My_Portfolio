@@ -2,7 +2,7 @@ import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
 import googleIcon from '../../assets/google.png';
 import linkedinIcon from '../../assets/linkedin.png';
-import githubIcon from '../../assets/github.png';
+
 
 import './Comment.css'
 import { useEffect } from 'react'
@@ -153,7 +153,7 @@ const Comment = () => {
                     <h3 className="comment-auth-title">Login With ...</h3>
                     <img onClick={requestGoogleAuth} className="auth-icon-button" src={googleIcon} alt="Google" />
                     <img onClick={requestLinkedInAuth} className="auth-icon-button" src={linkedinIcon} alt="LinkedIn" />
-                    <img onClick={requestGitHubAuth} className="auth-icon-button" src={githubIcon} alt="GitHub" />
+        
                 </div>
                 }
                 
