@@ -1,21 +1,86 @@
-My Portfolio
+# 🎮 My Portfolio
 
-Overview:
-This project will be kept updating tho i finished the MVP on Dec 26 2025.
-There are several sections in the page. HomePage, About, Project(CS), Performance(Music) Contact, Testimonial.
-I created a gamified homepage for greeting, replicating a retro game vibe. NPC can update its animation based on timer or user click. After click, it gives a thumbup and show 3 social links of mine.
-There is a beautiful parallax background with a side scrolling sky. Nav bar can hide itself if user is not at the top of the page. buttons are functioning to scroll to designated places.
+## 📌 Overview
+This is my personal portfolio website. The MVP was completed on **Dec 26, 2025**, and the project will continue to evolve as I add features, polish interactions, and showcase new work.
 
-The about page shows a overview of my journey and interest. I also list all my tech stack here.
+This site brings together **software engineering**, **game design**, and **music performance**, with a strong emphasis on interactivity and user experience.
 
-Next I have a My Project. GitHub link is shared with description and clickable img that gives a route to the project's detail page. User can download build or watch anything relevant.
+---
 
-After that i have a section to showcase my music journey(public performances/musical arrangements)
+## 🏠 Home
+A **gamified homepage** inspired by retro games.
 
-Moreover, I have a Get In Touch page, where user can access my email or linkedin. User can also send me a quick message by filling the form. i will receive an email from this.
+- 🎭 **Interactive NPC**
+  - Animation updates based on **timer** or **user interaction**
+  - On click: gives a **thumbs-up animation** and reveals **three social links**
 
-Last but not least: Testimonial. I have an npc to give user hints to leave comments. but before that user must login using google or Linkedin. User will go to a shared database. if multiple accounts use the same email, there will not be any duplicate users.
+- 🌌 **Parallax Background**
+  - Side-scrolling sky for depth and motion
+  - Retro game atmosphere
 
-Comments will be displayed on at the same place. 
-After logging in, user can click on Leave A Comment button, where user is redirected to a form. 
-If this user is admin, form will also show all the comments, which user can decide which to show. If user is not admin, user can only submit a comment.
+- 🧭 **Navigation**
+  - Auto-hiding navbar when scrolling down
+  - Buttons smoothly scroll to designated sections
+
+---
+
+## 👤 About
+An overview of my journey, interests, and long-term direction.
+
+- Personal background and development focus
+- Complete **tech stack**, organized by category
+
+---
+
+## 💻 Projects (Computer Science)
+A showcase of my software and game development work.
+
+- Each project includes:
+  - 📄 Project description
+  - 🔗 GitHub repository link
+  - 🖼️ Clickable preview image
+
+- Project detail pages allow users to:
+  - 📥 Download builds
+  - 🎥 Watch demos
+  - 📚 Access related resources
+
+---
+
+## 🎹 Performance (Music)
+A dedicated section for my music journey.
+
+- Public performances
+- Musical arrangements
+- Exploration of the connection between **technology and music**
+
+---
+
+## 📬 Get In Touch
+Multiple ways to reach me.
+
+- 📧 Email
+- 💼 LinkedIn
+- ✍️ Contact form for quick messages
+  - Submissions trigger an **email notification** to me
+
+---
+
+## 💬 Testimonials
+An authenticated and moderated testimonial system.
+
+- 🤖 NPC guides users on how to leave comments
+- 🔐 Login required via **Google or LinkedIn**
+- 🗄️ Shared database with **no duplicate users per email**
+
+### User Capabilities
+- Submit a testimonial
+- View approved comments displayed on the page
+
+### Admin Capabilities
+- View all submitted comments
+- Approve or hide testimonials before display
+
+---
+
+
