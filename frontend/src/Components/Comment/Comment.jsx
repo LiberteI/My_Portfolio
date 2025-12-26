@@ -21,12 +21,12 @@ const Comment = () => {
     }
 
     const requestLinkedInAuth = () => {
-
+        window.location.href = `${apiBase}/auth/linkedin`;
     }
 
-    const requestGitHubAuth = () => [
-
-    ]
+    const requestGitHubAuth = () => {
+        window.location.href = `${apiBase}/auth/github`;
+    }   
     
     const populateComments = async () => {
 

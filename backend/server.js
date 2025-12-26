@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import contactRoutes from "./contact/route.js";
 import youtubeRoutes from "./Youtube/route.js";
 import googleRoute from "./ThirdParty/GoogleRoute.js"
+import linkedinRoute from "./ThirdParty/LinkedinRoute.js"
+// import githubRoute from "./ThirdParty/githubRoute.js"
 
 import commentRoute from "./Comment/CommentRoute.js"
 import userRoute from "./User/UserRoute.js"
@@ -34,6 +36,10 @@ app.use("/api/youtube", youtubeRoutes);
 
 // get route from frontend
 app.use("/auth/google", googleRoute);
+
+app.use("/auth/linkedin", linkedinRoute);
+
+// app.use("auth/github", githubRoute)
 
 // get router from frontend
 app.use("/api/Comment", commentRoute);

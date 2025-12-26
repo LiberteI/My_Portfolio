@@ -23,7 +23,6 @@ export const googleAuthStart = (req, res) => {
 // after passing auth start
 export const googleAuthCallback = async (req, res) => {
     try {
-        console.log(">>> googleAuthCallback HIT");
 
         // ticket from google
         const { code } = req.query;
@@ -56,17 +55,8 @@ export const googleAuthCallback = async (req, res) => {
             return res.status(502).send(`Token exchange failed: ${errorText}`);
         }
 
-        console.log("Token exchange OK");
-
         // get data: email, google userID, name, expiration, audience
         const { id_token } = await tokenRes.json();
-
-        // TODO:
-        // 1. verify id_token *
-        // 2. find/create user *
-        // 3. issue JWT or session 
-
-        console.log("id_token exists:", Boolean(id_token));
 
         const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
         
@@ -80,8 +70,6 @@ export const googleAuthCallback = async (req, res) => {
         if (!googlePayLoad) {
             return res.status(400).send("Invalid ID token");
         }
-
-        console.log("Google payload:", googlePayLoad);
 
         // extract data from token
         const { name, picture, sub, email, email_verified} = googlePayLoad;
@@ -102,11 +90,7 @@ export const googleAuthCallback = async (req, res) => {
 
         const isProd = process.env.NODE_ENV === "production";
         const frontendOrigin = isProd ? process.env.FRONTEND_ORIGIN  : "http://localhost:5173";
-        console.log("googleAuthCallback env:", {
-            nodeEnv: process.env.NODE_ENV,
-            isProd,
-            frontendOrigin,
-        });
+        
         res.cookie("auth", user._id.toString() ,{
             httpOnly: true,
             secure: isProd,
