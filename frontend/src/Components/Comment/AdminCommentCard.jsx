@@ -77,10 +77,11 @@ const AdminCommentCard = ({ commentData, onChange }) => {
 
     return (
         <div className="comment-card">
-    
-            {avatarSrc && <img src={avatarSrc} alt={displayName} />}
-            <h3>{displayName}</h3>
-            {subtitle && <p className="comment-subtitle">{subtitle}</p>}
+            <div className="comment-card-header">
+                {avatarSrc && <img src={avatarSrc} alt={displayName} />}
+                <h3>{displayName}</h3>
+                {subtitle && <p className="comment-subtitle">{subtitle}</p>}
+            </div>
 
             {!isEditing 
                 &&
