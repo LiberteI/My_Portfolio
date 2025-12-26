@@ -157,17 +157,12 @@ const Comment = () => {
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
                 {!isLoggedIn &&
-                <div>
-                    <h3>Continue with ...</h3>
-                    <button onClick={requestGoogleAuth} className="comment-button">
-                        <img src={googleIcon} alt="google" />
-                    </button>
-                    <button onClick={requestLinkedInAuth} className="comment-button">
-                        <img src={linkedinIcon} alt="linkedin" />
-                    </button>
-                    <button onClick={requestGitHubAuth} className="comment-button">
-                        <img src={githubIcon} alt="github" />
-                    </button>
+                
+                <div className="comment-auth-buttons">
+                    <h3 className="comment-auth-title">Login With ...</h3>
+                    <img onClick={requestGoogleAuth} className="auth-icon-button" src={googleIcon} alt="Google" />
+                    <img onClick={requestLinkedInAuth} className="auth-icon-button" src={linkedinIcon} alt="LinkedIn" />
+                    <img onClick={requestGitHubAuth} className="auth-icon-button" src={githubIcon} alt="GitHub" />
                 </div>
                 }
                 
