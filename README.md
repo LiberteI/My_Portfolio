@@ -111,19 +111,19 @@ An authenticated and moderated testimonial system.
 
 ## ⚙️ Setup Instructions
 
-# 1️⃣ Clone the Repository
+### 1️⃣ Clone the Repository
 - git clone https://github.com/LiberteI/My_Portfolio.git
 - cd Portfolio
-# 2️⃣ Environment Variables
+### 2️⃣ Environment Variables
 - Locate the .env.example file
 
 - Create a .env file and fill in the required values
 
-# 3️⃣ Run the Frontend
+### 3️⃣ Run the Frontend
 - cd frontend
 - npm install
 - npm run dev
-# 4️⃣ Run the Backend
+### 4️⃣ Run the Backend
 - Open a new terminal:
 - cd backend
 - npm install
