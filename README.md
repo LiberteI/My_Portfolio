@@ -130,5 +130,24 @@ An authenticated and moderated testimonial system.
 - node server.js
 **The frontend and backend will now be running locally.**
 
+## 🧪 Environment Variables (`.env.example`)
+YT_API_KEY=
+VIVA_LA_VIDA_ID=
+FLOWER_DANCE_ID=
+
+MONGO_URI=
+
+RESEND_API_KEY=
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=
+
+FRONTEND_ORIGIN=
+NODE_ENV=development
+
+LINKEDIN_CLIENT_ID=
+LINKEDIN_CLIENT_SECRET=
+LINKEDIN_CALLBACK_URL=
 
 
