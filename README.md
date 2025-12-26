@@ -83,4 +83,29 @@ An authenticated and moderated testimonial system.
 
 ---
 
+## 🛠️ Tech Stack
+
+### Core Stack
+- **MERN Stack**
+  - **MongoDB** – database
+  - **Express.js** – backend framework
+  - **React** – frontend UI
+  - **Node.js** – server runtime
+
+### Game & Interactive Systems
+- **Unity**
+  - Tilemap system for 2D level design and world building
+
+### APIs & Integrations
+- **Google API** – authentication and user identity
+- **LinkedIn API** – authentication and profile access
+- **YouTube API** – video and performance content integration
+
+### Infrastructure & Services
+- **Render** – deployment and hosting
+- **Resend** – email delivery for contact form and notifications
+
+### Languages
+- **JavaScript**
+- **CSS**
 
