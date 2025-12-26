@@ -14,7 +14,7 @@ const CommentCard = ({ commentData }) => {
                 <h3>{displayName}</h3>
                 {subtitle && <p className="comment-subtitle">{subtitle}</p>}
             </div>
-            <p>{body}</p>
+            <p className="comment-body">{body}</p>
         </div>
     );
 }

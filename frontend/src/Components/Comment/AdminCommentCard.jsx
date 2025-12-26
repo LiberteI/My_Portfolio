@@ -88,7 +88,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                     <p className={`comment-visibility ${dataDraft.shouldDisplay ? 'is-visible' : 'is-hidden'}`}>
                         {dataDraft.shouldDisplay ? 'Visible' : 'Invisible'}
                     </p>
-                    <p>{body}</p>
+                    <p className="comment-body">{body}</p>
                 </>
             }
             {isEditing
