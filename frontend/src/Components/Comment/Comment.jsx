@@ -139,7 +139,7 @@ const Comment = () => {
     return (
         <section className="comment-container">
             <h1>Testimonial</h1>
-            {/*<div className='comment-bubble'>{typedText}</div>*/}
+            <div className='comment-bubble'>{typedText}</div>
             
 
             <div className="comment-cta">
