@@ -76,6 +76,8 @@
     border-radius: 10px;
     object-fit: cover;
     align-self: center;
+    order: 3;
+    margin-top: auto;
 }
 
 .performance-date{
@@ -83,6 +85,17 @@
     letter-spacing: 0.05rem;
     opacity: 0.7;
     margin-bottom: 1rem;
+}
+
+.performance-card p{
+    margin: 0.25rem 0 0;
+    line-height: 1.4;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    order: 2;
 }
 
 .performance-card:hover{

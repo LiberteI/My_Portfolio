@@ -12,7 +12,7 @@ export const getVideo = async (req, res) => {
             process.env.DISTANCE_ID,
             process.env.TANGO_ID,
             process.env.PATHETIQUE_2ND_ID,
-            process.env.ID_RATHER_PRETEND_ID,
+            
         ].filter(Boolean)
 
         const idParam = videoIDs.join(',')
