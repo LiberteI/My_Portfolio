@@ -9,6 +9,10 @@ export const getVideo = async (req, res) => {
         const videoIDs = [
             process.env.VIVA_LA_VIDA_ID,
             process.env.FLOWER_DANCE_ID,
+            process.env.DISTANCE_ID,
+            process.env.TANGO_ID,
+            process.env.PATHETIQUE_2ND_ID,
+            process.env.ID_RATHER_PRETEND_ID,
         ].filter(Boolean)
 
         const idParam = videoIDs.join(',')
