@@ -331,7 +331,7 @@
 
 @media (max-width: 820px){
     .comment-bubble{
-        top: 27%;
-        left: 50%;
+        top: 10%;
+        left: 10%;
     }
 }
