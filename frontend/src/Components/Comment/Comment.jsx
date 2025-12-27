@@ -26,9 +26,6 @@ const Comment = () => {
         window.location.href = `${apiBase}/auth/linkedin`;
     }
 
-    const requestGitHubAuth = () => {
-        window.location.href = `${apiBase}/auth/github`;
-    }   
     
     const populateComments = async () => {
 
@@ -142,8 +139,8 @@ const Comment = () => {
     return (
         <section className="comment-container">
             <h1>Testimonial</h1>
-
-            <div className='comment-bubble'>{typedText}</div>
+            {/*<div className='comment-bubble'>{typedText}</div>*/}
+            
 
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
