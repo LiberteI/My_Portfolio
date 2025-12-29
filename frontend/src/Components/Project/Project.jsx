@@ -2,6 +2,7 @@ import "./Project.css"
 import ProjectCard from "./ProjectCard"
 import projectThumb from "../../assets/ProjectThumbnail/KnightThumbnail.png"
 import deadzoneThumb from "../../assets/ProjectThumbnail/deadzone_thumbnail.png"
+import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 
 const projects = [
     {
@@ -24,7 +25,41 @@ const projects = [
         skills: "Unity · C# · Finite State Machines (FSM) · Enemy & Ally AI · Event-Driven Architecture · Gameplay Systems Design",
         description:"Designing and developing an indie 2D post-apocalyptic zombie survival shooter focused on responsive combat, barricade defense, and intelligent AI systems. Built modular, state-driven player and enemy behaviors using clean architecture to create emergent gameplay, tactical depth, and a polished, skill-based player experience.",
         githubLink:"https://github.com/LiberteI/DeadZone",
+        isSoloProject: false
+    },
+    {
+        title: "Shape Morphing",
+        slug: "shape-morphing",
+        image: shapeMorphingGif,
+        topic: "Computer Animation",
+        skills: "",
+        description:"",
+        githubLink:"https://github.com/LiberteI/Computer_Animation",
+        canLink: false,
         isSoloProject: true
+
+    },
+    {
+        title: "Astronomical Simulation",
+        slug: "astronomical-simulation",
+        image: null,
+        topic: "Computer Animation",
+        skills: "",
+        description:"",
+        githubLink:"https://github.com/LiberteI/Astronomical_System",
+        isSoloProject: true
+
+    },
+    {
+        title: "Ocean Simulation",
+        slug: "ocean simulation",
+        image: null,
+        topic: "Computer Animation",
+        skills: "",
+        description:"",
+        githubLink:"https://github.com/LiberteI/Submarine",
+        isSoloProject: true
+
     }
     
 
