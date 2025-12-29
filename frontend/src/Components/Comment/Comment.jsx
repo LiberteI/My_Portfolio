@@ -137,7 +137,7 @@ const Comment = () => {
     }, [currentBubbleText]);
 
     return (
-        <section className="comment-container">
+        <section className="comment-container" id="testimonial">
             <h1>Testimonial</h1>
             <div className='comment-bubble'>{typedText}</div>
             

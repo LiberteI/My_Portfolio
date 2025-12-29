@@ -34,8 +34,9 @@ const HomePage = () => {
       <About />
       <Project />
       <Performances />
-      <Contact />
       <Comment />
+      <Contact />
+      
     </div>
   )
 }
