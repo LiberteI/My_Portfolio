@@ -81,7 +81,7 @@ const projects = [
         description:"Developed a 2D platformer during Global Game Jam 2025 in a 48-hour sprint. Implemented physics-based movement, a shrinking bubble survival mechanic, and dynamic bounce controls in Unity. Collaborated on original pixel art, animations, and an animated cutscene, rapidly prototyping gameplay systems under tight time constraints.",
         githubLink:"https://github.com/LydiaV2001/GGJ2025",
         isSoloProject: false,
-        canLink: true
+        canLink: false
     },
     {
         title: "Easy Shop",
