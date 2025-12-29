@@ -6,6 +6,12 @@ import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
 import bubbleThumb from "../../assets/ProjectThumbnail/Bubble.png"
+import agentThumb from "../../assets/ProjectThumbnail/agent.png"
+import supervisedLearningThumb from "../../assets/supervisedLearning.png"
+import dalTutorThumb from "../../assets/daltutor.png"
+import iceSpyThumb from "../../assets/iceSpy.png"
+import susThumb from "../../assets/sus.png"
+import portfolioThumb from "../../assets/portfolio.png"
 
 const projects = [
     {
@@ -78,7 +84,7 @@ const projects = [
     {
         title: "Easy Shop",
         slug: "easy-shop",
-        image: null,
+        image: agentThumb,
         topic: "Agentic AI",
         skills: "",
         description: "",
@@ -89,7 +95,7 @@ const projects = [
     {
         title: "Dal Tutor",
         slug: "dal-tutor",
-        image: null,
+        image: dalTutorThumb,
         topic: "Software Development",
         skills: "",
         description: "",
@@ -100,7 +106,7 @@ const projects = [
     {
         title: "My Portfolio",
         slug: "my-portfolio",
-        image: null,
+        image: portfolioThumb,
         topic: "Full-Stack Development",
         skills: "",
         description: "",
@@ -111,7 +117,7 @@ const projects = [
     {
         title: "Ice Spy",
         slug: "ice-spy",
-        image: null,
+        image: iceSpyThumb,
         topic: "Machine Learning",
         skills: "",
         description: "",
@@ -122,7 +128,7 @@ const projects = [
     {
         title: "Sustainable Community",
         slug: "sustainable-community",
-        image: null,
+        image: susThumb,
         topic: "Full-Stack Development",
         skills: "",
         description: "",
@@ -133,7 +139,7 @@ const projects = [
     {
         title: "Housing Price Predictor",
         slug: "housing-price-predictor",
-        image: null,
+        image: supervisedLearningThumb,
         topic: "Supervised Learning",
         skills: "",
         description: "",
