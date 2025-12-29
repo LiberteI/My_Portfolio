@@ -74,7 +74,74 @@ const projects = [
         githubLink:"https://github.com/LydiaV2001/GGJ2025",
         isSoloProject: false
 
+    },
+    {
+        title: "Easy Shop",
+        slug: "easy-shop",
+        image: null,
+        topic: "Agentic AI",
+        skills: "",
+        description: "",
+        githubLink: "https://github.com/LiberteI",
+        isSoloProject: true,
+        canLink: false
+    },
+    {
+        title: "Dal Tutor",
+        slug: "dal-tutor",
+        image: null,
+        topic: "Software Development",
+        skills: "",
+        description: "",
+        githubLink: "https://github.com/LiberteI/dalTutor",
+        isSoloProject: false,
+        canLink: false
+    },
+    {
+        title: "My Portfolio",
+        slug: "my-portfolio",
+        image: null,
+        topic: "Full-Stack Development",
+        skills: "",
+        description: "",
+        githubLink: "https://github.com/LiberteI/My_Portfolio",
+        isSoloProject: true,
+        canLink: false
+    },
+    {
+        title: "Ice Spy",
+        slug: "ice-spy",
+        image: null,
+        topic: "Machine Learning",
+        skills: "",
+        description: "",
+        githubLink: "https://github.com/hongh233/NASA",
+        isSoloProject: false,
+        canLink: false
+    },
+    {
+        title: "Sustainable Community",
+        slug: "sustainable-community",
+        image: null,
+        topic: "Full-Stack Development",
+        skills: "",
+        description: "",
+        githubLink: "https://github.com/LiberteI/Watt_the_Hack",
+        isSoloProject: false,
+        canLink: false
+    },
+    {
+        title: "Housing Price Predictor",
+        slug: "housing-price-predictor",
+        image: null,
+        topic: "Supervised Learning",
+        skills: "",
+        description: "",
+        githubLink: "https://github.com/LiberteI/Supervised-Learning-Workshop",
+        isSoloProject: true,
+        canLink: false
     }
+
     
 
 ]
