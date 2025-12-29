@@ -36,7 +36,12 @@ const BubbleBiologistGame = () => {
           src="/Bubble-Biologist/index.html"
           width="1100"
           height="720"
-          style={{ border: "none", maxWidth: '100%', maxHeight: '80vh', aspectRatio: '11 / 7', overflow: 'hidden' }}
+          style={{
+            border: "none",
+            width: 'min(1100px, 90vw)',
+            height: 'min(720px, 70vh)',
+            overflow: 'hidden'
+          }}
           scrolling="no"
           allowFullScreen
           title="Bubble Biologist"
