@@ -4,8 +4,8 @@ import github from "../../assets/devTools/github.png"
 
 const ProjectCard = ({ projectData }) => {
 
-  const { title, image, slug, canLink, description, topic, skills, githubLink } = projectData
-  
+  const { title, image, slug, canLink, description, topic, skills, githubLink, isSoloProject } = projectData
+  const projectTypeLabel = isSoloProject ? 'Solo Project' : 'Group Project'
   if (canLink) {
     return (
     <div className="project-card">
@@ -19,7 +19,12 @@ const ProjectCard = ({ projectData }) => {
         <div className='right-column'>
             <h2>{title}</h2>
 
-            <p className='project-topic'>{topic}</p>
+            <div className='project-meta'>
+              <p className='project-topic'>{topic}</p>
+              <span className={`project-badge ${isSoloProject ? 'project-badge--solo' : 'project-badge--group'}`}>
+                {projectTypeLabel}
+              </span>
+            </div>
 
             <p className='project-skills'>{skills}</p>
 
@@ -50,7 +55,12 @@ const ProjectCard = ({ projectData }) => {
         <div className='right-column'>
             <h2>{title}</h2>
 
-            <p className='project-topic'>{topic}</p>
+            <div className='project-meta'>
+              <p className='project-topic'>{topic}</p>
+              <span className={`project-badge ${isSoloProject ? 'project-badge--solo' : 'project-badge--group'}`}>
+                {projectTypeLabel}
+              </span>
+            </div>
 
             <p className='project-skills'>{skills}</p>
 
