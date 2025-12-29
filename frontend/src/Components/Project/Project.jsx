@@ -14,7 +14,7 @@ const projects = [
         skills: "Unity · Tilemap · Cinemachine · Physics & Raycasting · Singleton Architecture · State-Driven Systems",
         description: "A dark 2D action game inspired by Souls-like combat, following a fallen knight driven by loss and revenge. The game features deliberate, stamina-based melee combat, multi-phase boss encounters with distinct attack patterns, and adaptive enemy behaviors. Atmospheric parallax-scrolled environments, and cinematic animations.",
         githubLink: "https://github.com/LiberteI/KnightOfCinders_firstProject",
-        isSoloProject: false
+        isSoloProject: true
     },
     {
         title: "Deadzone",
@@ -25,15 +25,15 @@ const projects = [
         skills: "Unity · C# · Finite State Machines (FSM) · Enemy & Ally AI · Event-Driven Architecture · Gameplay Systems Design",
         description:"Designing and developing an indie 2D post-apocalyptic zombie survival shooter focused on responsive combat, barricade defense, and intelligent AI systems. Built modular, state-driven player and enemy behaviors using clean architecture to create emergent gameplay, tactical depth, and a polished, skill-based player experience.",
         githubLink:"https://github.com/LiberteI/DeadZone",
-        isSoloProject: false
+        isSoloProject: true
     },
     {
         title: "Shape Morphing",
         slug: "shape-morphing",
         image: shapeMorphingGif,
         topic: "Computer Animation",
-        skills: "",
-        description:"",
+        skills: "skills: C++ · OpenGL (GLUT) · Vertex-Based Shape Morphing · Linear Interpolation (LERP) · Modular OOP Design · Double-Buffered Rendering",
+        description:"Built a C++ OpenGL application that morphs custom shapes through vertex resampling and linear interpolation. Implemented double-buffered rendering, event-driven mouse input, and a clean modular architecture. Refactored a monolithic prototype into scalable components, gaining practical insight into the OpenGL pipeline and real-world rendering constraints, and improved maintainability, performance, and clarity.",
         githubLink:"https://github.com/LiberteI/Computer_Animation",
         canLink: false,
         isSoloProject: true
