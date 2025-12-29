@@ -19,9 +19,29 @@ const App = () => {
 
       <Routes>
         <Route path='/' element={<HomePage />}/>
-        <Route path='projects/knight-of-cinders' element={<KnightGame/>}/>
+        <Route path='/projects/knight-of-cinders' element={<KnightGame/>}/>
+        <Route path='/projects/bubble-biologist' element={<BubbleBiologistGame/>}/>
         <Route path='/comment-form' element={<CommentFormPathWay/>}/>
       </Routes>
+    </div>
+  )
+}
+
+const BubbleBiologistGame = () => {
+  return (
+    <div className='app-container'>
+      <Navbar/>
+      <div style={{ display: 'grid', placeItems: 'center', padding: '2rem' }}>
+        <iframe
+          src="/Bubble-Biologist/index.html"
+          width="1100"
+          height="720"
+          style={{ border: "none", maxWidth: '100%', maxHeight: '80vh', aspectRatio: '11 / 7', overflow: 'hidden' }}
+          scrolling="no"
+          allowFullScreen
+          title="Bubble Biologist"
+        />
+      </div>
     </div>
   )
 }
