@@ -30,7 +30,7 @@ const projects = [
         slug: "housing-price-predictor",
         image: supervisedLearningThumb,
         topic: "Supervised Learning",
-        skills: "Supervised Learning · Regression Modeling · Data Preprocessing · scikit-learn Pipelines · Model Evaluation · Data Visualization",
+        skills: "Supervised Learning · Regression Modeling · Data Preprocessing · Python · Model Evaluation · Data Visualization",
         description: "Completed an end-to-end supervised learning project predicting housing prices using real-world data. Built a reproducible scikit-learn pipeline covering data cleaning, preprocessing, regression modeling, evaluation with RMSE and MAE, visualization, and result interpretation across the full machine learning workflow.",
         githubLink: "https://github.com/LiberteI/Supervised-Learning-Workshop",
         isSoloProject: true,
@@ -54,7 +54,7 @@ const projects = [
         image: deadzoneThumb,
         canLink: false,
         topic: "Game Development",
-        skills: "Unity · C# · Finite State Machines (FSM) · Enemy & Ally AI · Event-Driven Architecture · Gameplay Systems Design",
+        skills: "Unity · C# · Shaders · Enemy & Ally AI · Event-Driven Architecture · Gameplay Systems Design",
         description:"Designing and developing an indie 2D post-apocalyptic zombie survival shooter focused on responsive combat, barricade defense, and intelligent AI systems. Built modular, state-driven player and enemy behaviors using clean architecture to create emergent gameplay, tactical depth, and a polished, skill-based player experience.",
         githubLink:"https://github.com/LiberteI/DeadZone",
         isSoloProject: true
