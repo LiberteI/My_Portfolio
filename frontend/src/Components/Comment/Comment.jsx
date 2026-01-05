@@ -140,8 +140,8 @@ const Comment = () => {
         <section className="comment-container" id="testimonial">
             <h1>Testimonial</h1>
             <div className='comment-bubble'>{typedText}</div>
-            
-
+            {status === 'loading' && <p className='comment-loading'>Loading Comments. It may take a second.</p>}
+            {status === 'error' && <p className='comment-error'>Fail to load commments. Please refresh the page!</p>}
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
                 {!isLoggedIn &&

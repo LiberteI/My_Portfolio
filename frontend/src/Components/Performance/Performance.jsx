@@ -48,8 +48,8 @@ const Performance = () => {
     <section className='performance' id='performance'>
       <h1>My Performances</h1>
 
-      {status === 'loading' && <p className='performance-loading'>Loading Performances</p>}
-      {status === 'error' && <p className='performance-error'>Fail to load performances</p>}
+      {status === 'loading' && <p className='performance-loading'>Loading Performances. It may take a second.</p>}
+      {status === 'error' && <p className='performance-error'>Fail to load performances. Please refresh the page!</p>}
 
       <div className='performance-grid'>
         {videos.map((video) => (

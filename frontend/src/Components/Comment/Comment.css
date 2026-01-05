@@ -153,6 +153,22 @@
     margin: 0 auto;
 }
 
+.comment-loading,
+.comment-error{
+    text-align: center;
+    margin: 1rem auto;
+    width: 100%;
+    font-weight: 600;
+}
+
+.comment-loading{
+    color: #9be8ff;
+}
+
+.comment-error{
+    color: #fca5a5;
+}
+
 @media (max-width: 1100px){
     .comment-cta{
         position: static;

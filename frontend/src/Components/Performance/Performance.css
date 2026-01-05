@@ -39,6 +39,22 @@
     justify-items: center;
 }
 
+.performance-loading,
+.performance-error{
+    text-align: center;
+    margin: 1rem auto;
+    width: 100%;
+    font-weight: 600;
+}
+
+.performance-loading{
+    color: #9be8ff;
+}
+
+.performance-error{
+    color: #fca5a5;
+}
+
 @media (min-width: 768px) {
     .performance-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
