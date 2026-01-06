@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import './CommentCard.css'
 
 const AdminCommentCard = ({ commentData, onChange }) => {
@@ -14,7 +14,7 @@ const AdminCommentCard = ({ commentData, onChange }) => {
     const handleDelete = async () => {
         try{
             const response = await fetch(`${apiBase}/api/Comment/admin/delete-comment`, {
-                method: "PATCH",
+                method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({ 
@@ -28,7 +28,8 @@ const AdminCommentCard = ({ commentData, onChange }) => {
                 return;
             }
 
-            onChange?.();
+            onChange();
+            console.log("succeeded in deleting comment");
         } catch (error){
             console.error(error);
         }
@@ -64,6 +65,14 @@ const AdminCommentCard = ({ commentData, onChange }) => {
             shouldDisplay
         }
     )
+    // keep local draft in sync when the server sends updated comment data
+    useEffect(() => {
+        setDataDraft({
+            comment,
+            shouldDisplay
+        });
+    }, [comment, shouldDisplay]);
+
     const startEditing = () => {
         setDataDraft({comment, shouldDisplay})
         setIsEditing(true);
@@ -89,8 +98,8 @@ const AdminCommentCard = ({ commentData, onChange }) => {
             {!isEditing 
                 &&
                 <>
-                    <p className={`comment-visibility ${dataDraft.shouldDisplay ? 'is-visible' : 'is-hidden'}`}>
-                        {dataDraft.shouldDisplay ? 'Visible' : 'Invisible'}
+                    <p className={`comment-visibility ${shouldDisplay ? 'is-visible' : 'is-hidden'}`}>
+                        {shouldDisplay ? 'Visible' : 'Invisible'}
                     </p>
                     <p className="comment-body">{body}</p>
                 </>

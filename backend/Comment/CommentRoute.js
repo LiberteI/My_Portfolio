@@ -15,6 +15,6 @@ router.get("/admin/comments", requireAuth, requireAdmin, getAllComments);
 
 router.patch("/admin/edit-comment", requireAuth, requireAdmin, moderateComment);
 
-router.patch("/admin/delete-comment", requireAuth, requireAdmin, softDeleteComment);
+router.delete("/admin/delete-comment", requireAuth, requireAdmin, softDeleteComment);
 
 export default router;
