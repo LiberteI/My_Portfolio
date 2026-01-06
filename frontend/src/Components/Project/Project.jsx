@@ -170,8 +170,7 @@ const Project = () => {
                     <ProjectCard 
                         key={project.slug} 
                         projectData={project}
-                    />
-                        
+                    />     
                 ))}
             </div>
 

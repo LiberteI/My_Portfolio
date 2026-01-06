@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { submitComment, getComments, getAllComments, moderateComment, hardDeleteComment} from "./CommentController.js";
+import { submitComment, getComments, getAllComments, moderateComment, softDeleteComment} from "./CommentController.js";
 import { requireAdmin, requireAuth } from "../Middleware/auth.js";
 
 
@@ -15,6 +15,6 @@ router.get("/admin/comments", requireAuth, requireAdmin, getAllComments);
 
 router.patch("/admin/edit-comment", requireAuth, requireAdmin, moderateComment);
 
-router.delete("/admin/delete-comment", requireAuth, requireAdmin, hardDeleteComment);
+router.patch("/admin/delete-comment", requireAuth, requireAdmin, softDeleteComment);
 
 export default router;

@@ -14,6 +14,9 @@ const Comment = () => {
 
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
     const [comments, setComments] = useState([]);
+    const [commentStatus, setCommentStatus] = useState(null);
+    const [userStatus, setUserStatus] = useState(null);
+
     const handleComment = () => {
         navigate("/comment-form");
     };
@@ -29,7 +32,7 @@ const Comment = () => {
     
     const populateComments = async () => {
 
-        setStatus('loading');
+        setCommentStatus('loading');
         try{
             const response = await fetch(`${apiBase}/api/Comment/get-comment`, {
                 method: "GET",
@@ -44,11 +47,11 @@ const Comment = () => {
             // set to [] if undefined or null
             setComments(data || []);
 
-            setStatus('success');
+            setCommentStatus('success');
 
         } catch (error){
             console.error(error);
-            setStatus("error");
+            setCommentStatus("error");
             setComments([]);
         }
     }
@@ -58,12 +61,8 @@ const Comment = () => {
         populateComments();
     }, []);
 
-    const [status, setStatus] = useState(null);
-    const [userStatus, setUserStatus] = useState(null);
-
     const getUser = async (event) => {
         event?.preventDefault?.();
-        setStatus("loading");
 
         try{
             const response = await fetch(`${apiBase}/api/me`, {
@@ -72,17 +71,14 @@ const Comment = () => {
             });
             if(response.status === 401){
                 setUserStatus(null);
-                setIsLoggedIn(false);
                 return;
             }
 
             const data = await response.json();
 
-            setStatus("success");
             setUserStatus({ id: data._id || data.id || null, isAdmin: Boolean(data.isAdmin) });
         } catch (error){
             
-            setStatus('error');
             setUserStatus(null);
         }
     };
@@ -94,7 +90,6 @@ const Comment = () => {
                 credentials: "include",
             });
             setUserStatus({ id: null, isAdmin: false });
-            setIsLoggedIn(false);
         } catch (error){
             console.error("logout error", error);
         }
@@ -140,14 +135,14 @@ const Comment = () => {
         <section className="comment-container" id="testimonial">
             <h1>Testimonial</h1>
             <div className='comment-bubble'>{typedText}</div>
-            {status === 'loading' && <p className='comment-loading'>Loading Comments. It may take a second.</p>}
-            {status === 'error' && <p className='comment-error'>Fail to load commments. Please refresh the page!</p>}
+            {commentStatus === 'loading' && <p className='comment-loading'>Loading Comments. It may take a second.</p>}
+            {commentStatus === 'error' && <p className='comment-error'>Fail to load commments. Please refresh the page!</p>}
             <div className="comment-cta">
                 <img className="comment-illustration" src={samurai} alt="samurai animation" />
                 {!isLoggedIn &&
                 
                 <div className="comment-auth-buttons">
-                    <h3 className="comment-auth-title">Login With ...</h3>
+                    <h3 className="comment-auth-title">Continue With ...</h3>
                     <img onClick={requestGoogleAuth} className="auth-icon-button" src={googleIcon} alt="Google" />
                     <img onClick={requestLinkedInAuth} className="auth-icon-button" src={linkedinIcon} alt="LinkedIn" />
         

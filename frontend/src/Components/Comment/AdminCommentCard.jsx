@@ -14,10 +14,13 @@ const AdminCommentCard = ({ commentData, onChange }) => {
     const handleDelete = async () => {
         try{
             const response = await fetch(`${apiBase}/api/Comment/admin/delete-comment`, {
-                method: "DELETE",
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ commentId: commentID })
+                body: JSON.stringify({ 
+                    commentId: commentID, 
+                    updates: { shouldDisplay: false }
+                })
             });
 
             if(!response.ok){

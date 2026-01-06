@@ -67,17 +67,17 @@ export const moderateComment = async (req, res) => {
 }
 
 // DELETE
-export const hardDeleteComment = async (req, res) => {
+export const softDeleteComment = async (req, res) => {
     try{
         const commentId = req.body.commentId;
-
+        const updates = req.body.updates;
         if(!commentId){
             return res.status(400).json({error : "Missing Comment ID"});
         }
 
-        const deletedComment = await deleteComment(commentId);
+        const updatedComments = await editComment({ commentId, updates });
 
-        return res.status(200).json(deletedComment);
+        return res.status(200).json(updatedComments);
     } catch(error){
         return res.status(500).send("internal error in deleting comment");
     }
