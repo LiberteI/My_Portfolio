@@ -32,6 +32,19 @@ const Comment = () => {
         window.location.href = `${apiBase}/auth/linkedin`;
     }
 
+    const getStaticIcon = (identifier) => {
+        let fallbackAvatar = null;
+        if(identifier === "amelia"){
+            fallbackAvatar = ruiyangSuImg;
+        }
+        else if(identifier === "vikrantchaudhary"){
+            fallbackAvatar = vikrantImg;
+        }
+        else if(identifier === "garrysangha"){
+            fallbackAvatar = garryImg;
+        }
+        return fallbackAvatar;
+    }
     // loop through user data. get https code back 
     const updateCommentData = async (data) => {
         if(data === null){
@@ -60,21 +73,13 @@ const Comment = () => {
 
                     let fallbackAvatar = comment.author.avatar;
 
-                    if(normalisedName === "amelia"){
-                        fallbackAvatar = ruiyangSuImg;
-                    }
-                    else if(normalisedName === "vikrantchaudhary"){
-                        fallbackAvatar = vikrantImg;
-                    }
-                    else if(normalisedName === "garrysangha"){
-                        fallbackAvatar = garryImg;
-                    }
+                    fallbackAvatar = getStaticIcon(normalisedName);
 
                     updatedComment = {
                         ...comment,
                         author: {
                             ...comment.author,
-                            avatar: fallbackAvatar,
+                            avatar: fallbackAvatar ? fallbackAvatar : comment.author.avatar,
                         },
                     };
                 }
@@ -89,21 +94,13 @@ const Comment = () => {
 
                     let fallbackAvatar = comment.author.avatar;
 
-                    if(normalisedName === "amelia"){
-                        fallbackAvatar = ruiyangSuImg;
-                    }
-                    else if(normalisedName === "vikrantchaudhary"){
-                        fallbackAvatar = vikrantImg;
-                    }
-                    else if(normalisedName === "garrysangha"){
-                        fallbackAvatar = garryImg;
-                    }
+                    fallbackAvatar = getStaticIcon(normalisedName);
 
                     updatedComment = {
                         ...comment,
                         author: {
                             ...comment.author,
-                            avatar: fallbackAvatar,
+                            avatar: fallbackAvatar ? fallbackAvatar : comment.author.avatar,
                         },
                     };
                 
