@@ -2,6 +2,9 @@ import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
 import googleIcon from '../../assets/google.png';
 import linkedinIcon from '../../assets/linkedin.png';
+import garryImg from '../../assets/FallBackImg/garry.jpeg';
+import ruiyangSuImg from '../../assets/FallBackImg/ruiyangSu.jpeg';
+import vikrantImg from '../../assets/FallBackImg/vikrant.jpeg';
 
 
 import './Comment.css'
@@ -29,6 +32,86 @@ const Comment = () => {
         window.location.href = `${apiBase}/auth/linkedin`;
     }
 
+    // loop through user data. get https code back 
+    const updateCommentData = async (data) => {
+        if(data === null){
+            setComments([]);
+            return;
+        }
+
+        const updatedComments = [];
+
+        for(const comment of data){
+            let updatedComment = comment;
+
+            try{
+                const response = await fetch(comment.author.avatar, {
+                    method:"HEAD",
+                    credentials: "include",
+                });
+
+                if(!response.ok){
+                    // substitute avatar using static img
+                    
+                    // get name str
+                    const normalisedName = comment.name
+                        .toLowerCase()
+                        .replace(/\s+/g, '');
+
+                    let fallbackAvatar = comment.author.avatar;
+
+                    if(normalisedName === "amelia"){
+                        fallbackAvatar = ruiyangSuImg;
+                    }
+                    else if(normalisedName === "vikrantchaudhary"){
+                        fallbackAvatar = vikrantImg;
+                    }
+                    else if(normalisedName === "garrysangha"){
+                        fallbackAvatar = garryImg;
+                    }
+
+                    updatedComment = {
+                        ...comment,
+                        author: {
+                            ...comment.author,
+                            avatar: fallbackAvatar,
+                        },
+                    };
+                }
+
+            } catch{
+                // substitute avatar using static img
+                    
+                    // get name str
+                    const normalisedName = comment.name
+                        .toLowerCase()
+                        .replace(/\s+/g, '');
+
+                    let fallbackAvatar = comment.author.avatar;
+
+                    if(normalisedName === "amelia"){
+                        fallbackAvatar = ruiyangSuImg;
+                    }
+                    else if(normalisedName === "vikrantchaudhary"){
+                        fallbackAvatar = vikrantImg;
+                    }
+                    else if(normalisedName === "garrysangha"){
+                        fallbackAvatar = garryImg;
+                    }
+
+                    updatedComment = {
+                        ...comment,
+                        author: {
+                            ...comment.author,
+                            avatar: fallbackAvatar,
+                        },
+                    };
+                
+            }
+            updatedComments.push(updatedComment);
+        }
+        setComments(updatedComments);
+    }
     
     const populateComments = async () => {
 
@@ -44,9 +127,8 @@ const Comment = () => {
 
             const data = await response.json();
 
-            // set to [] if undefined or null
-            setComments(data || []);
-
+            await updateCommentData(data);
+            
             setCommentStatus('success');
 
         } catch (error){
@@ -106,6 +188,7 @@ const Comment = () => {
     const leaveAComment = "Leave A Comment!";
     const [currentBubbleText, setCurrentBubbleText] = useState(workedWithMe);
     const [typedText, setTypedText] = useState(workedWithMe);
+    
     useEffect(() => {
         const toggleBubbleText = setInterval(() => {
             setCurrentBubbleText(prev => prev === workedWithMe ? leaveAComment : workedWithMe);
