@@ -8,6 +8,7 @@ import Comment from './Components/Comment/Comment'
 import About from './Components/About/About'
 import Project from './Components/Project/Project'
 import CommentForm from './Components/Comment/CommentForm'
+import Experience from './Components/Experience/Experience'
 
 import KnightGameThumbnail from './assets/ProjectThumbnail/KnightThumbnail.png'
 import invocation from './assets/Animations/invocation.gif'
@@ -24,12 +25,21 @@ const App = () => {
         <Route path='/comment-form' element={<CommentFormPathWay/>}/>
         <Route path='/projects' element={<Projects />} />
         <Route path='/repertoire' element={<RepertoirePage />}/>
-        <Route path='contact' element={<ContactPage />}/>
+        <Route path='/contact' element={<ContactPage />}/>
+        <Route path='experience' element={<ExperiencePage />}/>
       </Routes>
     </div>
   )
 }
 
+const ExperiencePage = () => {
+  return (
+    <div className='app-container'>
+      <Navbar/>
+      <Experience />
+    </div>
+  )
+}
 const ContactPage = () => {
   return (
     <div className='app-container'>

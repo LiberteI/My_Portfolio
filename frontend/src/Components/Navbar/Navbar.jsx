@@ -105,7 +105,15 @@ const Navbar = () => {
           </li>
 
           <li className='navbar_item'>
-            <a href="/experience" onClick={(e) => handleClick(e, 'about')} aria-label='Go to about'>Experience</a>
+            <a 
+              href="/experience" 
+              onClick={(e) => {
+                e.preventDefault()
+                navigate('/experience')
+              }} 
+              aria-label='Go to experience'>
+              Experience
+            </a>
           </li>
 
           <li className='navbar_item'>
