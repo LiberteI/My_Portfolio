@@ -24,11 +24,20 @@ const App = () => {
         <Route path='/comment-form' element={<CommentFormPathWay/>}/>
         <Route path='/projects' element={<Projects />} />
         <Route path='/repertoire' element={<RepertoirePage />}/>
+        <Route path='contact' element={<ContactPage />}/>
       </Routes>
     </div>
   )
 }
 
+const ContactPage = () => {
+  return (
+    <div className='app-container'>
+      <Navbar/>
+      <Contact />
+    </div>
+  )
+}
 
 const HomePage = () => {
   return (
@@ -36,8 +45,6 @@ const HomePage = () => {
       <Navbar/>
       <Home />
       <About />
-      <Contact />
-
       <Comment />
       
     </div>

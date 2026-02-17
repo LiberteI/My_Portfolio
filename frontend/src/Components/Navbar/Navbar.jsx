@@ -105,6 +105,10 @@ const Navbar = () => {
           </li>
 
           <li className='navbar_item'>
+            <a href="/experience" onClick={(e) => handleClick(e, 'about')} aria-label='Go to about'>Experience</a>
+          </li>
+
+          <li className='navbar_item'>
             <a 
               href="/projects" 
               onClick={(e) => {
@@ -129,12 +133,21 @@ const Navbar = () => {
           </li>
 
           <li className='navbar_item'>
-            <a href="#testimonial" onClick={(e) => handleClick(e, 'testimonial')} aria-label='Go to testimonials'>Testimonials</a>
+            <a href="/contact" 
+              onClick={(e) => {
+                e.preventDefault()
+                navigate('/contact')
+              }} 
+              aria-label='Go to contact'>
+              Contact
+            </a>
           </li>
 
-          <li className='navbar_item'>
-            <a href="#contact" onClick={(e) => handleClick(e, 'contact')} aria-label='Go to contact'>Contact</a>
-          </li>
+          {/* <li className='navbar_item'>
+            <a href="#testimonial" onClick={(e) => handleClick(e, 'testimonial')} aria-label='Go to testimonials'>Testimonials</a>
+          </li> */}
+
+          
 
         </ul>
         
