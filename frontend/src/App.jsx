@@ -22,6 +22,8 @@ const App = () => {
         <Route path='/projects/knight-of-cinders' element={<KnightGame/>}/>
         
         <Route path='/comment-form' element={<CommentFormPathWay/>}/>
+        <Route path='/projects' element={<Projects />} />
+        <Route path='/repertoire' element={<RepertoirePage />}/>
       </Routes>
     </div>
   )
@@ -34,14 +36,33 @@ const HomePage = () => {
       <Navbar/>
       <Home />
       <About />
-      <Project />
-      <Repertoire />
-      <Comment />
       <Contact />
+
+      <Comment />
       
     </div>
   )
 }
+
+const RepertoirePage = () => {
+  return (
+    <div className='app-container'>
+      <Navbar/>
+      <Repertoire />
+    </div>
+  )
+}
+
+
+const Projects = () => {
+  return (
+    <div className='app-container'>
+      <Navbar/>
+      <Project />
+    </div>
+  )
+}
+
 
 const CommentFormPathWay = () => {
   return (
