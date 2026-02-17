@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Navbar from './Components/Navbar/Navbar'
 import Home from './Components/Home/Home'
 import Contact from './Components/Contact/Contact'
-import Performances from './Components/Performance/Performance'
+import Repertoire from './Components/Repertoire/Repertoire'
 import Comment from './Components/Comment/Comment'
 import About from './Components/About/About'
 import Project from './Components/Project/Project'
@@ -35,7 +35,7 @@ const HomePage = () => {
       <Home />
       <About />
       <Project />
-      <Performances />
+      <Repertoire />
       <Comment />
       <Contact />
       

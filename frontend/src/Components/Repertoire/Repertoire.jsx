@@ -1,7 +1,7 @@
 import './Performance.css'
 import { useEffect, useState } from 'react'
 
-const Performance = () => {
+const Repertoire = () => {
   const [videos, setVideos] = useState([])
   const [status, setStatus] = useState('idle')
   // if remote exists, use it. otherwise, fall back
@@ -45,7 +45,7 @@ const Performance = () => {
   }
 
   return (
-    <section className='performance' id='performance'>
+    <section className='performance' id='repertoire'>
       <h1>My Performances</h1>
 
       {status === 'loading' && <p className='performance-loading'>Loading Performances. It may take a second.</p>}
@@ -74,4 +74,4 @@ const Performance = () => {
   )
 }
 
-export default Performance
+export default Repertoire

@@ -80,7 +80,8 @@ const Home = () => {
     }, [])
 
     const greetingText = "Hello There!";
-    const introductionText = "I am Yiming Yang (Liberte) \n a Game Developer \n Full Stack Developer \n and Pianist \n (Click Me)";
+    const introductionText = "I am Yiming Yang (Liberté) \na developer and Pianist \n (Click Me)";
+    
     const [shouldIdle, setShouldIdle] = useState(false);
     const [typedText, setTypedText] = useState('');
 

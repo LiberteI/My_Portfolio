@@ -109,7 +109,7 @@ const Navbar = () => {
           </li>
 
           <li className='navbar_item'>
-            <a href="#performance" onClick={(e) => handleClick(e, 'performance')} aria-label='Go to performances'>Performances</a>
+            <a href="#repertoire" onClick={(e) => handleClick(e, 'repertoire')} aria-label='Go to repertoire'>Repertoire</a>
           </li>
 
           <li className='navbar_item'>
