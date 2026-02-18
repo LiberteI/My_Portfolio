@@ -1,3 +1,4 @@
+import "./Experience.css"
 import ExperienceCard from "./ExperienceCard"
 import questLogo from "../../assets/icons/QuestLogo.svg"
 const experiences = [
@@ -5,6 +6,7 @@ const experiences = [
     {
         key: "quest",
         logo: questLogo,
+        logoBg: "#ffffffff",
         name: "Quest Software",
         position: "Software Developer Intern",
         duration: "May 2026 - August 2026"
@@ -14,7 +16,7 @@ const experiences = [
 const Experience = () => {
 
     return(
-        <section>
+        <section className="experience-section" id="experience">
             <h1>My Experiences</h1>
             
             <div className="experience-grid">
