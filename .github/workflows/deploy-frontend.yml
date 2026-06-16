@@ -41,6 +41,17 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Link frontend project explicitly
+        working-directory: frontend
+        run: |
+          mkdir -p .vercel
+          cat > .vercel/project.json <<EOF
+          {
+            "orgId": "$VERCEL_ORG_ID",
+            "projectId": "$VERCEL_PROJECT_ID"
+          }
+          EOF
+
       - name: Pull Vercel environment
         working-directory: frontend
         run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
