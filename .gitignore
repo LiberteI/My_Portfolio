@@ -28,3 +28,4 @@ pnpm-debug.log*
 
 .vite/
 .vite.deps
+.env-example
