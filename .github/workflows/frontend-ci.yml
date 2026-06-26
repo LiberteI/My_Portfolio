@@ -1,4 +1,4 @@
-name: Lint
+name: Frontend CI
 
 on:
   push:
@@ -6,15 +6,15 @@ on:
       - main
     paths:
       - 'frontend/**'
-      - '.github/workflows/lint.yml'
+      - '.github/workflows/frontend-ci.yml'
   pull_request:
     paths:
       - 'frontend/**'
-      - '.github/workflows/lint.yml'
+      - '.github/workflows/frontend-ci.yml'
 
 jobs:
-  frontend-lint:
-    name: Frontend Lint
+  frontend-checks:
+    name: Frontend Checks
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -36,3 +36,6 @@ jobs:
 
       - name: Run lint
         run: npm run lint
+
+      - name: Run build
+        run: npm run build
