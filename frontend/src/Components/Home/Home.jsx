@@ -134,12 +134,12 @@ const Home = () => {
     const handleClick = () => {
         setClicked(true);
         setShouldShowSocials(true);
-        const toggleClicked = setTimeout(() => {
+        setTimeout(() => {
             setClicked(false);
             
         }, 830);
         
-        const toggleSocialButtonFlag = setTimeout(() => {
+        setTimeout(() => {
             setShouldShowSocials(false);
 
         }, 6000);
@@ -148,21 +148,20 @@ const Home = () => {
 
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
-    const invokeBackend = async () => {
-        const response = await fetch(`${apiBase}/api/health`, {
-            method: "GET",
-            credentials: "include"
-        });
-
-    }
-
     useEffect(() => {
+        const invokeBackend = async () => {
+            await fetch(`${apiBase}/api/health`, {
+                method: "GET",
+                credentials: "include"
+            });
+        };
+
         invokeBackend();
         const keepHealth = setInterval(() => {
             invokeBackend();
         }, 5 * 60 * 1000);
         return () => clearInterval(keepHealth);
-    }, [])
+    }, [apiBase])
     
     return(
         <main id='home' className='home'>

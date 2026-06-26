@@ -45,122 +45,86 @@ const Comment = () => {
         }
         return fallbackAvatar;
     }
-    // loop through user data. get https code back 
-    const updateCommentData = async (data) => {
-        if(data === null){
-            setComments([]);
-            return;
-        }
-
-        const updatedComments = [];
-
-        for(const comment of data){
-            let updatedComment = comment;
-
-            try{
-                const response = await fetch(comment.author.avatar, {
-                    method:"HEAD",
-                    credentials: "include",
-                });
-
-                if(!response.ok){
-                    // substitute avatar using static img
-                    
-                    // get name str
-                    const normalisedName = comment.name
-                        .toLowerCase()
-                        .replace(/\s+/g, '');
-
-                    let fallbackAvatar = comment.author.avatar;
-
-                    fallbackAvatar = getStaticIcon(normalisedName);
-
-                    updatedComment = {
-                        ...comment,
-                        author: {
-                            ...comment.author,
-                            avatar: fallbackAvatar ? fallbackAvatar : comment.author.avatar,
-                        },
-                    };
+    useEffect(() => {
+        const populateComments = async () => {
+            const updateCommentData = async (data) => {
+                if(data === null){
+                    setComments([]);
+                    return;
                 }
 
-            } catch{
-                // substitute avatar using static img
-                    
-                    // get name str
-                    const normalisedName = comment.name
-                        .toLowerCase()
-                        .replace(/\s+/g, '');
+                const updatedComments = [];
 
-                    let fallbackAvatar = comment.author.avatar;
+                for(const comment of data){
+                    let updatedComment = comment;
 
-                    fallbackAvatar = getStaticIcon(normalisedName);
+                    try{
+                        const response = await fetch(comment.author.avatar, {
+                            method:"HEAD",
+                            credentials: "include",
+                        });
 
-                    updatedComment = {
-                        ...comment,
-                        author: {
-                            ...comment.author,
-                            avatar: fallbackAvatar ? fallbackAvatar : comment.author.avatar,
-                        },
-                    };
+                        if(!response.ok){
+                            const normalisedName = comment.name
+                                .toLowerCase()
+                                .replace(/\s+/g, '');
+
+                            const fallbackAvatar = getStaticIcon(normalisedName);
+
+                            updatedComment = {
+                                ...comment,
+                                author: {
+                                    ...comment.author,
+                                    avatar: fallbackAvatar ? fallbackAvatar : comment.author.avatar,
+                                },
+                            };
+                        }
+
+                    } catch{
+                        const normalisedName = comment.name
+                            .toLowerCase()
+                            .replace(/\s+/g, '');
+
+                        const fallbackAvatar = getStaticIcon(normalisedName);
+
+                        updatedComment = {
+                            ...comment,
+                            author: {
+                                ...comment.author,
+                                avatar: fallbackAvatar ? fallbackAvatar : comment.author.avatar,
+                            },
+                        };
+                    }
+                    updatedComments.push(updatedComment);
+                }
+                setComments(updatedComments);
+            };
+
+            setCommentStatus('loading');
+            try{
+                const response = await fetch(`${apiBase}/api/Comment/get-comment`, {
+                    method: "GET",
+                    credentials: "include"
+                });
+                if(!response.ok){
+                    throw new Error("request failed");
+                }
+
+                const data = await response.json();
+
+                await updateCommentData(data);
                 
+                setCommentStatus('success');
+
+            } catch (error){
+                console.error(error);
+                setCommentStatus("error");
+                setComments([]);
             }
-            updatedComments.push(updatedComment);
-        }
-        setComments(updatedComments);
-    }
-    
-    const populateComments = async () => {
+        };
 
-        setCommentStatus('loading');
-        try{
-            const response = await fetch(`${apiBase}/api/Comment/get-comment`, {
-                method: "GET",
-                credentials: "include"
-            });
-            if(!response.ok){
-                throw new Error("request failed");
-            }
-
-            const data = await response.json();
-
-            await updateCommentData(data);
-            
-            setCommentStatus('success');
-
-        } catch (error){
-            console.error(error);
-            setCommentStatus("error");
-            setComments([]);
-        }
-    }
-
-    useEffect(() => {
-        // load comments
         populateComments();
-    }, []);
-
-    const getUser = async (event) => {
-        event?.preventDefault?.();
-
-        try{
-            const response = await fetch(`${apiBase}/api/me`, {
-                method: 'GET',
-                credentials: 'include',
-            });
-            if(response.status === 401){
-                setUserStatus(null);
-                return;
-            }
-
-            const data = await response.json();
-
-            setUserStatus({ id: data._id || data.id || null, isAdmin: Boolean(data.isAdmin) });
-        } catch (error){
-            
-            setUserStatus(null);
-        }
-    };
+    }, [apiBase]);
 
     const logout = async () => {
         try{
@@ -175,9 +139,27 @@ const Comment = () => {
     };
 
     useEffect(() => {
-        // send http to get user
+        const getUser = async () => {
+            try{
+                const response = await fetch(`${apiBase}/api/me`, {
+                    method: 'GET',
+                    credentials: 'include',
+                });
+                if(response.status === 401){
+                    setUserStatus(null);
+                    return;
+                }
+
+                const data = await response.json();
+
+                setUserStatus({ id: data._id || data.id || null, isAdmin: Boolean(data.isAdmin) });
+            } catch {
+                setUserStatus(null);
+            }
+        };
+
         getUser();
-    }, [])
+    }, [apiBase])
 
     const isLoggedIn = Boolean(userStatus?.id);
 

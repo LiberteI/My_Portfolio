@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useState } from "react"
 import CommentCard from './AdminCommentCard'
 const CommentForm = () => {
@@ -76,7 +76,7 @@ const CommentForm = () => {
 
 
     const [comments, setComments] = useState([]);
-    const tryShowAllComments = async () => {
+    const tryShowAllComments = useCallback(async () => {
         try{
             const response = await fetch(`${apiBase}/api/Comment/admin/comments`, {
                 method: "GET",
@@ -92,16 +92,16 @@ const CommentForm = () => {
 
             setComments(dbComments || []);
 
-        } catch(error){
+        } catch{
             console.log("No authorization");
         }
-    }
+    }, [apiBase])
     useEffect(() => {
     
         // request for all comments render
         tryShowAllComments();
 
-    }, [])
+    }, [tryShowAllComments])
 
     return (
         <div className="comment-form-container">
