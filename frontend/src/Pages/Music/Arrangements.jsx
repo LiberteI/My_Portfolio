@@ -1,7 +1,6 @@
-import './Performance.css'
 import { useEffect, useState } from 'react'
 
-const Repertoire = () => {
+const Arrangements = () => {
   const [videos, setVideos] = useState([])
   const [status, setStatus] = useState('idle')
   // if remote exists, use it. otherwise, fall back
@@ -46,10 +45,10 @@ const Repertoire = () => {
 
   return (
     <section className='performance' id='repertoire'>
-      <h1>My Performances</h1>
+      <h1>My Arrangements</h1>
 
-      {status === 'loading' && <p className='performance-loading'>Loading Performances. It may take a second.</p>}
-      {status === 'error' && <p className='performance-error'>Fail to load performances. Please refresh the page!</p>}
+      {status === 'loading' && <p className='performance-loading'>Loading Arrangements. It may take a second.</p>}
+      {status === 'error' && <p className='performance-error'>Fail to load arrangements. Please refresh the page!</p>}
 
       <div className='performance-grid'>
         {videos.map((video) => (
@@ -74,4 +73,4 @@ const Repertoire = () => {
   )
 }
 
-export default Repertoire
+export default Arrangements
