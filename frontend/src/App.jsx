@@ -15,19 +15,16 @@ import invocation from './assets/Animations/invocation.gif'
 
 const App = () => {
   return (
-    <div className='app-container'>
-
-      <Routes>
-        <Route path='/' element={<HomePage />}/>
-        <Route path='/projects/knight-of-cinders' element={<KnightGame/>}/>
-        
-        <Route path='/comment-form' element={<CommentFormPathWay/>}/>
-        <Route path='/projects' element={<Projects />} />
-        <Route path='/music' element={<MusicPathway />} />
-        <Route path='/contact' element={<ContactPage />}/>
-        <Route path='experience' element={<ExperiencePage />}/>
-      </Routes>
-    </div>
+    <Routes>
+      <Route path='/' element={<HomePage />}/>
+      <Route path='/projects/knight-of-cinders' element={<KnightGame/>}/>
+      
+      <Route path='/comment-form' element={<CommentFormPathWay/>}/>
+      <Route path='/projects' element={<Projects />} />
+      <Route path='/music' element={<MusicPathway />} />
+      <Route path='/contact' element={<ContactPage />}/>
+      <Route path='experience' element={<ExperiencePage />}/>
+    </Routes>
   )
 }
 
