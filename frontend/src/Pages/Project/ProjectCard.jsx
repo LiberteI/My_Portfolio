@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import "./Project.css"
-import github from "../../assets/devTools/github.png"
+
+const github = "/images/dev-tools/github.png"
 
 const ProjectCard = ({ projectData }) => {
 

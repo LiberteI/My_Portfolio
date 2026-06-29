@@ -1,11 +1,10 @@
 import CommentCard from './CommentCard'
 import samurai from '../../assets/Animations/samurai.gif'
-import googleIcon from '../../assets/google.png';
-import linkedinIcon from '../../assets/linkedin.png';
-import garryImg from '../../assets/FallBackImg/garry.jpeg';
-import ruiyangSuImg from '../../assets/FallBackImg/ruiyangSu.jpeg';
-import vikrantImg from '../../assets/FallBackImg/vikrant.jpeg';
-
+const googleIcon = '/images/social/google.png'
+const linkedinIcon = '/images/social/linkedin.png'
+const garryImg = '/images/fallback/garry.jpeg'
+const ruiyangSuImg = '/images/fallback/ruiyangSu.jpeg'
+const vikrantImg = '/images/fallback/vikrant.jpeg'
 
 import './Comment.css'
 import { useEffect } from 'react'

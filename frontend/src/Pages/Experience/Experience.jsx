@@ -1,6 +1,7 @@
 import "./Experience.css"
 import ExperienceCard from "./ExperienceCard"
-import questLogo from "../../assets/icons/QuestLogo.svg"
+
+const questLogo = "/images/icons/QuestLogo.svg"
 const experiences = [
 
     {

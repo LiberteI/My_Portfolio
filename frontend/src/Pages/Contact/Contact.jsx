@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import './Contact.css'
-import emailIcon from "../../assets/email.png"
-import linkedinIcon from "../../assets/linkedin.png"
+
+const emailIcon = "/images/social/email.png"
+const linkedinIcon = "/images/social/linkedin.png"
 const Contact = () => {
     // state set up
     const [formData, setFormData] = useState({name : '', email : '', message : ''})
