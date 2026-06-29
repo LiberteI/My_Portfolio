@@ -8,6 +8,7 @@ import About from './Pages/About/About'
 import Project from './Pages/Project/Project'
 import CommentForm from './Pages/Comment/CommentForm'
 import Experience from './Pages/Experience/Experience'
+import MusicPage from './Pages/Music/MusicPage'
 
 import invocation from './assets/Animations/invocation.gif'
 
@@ -22,6 +23,7 @@ const App = () => {
         
         <Route path='/comment-form' element={<CommentFormPathWay/>}/>
         <Route path='/projects' element={<Projects />} />
+        <Route path='/music' element={<MusicPathway />} />
         <Route path='/contact' element={<ContactPage />}/>
         <Route path='experience' element={<ExperiencePage />}/>
       </Routes>
@@ -63,6 +65,15 @@ const Projects = () => {
     <div className='app-container'>
       <Navbar/>
       <Project />
+    </div>
+  )
+}
+
+const MusicPathway = () => {
+  return (
+    <div className='app-container'>
+      <Navbar/>
+      <MusicPage />
     </div>
   )
 }
