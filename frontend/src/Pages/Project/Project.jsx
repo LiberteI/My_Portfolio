@@ -5,13 +5,11 @@ import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
 
 const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
-const deadzoneThumb = "/images/project-thumbnails/deadzone_thumbnail.png"
 const bubbleThumb = "/images/project-thumbnails/Bubble.png"
 const agentThumb = "/images/project-thumbnails/agent.png"
 const supervisedLearningThumb = "/images/projects/supervisedLearning.png"
 const dalTutorThumb = "/images/projects/daltutor.png"
 const iceSpyThumb = "/images/projects/iceSpy.png"
-const susThumb = "/images/projects/sus.png"
 const portfolioThumb = "/images/projects/portfolio.png"
 
 const projects = [
