@@ -1,14 +1,13 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Navbar from './Components/Navbar/Navbar'
-import Home from './Components/Home/Home'
-import Contact from './Components/Contact/Contact'
-import Repertoire from './Components/Repertoire/Repertoire'
-import Comment from './Components/Comment/Comment'
-import About from './Components/About/About'
-import Project from './Components/Project/Project'
-import CommentForm from './Components/Comment/CommentForm'
-import Experience from './Components/Experience/Experience'
+import Navbar from './Pages/Navbar/Navbar'
+import Home from './Pages/Home/Home'
+import Contact from './Pages/Contact/Contact'
+import Comment from './Pages/Comment/Comment'
+import About from './Pages/About/About'
+import Project from './Pages/Project/Project'
+import CommentForm from './Pages/Comment/CommentForm'
+import Experience from './Pages/Experience/Experience'
 
 import KnightGameThumbnail from './assets/ProjectThumbnail/KnightThumbnail.png'
 import invocation from './assets/Animations/invocation.gif'
@@ -24,7 +23,6 @@ const App = () => {
         
         <Route path='/comment-form' element={<CommentFormPathWay/>}/>
         <Route path='/projects' element={<Projects />} />
-        <Route path='/repertoire' element={<RepertoirePage />}/>
         <Route path='/contact' element={<ContactPage />}/>
         <Route path='experience' element={<ExperiencePage />}/>
       </Routes>
@@ -60,16 +58,6 @@ const HomePage = () => {
     </div>
   )
 }
-
-const RepertoirePage = () => {
-  return (
-    <div className='app-container'>
-      <Navbar/>
-      <Repertoire />
-    </div>
-  )
-}
-
 
 const Projects = () => {
   return (

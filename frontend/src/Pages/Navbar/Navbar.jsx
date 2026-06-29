@@ -130,17 +130,6 @@ const Navbar = () => {
           </li>
 
           <li className='navbar_item'>
-            <a href="/repertoire" 
-              onClick={(e) => {
-                e.preventDefault()
-                navigate('/repertoire')
-              }} 
-              aria-label='Go to repertoire'>
-              Repertoire
-            </a>
-          </li>
-
-          <li className='navbar_item'>
             <a href="/contact" 
               onClick={(e) => {
                 e.preventDefault()

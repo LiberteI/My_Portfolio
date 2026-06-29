@@ -49,18 +49,6 @@ const projects = [
         canLink: false
     },
     {
-        title: "Deadzone",
-        slug: "deadzone",
-        image: deadzoneThumb,
-        canLink: false,
-        topic: "Game Development",
-        skills: "Unity · C# · Shaders · Enemy & Ally AI · Event-Driven Architecture · Gameplay Systems Design",
-        description:"Designing and developing an indie 2D post-apocalyptic zombie survival shooter focused on responsive combat, barricade defense, and intelligent AI systems. Built modular, state-driven player and enemy behaviors using clean architecture to create emergent gameplay, tactical depth, and a polished, skill-based player experience.",
-        githubLink:"https://github.com/LiberteI/DeadZone",
-        isSoloProject: true
-    },
-    
-    {
         title: "Ocean Simulation",
         slug: "ocean-simulation",
         image: oceanGif,
@@ -84,18 +72,6 @@ const projects = [
         isSoloProject: true
 
     },
-    {
-        title: "Sustainable Community",
-        slug: "sustainable-community",
-        image: susThumb,
-        topic: "Full-Stack Development",
-        skills: "Web Application Development · Inclusive UX Design · AI-Powered Verification · Voice Interface Design",
-        description: "Built Watt the Hack during the Cognizant BrAInstorm Hackathon, a sustainability-focused web app promoting inclusive, community-driven action. Delivered real-time feedback, AI-verified rewards, and voice-controlled accessibility features to motivate collective impact and make sustainable practices engaging, visible, and accessible to all users.",
-        githubLink: "https://github.com/LiberteI/Watt_the_Hack",
-        isSoloProject: false,
-        canLink: false
-    },
-
     {
         title: "Ice Spy",
         slug: "ice-spy",
