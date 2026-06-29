@@ -1,17 +1,16 @@
 import "./Project.css"
 import ProjectCard from "./ProjectCard"
-import projectThumb from "../../assets/ProjectThumbnail/KnightThumbnail.png"
-import deadzoneThumb from "../../assets/ProjectThumbnail/deadzone_thumbnail.png"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
-import bubbleThumb from "../../assets/ProjectThumbnail/Bubble.png"
-import agentThumb from "../../assets/ProjectThumbnail/agent.png"
-import supervisedLearningThumb from "../../assets/supervisedLearning.png"
-import dalTutorThumb from "../../assets/daltutor.png"
-import iceSpyThumb from "../../assets/iceSpy.png"
-import susThumb from "../../assets/sus.png"
-import portfolioThumb from "../../assets/portfolio.png"
+
+const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
+const bubbleThumb = "/images/project-thumbnails/Bubble.png"
+const agentThumb = "/images/project-thumbnails/agent.png"
+const supervisedLearningThumb = "/images/projects/supervisedLearning.png"
+const dalTutorThumb = "/images/projects/daltutor.png"
+const iceSpyThumb = "/images/projects/iceSpy.png"
+const portfolioThumb = "/images/projects/portfolio.png"
 
 const projects = [
     {

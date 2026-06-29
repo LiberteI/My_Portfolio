@@ -9,7 +9,6 @@ import Project from './Pages/Project/Project'
 import CommentForm from './Pages/Comment/CommentForm'
 import Experience from './Pages/Experience/Experience'
 
-import KnightGameThumbnail from './assets/ProjectThumbnail/KnightThumbnail.png'
 import invocation from './assets/Animations/invocation.gif'
 
 
@@ -84,7 +83,7 @@ const KnightGame = () => {
       <Navbar/>
       <div className='knightGame-container'>
 
-        <video src="/knightTrailer.mp4" controls playsInline poster={KnightGameThumbnail}/>
+        <video src="/knightTrailer.mp4" controls playsInline poster="/images/project-thumbnails/KnightThumbnail.png"/>
 
         <div className='knightGame-content'>
           <img className='knightGame-gif' src={invocation} alt="Knight of Cinders invocation animation" />

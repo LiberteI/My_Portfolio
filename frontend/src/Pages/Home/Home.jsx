@@ -2,18 +2,19 @@ import './Home.css'
 import React, { useEffect, useRef, useState } from 'react'
 
 // Parallax skyline layers
-import moon from '../../assets/City/bg/Moon.png'
-import sky from '../../assets/City/bg/Sky.png'
-import skyFlip from '../../assets/City/bg/flip.png'
-import buildingBack from '../../assets/City/bg/buildingBack.png'
-import buildingFar from '../../assets/City/bg/buildingFar.png'
-import buildingMid from '../../assets/City/bg/buildingMid.png'
-import buildingClose from '../../assets/City/bg/buildingClose.png'
 import Chatbot from '../Chatbot/Chatbot'
-import tile from '../../assets/City/bg/tile.png'
-import youtubeIcon from '../../assets/youtube.png'
-import linkedinIcon from '../../assets/linkedin.png'
-import githubIcon from '../../assets/github.png'
+
+const moon = '/images/city/bg/Moon.png'
+const sky = '/images/city/bg/Sky.png'
+const skyFlip = '/images/city/bg/flip.png'
+const buildingBack = '/images/city/bg/buildingBack.png'
+const buildingFar = '/images/city/bg/buildingFar.png'
+const buildingMid = '/images/city/bg/buildingMid.png'
+const buildingClose = '/images/city/bg/buildingClose.png'
+const tile = '/images/city/bg/tile.png'
+const youtubeIcon = '/images/social/youtube.png'
+const linkedinIcon = '/images/social/linkedin.png'
+const githubIcon = '/images/social/github.png'
 
 
 

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './Navbar.css'
-import logo from '../../assets/LOGO_dark.png'
+
+const logo = '/images/branding/LOGO_dark.png'
 
 const Navbar = () => {
   const [isHidden, setIsHidden] = useState(false)
