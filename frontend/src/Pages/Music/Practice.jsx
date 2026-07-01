@@ -292,27 +292,33 @@ const Stats = ({ data = [] }) => {
 
   return (
     <div className='grid gap-4 md:gap-5'>
-      <div className='grid gap-3 md:grid-cols-3'>
-        <div className='flex items-center gap-4 rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
-          <img
-            className='h-12 w-12 object-contain'
-            src={fireStreakGif}
-            alt='Fire streak icon'
-          />
-          <div className='flex flex-col'>
-            <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
-            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
+      <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
+        <div className='flex flex-col gap-4 md:flex-row md:items-center md:gap-5'>
+          <div className='flex items-center gap-4'>
+            <img
+              className='h-12 w-12 object-contain'
+              src={fireStreakGif}
+              alt='Fire streak icon'
+            />
+            <div className='flex flex-col'>
+              <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
+              <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
+            </div>
           </div>
-        </div>
 
-        <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
-          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This week</p>
-          <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
-        </div>
+          <span className='hidden text-neutral-600 md:block'>|</span>
 
-        <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
-          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This month</p>
-          <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
+          <div className='flex flex-col'>
+            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This week</p>
+            <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
+          </div>
+
+          <span className='hidden text-neutral-600 md:block'>|</span>
+
+          <div className='flex flex-col'>
+            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This month</p>
+            <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
+          </div>
         </div>
       </div>
 
@@ -340,7 +346,7 @@ const Stats = ({ data = [] }) => {
         target='_blank'
         rel='noreferrer'
       >
-        View piano logs
+        View piano logs -&gt;
       </a>
     </div>
   )
@@ -348,26 +354,22 @@ const Stats = ({ data = [] }) => {
 const Practice = () => {
   return (
     <section className='w-full rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
-      <div className='flex flex-col gap-8 md:gap-10'>
-        <MusicHeader
-          number={1}
-          title='Practice Streak'
-          subtitle='Consistency builds mastery.'
-        />
+      <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
+        <div className='min-w-0 flex-1'>
+          <MusicHeader
+            number={1}
+            title='Practice Streak'
+            subtitle='Consistency builds mastery.'
+          />
 
-        <div className='w-full rounded-2xl p-6 md:p-8'>
-          <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
-            <div className='min-w-0 flex-1'>
+          <div className='mt-8 rounded-2xl bg-neutral-900/50 p-6 md:p-8'>
               <ContributionBar data={demoPracticeData} />
-            </div>
-
-            <div className='xl:w-[320px] xl:flex-none'>
-              <Stats data={demoPracticeData} />
-            </div>
           </div>
         </div>
 
-        
+        <div className='xl:w-[320px] xl:flex-none'>
+          <Stats data={demoPracticeData} />
+        </div>
       </div>
     </section>
   )
