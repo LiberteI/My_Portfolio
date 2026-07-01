@@ -6,6 +6,7 @@ const CELL_BASE_CLASS =
   'h-3.5 w-3.5 rounded-[4px] border border-white/5 transition-colors duration-150'
 const GRID_LABEL_CLASS = 'text-[11px] uppercase tracking-[0.18em] text-neutral-500'
 const CELL_SIZE_REM = 0.875
+const BADGE_GOLD_TEXT_CLASS = 'text-[#c6942f]'
 
 const formatDateLabel = (date) =>
   date.toLocaleDateString('en-US', {
@@ -15,11 +16,11 @@ const formatDateLabel = (date) =>
   })
 
 const getCellTone = (practiceTime) => {
-  if (!practiceTime) return 'bg-neutral-700/70'
-  if (practiceTime < 30) return 'bg-emerald-900'
-  if (practiceTime < 60) return 'bg-emerald-700'
-  if (practiceTime < 90) return 'bg-emerald-500'
-  return 'bg-emerald-300'
+  if (!practiceTime) return 'bg-[#161B22]'
+  if (practiceTime < 30) return 'bg-[#0E4429]'
+  if (practiceTime < 60) return 'bg-[#006D32]'
+  if (practiceTime < 90) return 'bg-[#26A641]'
+  return 'bg-[#39D353]'
 }
 
 // Renders one daily practice cell. Empty dates are placeholders used to align the
@@ -292,11 +293,12 @@ const Stats = ({ data = [] }) => {
 
   return (
     <div className='grid gap-4 md:gap-5'>
+      {/* Summary card: current streak, this week, and this month at a glance. */}
       <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
         <div className='flex flex-col gap-4 md:flex-row md:items-center md:gap-5'>
           <div className='flex items-center gap-4'>
             <img
-              className='h-12 w-12 object-contain'
+              className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
               src={fireStreakGif}
               alt='Fire streak icon'
             />
@@ -309,51 +311,58 @@ const Stats = ({ data = [] }) => {
           <span className='hidden text-neutral-600 md:block'>|</span>
 
           <div className='flex flex-col'>
-            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This week</p>
+            <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This week</p>
             <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
           </div>
 
           <span className='hidden text-neutral-600 md:block'>|</span>
 
           <div className='flex flex-col'>
-            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This month</p>
+            <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This month</p>
             <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
           </div>
         </div>
       </div>
 
-      <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
-        <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
-          <div className='flex w-full items-baseline justify-between gap-3'>
-            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Weekly goal</p>
-            <p className='text-right text-lg text-neutral-100'>
-              {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
-            </p>
-          </div>
-        </div>
+      {/* Weekly goal card keeps the label, current total, and progress fill together. */}
+      <div className='rounded-xl border border-neutral-700/70 bg-neutral-950/40 p-4 min-h-[50px]'>
+        <div className='flex w-full justify-center'>
+          <div className='w-[180px] sm:w-[220px] md:w-[260px] lg:w-[320px]'>
+            <div className='flex items-baseline justify-between gap-3 px-1 py-1'>
+              <p className={`text-xs uppercase tracking-[0.2em] ${BADGE_GOLD_TEXT_CLASS}`}>Weekly goal</p>
+              <p className={`text-right text-lg ${BADGE_GOLD_TEXT_CLASS}`}>
+                {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
+              </p>
+            </div>
 
-        <div className='mt-4 h-2.5 overflow-hidden rounded-full bg-neutral-800'>
-          <div
-            className='h-full rounded-full bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-300 transition-[width] duration-300'
-            style={{ width: `${progressPercent}%` }}
-          />
+            <div className='mt-4 h-2.5 w-full overflow-hidden rounded-full bg-neutral-800'>
+              {/* Width is derived from weekly progress percentage and capped in getPracticeStats. */}
+              <div
+                className='h-full rounded-full bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-300 transition-[width] duration-300'
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      <a
-        className='inline-flex w-fit items-center rounded-full border border-neutral-600 bg-neutral-950/40 px-4 py-2 text-sm text-neutral-200 transition-colors duration-150 hover:border-neutral-400 hover:bg-neutral-900'
-        href='https://github.com/LiberteI/piano-log/tree/main/logs'
-        target='_blank'
-        rel='noreferrer'
-      >
-        View piano logs -&gt;
-      </a>
+      {/* External shortcut to the detailed piano practice logs repository. */}
+      <div className='flex justify-end min-h-[40px]'>
+        <a
+          className={`min-w-[200px] justify-center inline-flex w-fit items-center rounded-[5px] border border-[#c6942f]/45 bg-neutral-950/40 px-4 py-2 text-sm transition-colors duration-150 hover:border-[#c6942f]/70 hover:bg-neutral-900 ${BADGE_GOLD_TEXT_CLASS}`}
+          href='https://github.com/LiberteI/piano-log/tree/main/logs'
+          target='_blank'
+          rel='noreferrer'
+        >
+          View piano logs -&gt;
+        </a>
+      </div>
     </div>
   )
 }
 const Practice = () => {
   return (
-    <section className='w-full rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
+    <section className='self-center w-full min-h-[300px] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
       <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
         <div className='min-w-0 flex-1'>
           <MusicHeader
@@ -362,12 +371,12 @@ const Practice = () => {
             subtitle='Consistency builds mastery.'
           />
 
-          <div className='mt-8 rounded-2xl bg-neutral-900/50 p-6 md:p-8'>
+          <div className='mt-8 rounded-2xl p-6 md:p-8'>
               <ContributionBar data={demoPracticeData} />
           </div>
         </div>
 
-        <div className='xl:w-[320px] xl:flex-none'>
+        <div className='xl:w-[400px] xl:flex-none'>
           <Stats data={demoPracticeData} />
         </div>
       </div>
