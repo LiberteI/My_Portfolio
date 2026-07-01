@@ -364,19 +364,20 @@ const Practice = () => {
   return (
     <section className='self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-900 p-8 md:w-[calc(100%-3rem)] md:p-10'>
       <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
-        <div className='min-w-0 flex-1'>
+        <div className='min-w-0 flex-1 flex-col gap-8 xl:flex'>
           <MusicHeader
+            className='translate-y-5 translate-x-5'
             number={1}
             title='Practice Streak'
             subtitle='Consistency builds mastery.'
           />
 
-          <div className='mt-8 rounded-2xl p-6 md:p-8'>
+          <div className='mt-8 rounded-2xl p-6 md:p-8 -translate-y-0 translate-x-10'>
               <ContributionBar data={demoPracticeData} />
           </div>
         </div>
 
-        <div className='xl:w-[400px] xl:flex-none'>
+        <div className='xl:w-[400px] xl:flex-none translate-y-12 -translate-x-10'>
           <Stats data={demoPracticeData} />
         </div>
       </div>
