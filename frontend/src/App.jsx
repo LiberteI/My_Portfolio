@@ -69,7 +69,6 @@ const Projects = () => {
 const MusicPathway = () => {
   return (
     <div className='app-container'>
-      <Navbar/>
       <MusicPage />
     </div>
   )

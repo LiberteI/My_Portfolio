@@ -1,73 +1,16 @@
-import { useEffect, useState } from 'react'
-
+import MusicHeader from '../../Components/MusicHeader'
 const Arrangements = () => {
-  const [videos, setVideos] = useState([])
-  const [status, setStatus] = useState('idle')
-  // if remote exists, use it. otherwise, fall back
-  const apiBase =
-    import.meta.env.VITE_API_BASE_URL ||
-    (import.meta.env.DEV ? 'http://localhost:8080' : window.location.origin)
-
-  useEffect(() => {
-    const fetchVideos = async () => {
-      setStatus('loading')
-
-      try {
-        const response = await fetch(`${apiBase}/api/youtube`)
-        if (!response.ok) {
-          throw new Error('Request failed')
-        }
-
-        const data = await response.json()
-        let items = []
-        if (data && Array.isArray(data.videos)) {
-          items = data.videos
-        }
-        setVideos(items)
-        setStatus('success')
-      } catch (error) {
-        console.error(error)
-        setStatus('error')
-      }
-    }
-
-    fetchVideos()
-  }, [apiBase])
-
-  const handleCardClick = (videoId) => {
-    if (!videoId) {
-      return
-    }
-
-    const url = `https://www.youtube.com/watch?v=${videoId}`
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   return (
-    <section className='performance' id='repertoire'>
-      <h1>My Arrangements</h1>
-
-      {status === 'loading' && <p className='performance-loading'>Loading Arrangements. It may take a second.</p>}
-      {status === 'error' && <p className='performance-error'>Fail to load arrangements. Please refresh the page!</p>}
-
-      <div className='performance-grid'>
-        {videos.map((video) => (
-          <article
-            className='performance-card'
-            key={video.id || video.title}
-            onClick={() => handleCardClick(video.id)}
-          >
-            <h3>{video.title}</h3>
-            {video.thumbnail && (
-              <img
-                className='performance-thumbnail'
-                src={video.thumbnail}
-                alt={video.title}
-              />
-            )}
-            <p>{video.description}</p>
-          </article>
-        ))}
+    <section className='w-full rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
+      <div className='flex flex-col gap-8 md:gap-10'>
+        <MusicHeader
+          number={2}
+          title='Arrangements'
+          subtitle='Creative interpretations of pieces.'
+        />
+        <div className='min-h-64 w-full rounded-2xl border border-neutral-700/70 bg-neutral-900/50 p-6 md:p-8'>
+          
+        </div>
       </div>
     </section>
   )
