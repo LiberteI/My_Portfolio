@@ -1,5 +1,7 @@
 import MusicHeader from '../../Components/MusicHeader'
 
+const fireStreakGif = '/images/fire-streak.gif'
+
 const CELL_BASE_CLASS =
   'h-3.5 w-3.5 rounded-[4px] border border-white/5 transition-colors duration-150'
 const GRID_LABEL_CLASS = 'text-[11px] uppercase tracking-[0.18em] text-neutral-500'
@@ -53,6 +55,83 @@ const normalizePracticeData = (data) => {
     entries.set(dateKey, Number(item.practiceTime) || 0)
     return entries
   }, new Map())
+}
+
+const getDateKey = (date) => date.toISOString().slice(0, 10)
+
+const getStartOfWeek = (date) => {
+  const start = new Date(date)
+  start.setHours(0, 0, 0, 0)
+  start.setDate(start.getDate() - start.getDay())
+  return start
+}
+
+const formatHours = (minutes) => {
+  if (minutes <= 0) return '0h'
+
+  const hours = minutes / 60
+  return Number.isInteger(hours) ? `${hours}h` : `${hours.toFixed(1)}h`
+}
+
+const getPracticeStats = (data, weeklyGoalMinutes = 600) => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const normalizedEntries = Array.isArray(data)
+    ? data
+        .filter((item) => item?.date)
+        .map((item) => {
+          const parsedDate = item.date instanceof Date ? new Date(item.date) : new Date(item.date)
+          parsedDate.setHours(0, 0, 0, 0)
+
+          return {
+            date: parsedDate,
+            dateKey: getDateKey(parsedDate),
+            practiceTime: Number(item.practiceTime) || 0,
+          }
+        })
+    : []
+
+  const byDate = new Map()
+  normalizedEntries.forEach((entry) => {
+    byDate.set(entry.dateKey, (byDate.get(entry.dateKey) ?? 0) + entry.practiceTime)
+  })
+
+  const weekStart = getStartOfWeek(today)
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1)
+
+  let thisWeekMinutes = 0
+  let thisMonthMinutes = 0
+
+  byDate.forEach((minutes, dateKey) => {
+    const entryDate = new Date(dateKey)
+    entryDate.setHours(0, 0, 0, 0)
+
+    if (entryDate >= weekStart && entryDate <= today) {
+      thisWeekMinutes += minutes
+    }
+
+    if (entryDate >= monthStart && entryDate <= today) {
+      thisMonthMinutes += minutes
+    }
+  })
+
+  let streakDays = 0
+  const cursor = new Date(today)
+  while ((byDate.get(getDateKey(cursor)) ?? 0) > 0) {
+    streakDays += 1
+    cursor.setDate(cursor.getDate() - 1)
+  }
+
+  const progressPercent = Math.min((thisWeekMinutes / weeklyGoalMinutes) * 100, 100)
+
+  return {
+    streakDays,
+    thisWeekMinutes,
+    thisMonthMinutes,
+    weeklyGoalMinutes,
+    progressPercent,
+  }
 }
 
 const getContributionColumns = (data) => {
@@ -174,7 +253,7 @@ const ContributionBar = ({ data = [] }) => {
           )}
         </div>
 
-        <div className='flex items-center justify-end gap-2 text-[11px] uppercase tracking-[0.18em] text-neutral-500'>
+        <div className='flex items-center justify-start gap-2 text-[11px] uppercase tracking-[0.18em] text-neutral-500'>
           <span>Less</span>
           <div className='flex items-center gap-1'>
             {legendSteps.map((step) => (
@@ -202,6 +281,70 @@ const demoPracticeData = [
   { date: '2026-06-21', practiceTime: 45 },
 ]
 
+const Stats = ({ data = [] }) => {
+  const {
+    streakDays,
+    thisWeekMinutes,
+    thisMonthMinutes,
+    weeklyGoalMinutes,
+    progressPercent,
+  } = getPracticeStats(data)
+
+  return (
+    <div className='grid gap-4 md:gap-5'>
+      <div className='grid gap-3 md:grid-cols-3'>
+        <div className='flex items-center gap-4 rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
+          <img
+            className='h-12 w-12 object-contain'
+            src={fireStreakGif}
+            alt='Fire streak icon'
+          />
+          <div className='flex flex-col'>
+            <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
+            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
+          </div>
+        </div>
+
+        <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
+          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This week</p>
+          <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
+        </div>
+
+        <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
+          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>This month</p>
+          <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
+        </div>
+      </div>
+
+      <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
+        <div className='flex flex-col gap-2 md:flex-row md:items-end md:justify-between'>
+          <div className='flex w-full items-baseline justify-between gap-3'>
+            <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Weekly goal</p>
+            <p className='text-right text-lg text-neutral-100'>
+              {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
+            </p>
+          </div>
+        </div>
+
+        <div className='mt-4 h-2.5 overflow-hidden rounded-full bg-neutral-800'>
+          <div
+            className='h-full rounded-full bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-300 transition-[width] duration-300'
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+      </div>
+
+      <a
+        className='inline-flex w-fit items-center rounded-full border border-neutral-600 bg-neutral-950/40 px-4 py-2 text-sm text-neutral-200 transition-colors duration-150 hover:border-neutral-400 hover:bg-neutral-900'
+        href='https://github.com/LiberteI/piano-log/tree/main/logs'
+        target='_blank'
+        rel='noreferrer'
+      >
+        View piano logs
+      </a>
+    </div>
+  )
+}
 const Practice = () => {
   return (
     <section className='w-full rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
@@ -212,9 +355,19 @@ const Practice = () => {
           subtitle='Consistency builds mastery.'
         />
 
-        <div className='w-full rounded-2xl border border-neutral-700/70 bg-neutral-900/50 p-6 md:p-8'>
-          <ContributionBar data={demoPracticeData} />
+        <div className='w-full rounded-2xl p-6 md:p-8'>
+          <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
+            <div className='min-w-0 flex-1'>
+              <ContributionBar data={demoPracticeData} />
+            </div>
+
+            <div className='xl:w-[320px] xl:flex-none'>
+              <Stats data={demoPracticeData} />
+            </div>
+          </div>
         </div>
+
+        
       </div>
     </section>
   )
