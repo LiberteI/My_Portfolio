@@ -1,6 +1,6 @@
 import MusicHeader from '../../Components/MusicHeader'
 
-const fireStreakGif = '/images/fire-streak.gif'
+const fireStreakGif = '/images/music/fire-streak.gif'
 
 const CELL_BASE_CLASS =
   'h-3.5 w-3.5 rounded-[4px] border border-white/5 transition-colors duration-150'
@@ -16,7 +16,7 @@ const formatDateLabel = (date) =>
   })
 
 const getCellTone = (practiceTime) => {
-  if (!practiceTime) return 'bg-[#161B22]'
+  if (!practiceTime) return 'bg-neutral-900'
   if (practiceTime < 30) return 'bg-[#0E4429]'
   if (practiceTime < 60) return 'bg-[#006D32]'
   if (practiceTime < 90) return 'bg-[#26A641]'
@@ -362,7 +362,7 @@ const Stats = ({ data = [] }) => {
 }
 const Practice = () => {
   return (
-    <section className='self-center w-full min-h-[300px] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
+    <section className='self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-900 p-8 md:w-[calc(100%-3rem)] md:p-10'>
       <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
         <div className='min-w-0 flex-1'>
           <MusicHeader
