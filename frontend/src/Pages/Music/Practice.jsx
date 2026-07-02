@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
 import MusicHeader from '../../Components/MusicHeader'
 
 const fireStreakGif = '/images/music/fire-streak.gif'
+const PRACTICE_DAYS_ENDPOINT =
+  'https://raw.githubusercontent.com/LiberteI/piano-log/main/generated/practice-days.json'
 
 const CELL_BASE_CLASS =
   'h-3.5 w-3.5 rounded-[4px] border border-white/5 transition-colors duration-150'
@@ -272,16 +275,6 @@ const ContributionBar = ({ data = [] }) => {
   )
 }
 
-const demoPracticeData = [
-  { date: '2026-01-02', practiceTime: 20 },
-  { date: '2026-01-06', practiceTime: 55 },
-  { date: '2026-02-14', practiceTime: 75 },
-  { date: '2026-03-01', practiceTime: 95 },
-  { date: '2026-04-18', practiceTime: 35 },
-  { date: '2026-05-09', practiceTime: 120 },
-  { date: '2026-06-21', practiceTime: 45 },
-]
-
 const Stats = ({ data = [] }) => {
   const {
     streakDays,
@@ -365,6 +358,38 @@ const Stats = ({ data = [] }) => {
   )
 }
 const Practice = () => {
+  const [practiceData, setPracticeData] = useState([])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadPracticeData = async () => {
+      try {
+        const response = await fetch(PRACTICE_DAYS_ENDPOINT)
+
+        if (!response.ok) {
+          throw new Error(`Failed to load practice data: ${response.status}`)
+        }
+
+        const data = await response.json()
+        if (isMounted) {
+          setPracticeData(Array.isArray(data) ? data : [])
+        }
+      } catch (error) {
+        console.error('Unable to load practice data', error)
+        if (isMounted) {
+          setPracticeData([])
+        }
+      }
+    }
+
+    loadPracticeData()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <section 
       className='self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-900 p-8 md:w-[calc(100%-3rem)] md:p-10
@@ -383,13 +408,13 @@ const Practice = () => {
             className='mt-8 overflow-hidden p-6 md:p-8 -translate-y-0 translate-x-10 
               max-[1280px]:translate-y-10
               max-[768px]:translate-x-0'>
-              <ContributionBar data={demoPracticeData} />
+              <ContributionBar data={practiceData} />
           </div>
         </div>
 
         <div className='xl:w-[400px] xl:flex-none translate-y-12 -translate-x-10 
           max-[1280px]:translate-x-0'>
-          <Stats data={demoPracticeData} />
+          <Stats data={practiceData} />
         </div>
       </div>
     </section>
