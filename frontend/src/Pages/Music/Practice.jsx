@@ -18,6 +18,25 @@ const formatDateLabel = (date) =>
     day: 'numeric',
   })
 
+const parsePracticeDate = (value) => {
+  if (value instanceof Date) {
+    const parsedDate = new Date(value)
+    parsedDate.setHours(0, 0, 0, 0)
+    return parsedDate
+  }
+
+  if (typeof value === 'string') {
+    const [year, month, day] = value.slice(0, 10).split('-').map(Number)
+    if ([year, month, day].every(Number.isFinite)) {
+      return new Date(year, month - 1, day)
+    }
+  }
+
+  const fallbackDate = new Date(value)
+  fallbackDate.setHours(0, 0, 0, 0)
+  return fallbackDate
+}
+
 const getCellTone = (practiceTime) => {
   if (!practiceTime) return 'bg-neutral-900'
   if (practiceTime < 30) return 'bg-[#0E4429]'
@@ -80,13 +99,14 @@ const formatHours = (minutes) => {
 const getPracticeStats = (data, weeklyGoalMinutes = 600) => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
 
   const normalizedEntries = Array.isArray(data)
     ? data
         .filter((item) => item?.date)
         .map((item) => {
-          const parsedDate = item.date instanceof Date ? new Date(item.date) : new Date(item.date)
-          parsedDate.setHours(0, 0, 0, 0)
+          const parsedDate = parsePracticeDate(item.date)
 
           return {
             date: parsedDate,
@@ -108,8 +128,7 @@ const getPracticeStats = (data, weeklyGoalMinutes = 600) => {
   let thisMonthMinutes = 0
 
   byDate.forEach((minutes, dateKey) => {
-    const entryDate = new Date(dateKey)
-    entryDate.setHours(0, 0, 0, 0)
+    const entryDate = parsePracticeDate(dateKey)
 
     if (entryDate >= weekStart && entryDate <= today) {
       thisWeekMinutes += minutes
@@ -121,7 +140,7 @@ const getPracticeStats = (data, weeklyGoalMinutes = 600) => {
   })
 
   let streakDays = 0
-  const cursor = new Date(today)
+  const cursor = new Date(yesterday)
   while ((byDate.get(getDateKey(cursor)) ?? 0) > 0) {
     streakDays += 1
     cursor.setDate(cursor.getDate() - 1)
@@ -334,7 +353,7 @@ const Stats = ({ data = [] }) => {
             <div className='mt-4 h-2.5 w-full overflow-hidden rounded-full bg-neutral-800'>
               {/* Width is derived from weekly progress percentage and capped in getPracticeStats. */}
               <div
-                className='h-full rounded-full bg-gradient-to-r from-emerald-700 via-emerald-500 to-emerald-300 transition-[width] duration-300'
+                className='h-full rounded-full bg-[#E6B870] transition-[width] duration-300'
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
