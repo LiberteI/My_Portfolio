@@ -329,8 +329,9 @@ const TopSummary = ({ data = [] }) => {
   } = getPracticeStats(data)
 
   return (
-    <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end sm:gap-5'>
-      <div className='flex items-center gap-4 justify-center sm:justify-start'>
+    <div className='flex flex-col gap-4
+      min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-start min-[600px]:gap-5'>
+      <div className='flex items-center gap-4 justify-center min-[600px]:justify-start'>
         <img
           className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
           src={fireStreakGif}
@@ -342,11 +343,12 @@ const TopSummary = ({ data = [] }) => {
         </div>
       </div>
 
-      <span className='hidden text-neutral-700 sm:block'>|</span>
+      <span className='hidden text-neutral-700 min-[600px]:block'>|</span>
 
-      <div className='mx-auto h-px w-full max-w-[180px] bg-neutral-800 sm:hidden' />
+      <div className='mx-auto h-px w-full max-w-[180px] bg-neutral-800
+        min-[600px]:hidden' />
 
-      <div className='flex w-full max-w-[320px] flex-col gap-2 sm:w-[220px] sm:shrink-0'>
+      <div className='flex w-full self-center max-w-[320px] flex-col gap-2 sm:w-[220px] sm:shrink-0'>
         <p className={`text-lg font-medium ${BADGE_GOLD_TEXT_CLASS}`}>
           {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
         </p>
