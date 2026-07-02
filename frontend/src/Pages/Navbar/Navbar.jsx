@@ -131,6 +131,18 @@ const Navbar = () => {
           </li>
 
           <li className='navbar_item'>
+            <a
+              href="/music"
+              onClick={(e) => {
+                e.preventDefault()
+                navigate('/music')
+              }}
+              aria-label='Go to music'>
+              Music
+            </a>
+          </li>
+
+          <li className='navbar_item'>
             <a href="/contact" 
               onClick={(e) => {
                 e.preventDefault()
