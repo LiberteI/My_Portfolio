@@ -424,7 +424,7 @@ const Practice = () => {
 
           <div 
             className='mt-8 overflow-hidden p-6 md:p-8 -translate-y-0 translate-x-10 
-              max-[1280px]:translate-y-10
+              max-[1280px]:translate-y-10 max-[1280px]:translate-x-0
               max-[768px]:translate-x-0'>
               <ContributionBar data={practiceData} />
           </div>
