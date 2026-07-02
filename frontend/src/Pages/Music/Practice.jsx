@@ -303,66 +303,64 @@ const Stats = ({ data = [] }) => {
   } = getPracticeStats(data)
 
   return (
-    <div className='grid gap-4 md:gap-5 max-[1280px]:grid-cols-2 max-[762px]:grid-cols-1'>
-      {/* Summary card: current streak, this week, and this month at a glance. */}
-      <div 
-        className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4
-        max-[1280px]:h-full
-        '>
-        <div className='flex flex-col gap-4 md:flex-row md:items-center md:gap-5 justify-center'>
-          <div className='flex items-center gap-4 justify-center'>
-            <img
-              className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
-              src={fireStreakGif}
-              alt='Fire streak icon'
-            />
-            <div className='flex flex-col'>
-              <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
-              <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
+    <div className='flex flex-col gap-4 md:gap-5'>
+      <div className='flex flex-col gap-4 min-[1281px]:flex-row min-[1281px]:items-stretch'>
+        {/* Summary card: current streak, this week, and this month at a glance. */}
+        <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4 min-[1281px]:flex-1'>
+          <div className='flex flex-col gap-4 justify-center md:flex-row md:items-center md:gap-5 min-[1281px]:h-full min-[1281px]:justify-start'>
+            <div className='flex items-center gap-4 justify-center'>
+              <img
+                className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
+                src={fireStreakGif}
+                alt='Fire streak icon'
+              />
+              <div className='flex flex-col'>
+                <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
+                <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
+              </div>
             </div>
-          </div>
 
-          <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
+            <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
 
-          <div className='hidden flex-col min-[1281px]:flex'>
-            <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This week</p>
-            <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
-          </div>
+            <div className='hidden flex-col min-[1281px]:flex'>
+              <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This week</p>
+              <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
+            </div>
 
-          <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
+            <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
 
-          <div className='hidden flex-col min-[1281px]:flex'>
-            <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This month</p>
-            <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
+            <div className='hidden flex-col min-[1281px]:flex'>
+              <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This month</p>
+              <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Weekly goal card keeps the label, current total, and progress fill together. */}
-      <div className='min-h-[50px] rounded-xl border border-neutral-700/70 bg-neutral-950/40 p-4 max-[1280px]:h-full'>
-        <div className='flex w-full justify-center'>
-          <div className='w-[calc(100%-1rem)] md:w-[calc(100%-3rem)] max-w-[320px]'>
-            <div className='flex items-baseline justify-between gap-3 px-1 py-1'>
-              <p className={`text-xs uppercase tracking-[0.2em] ${BADGE_GOLD_TEXT_CLASS}`}>Weekly goal</p>
-              <p className={`text-right text-lg ${BADGE_GOLD_TEXT_CLASS}`}>
-                {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
-              </p>
-            </div>
+        {/* Weekly goal card keeps the label, current total, and progress fill together. */}
+        <div className='min-h-[50px] rounded-xl border border-neutral-700/70 bg-neutral-950/40 p-4 min-[1281px]:min-w-[320px] min-[1281px]:max-w-[360px] min-[1281px]:flex-1'>
+          <div className='flex w-full justify-center min-[1281px]:h-full min-[1281px]:items-center'>
+            <div className='w-[calc(100%-1rem)] max-w-[320px] md:w-[calc(100%-3rem)] min-[1281px]:w-full min-[1281px]:max-w-none'>
+              <div className='flex items-baseline justify-between gap-3 px-1 py-1'>
+                <p className={`text-xs uppercase tracking-[0.2em] ${BADGE_GOLD_TEXT_CLASS}`}>Weekly goal</p>
+                <p className={`text-right text-lg ${BADGE_GOLD_TEXT_CLASS}`}>
+                  {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
+                </p>
+              </div>
 
-            <div className='mt-4 h-2.5 w-full overflow-hidden rounded-full bg-neutral-800'>
-              {/* Width is derived from weekly progress percentage and capped in getPracticeStats. */}
-              <div
-                className='h-full rounded-full bg-[#E6B870] transition-[width] duration-300'
-                style={{ width: `${progressPercent}%` }}
-              />
+              <div className='mt-4 h-2.5 w-full overflow-hidden rounded-full bg-neutral-800'>
+                {/* Width is derived from weekly progress percentage and capped in getPracticeStats. */}
+                <div
+                  className='h-full rounded-full bg-[#E6B870] transition-[width] duration-300'
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* External shortcut to the detailed piano practice logs repository. */}
-      <div className='flex min-h-[40px] justify-end
-        max-[1280px]:min-h-[40px] max-[1280px]:items-start max-[1280px]:justify-start max-[1279px]:hidden'>
+      <div className='flex min-h-[40px] justify-start'>
         <a
           className={`min-w-[200px] min-h-[40px] justify-center inline-flex w-fit items-center rounded-[5px] border border-[#c6942f]/45 bg-neutral-950/40 px-4 py-2 text-sm transition-colors duration-150 hover:border-[#c6942f]/70 hover:bg-neutral-900 ${BADGE_GOLD_TEXT_CLASS}`}
           href='https://github.com/LiberteI/piano-log/tree/main/logs'
@@ -413,8 +411,8 @@ const Practice = () => {
       className='self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-900 p-8 md:w-[calc(100%-3rem)] md:p-10
       max-[1280px]:min-h-[400px]
       max-[768px]:min-h-[450px]'>
-      <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
-        <div className='min-w-0 flex-1 flex-col gap-8 xl:flex'>
+      <div className='flex flex-col gap-8'>
+        <div className='min-w-0 flex flex-col gap-8'>
           <MusicHeader
             className='translate-y-5 translate-x-5'
             number={1}
@@ -423,15 +421,14 @@ const Practice = () => {
           />
 
           <div 
-            className='mt-8 overflow-hidden p-6 md:p-8 -translate-y-0 translate-x-10 
-              max-[1280px]:translate-y-10 max-[1280px]:translate-x-0
-              max-[768px]:translate-x-0'>
+            className='mt-8 overflow-x-auto p-6 md:p-8 
+              min-[1281px]:px-0 min-[1281px]:pb-2 min-[1281px]:pt-8 min-[1281px]:self-center
+              max-[1280px]:translate-y-10 max-[1280px]:translate-x-0 max-[768px]:translate-x-0'>
               <ContributionBar data={practiceData} />
           </div>
         </div>
 
-        <div className='xl:w-[400px] xl:flex-none translate-y-12 -translate-x-10 
-          max-[1280px]:translate-x-0'>
+        <div className='min-[1281px]:pt-2'>
           <Stats data={practiceData} />
         </div>
       </div>
