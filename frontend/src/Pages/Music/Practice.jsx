@@ -82,6 +82,8 @@ const normalizePracticeData = (data) => {
 
 const getDateKey = (date) => date.toISOString().slice(0, 10)
 
+const getMondayIndex = (date) => (date.getDay() + 6) % 7
+
 const getStartOfWeek = (date) => {
   const start = new Date(date)
   start.setHours(0, 0, 0, 0)
@@ -160,39 +162,36 @@ const getPracticeStats = (data, weeklyGoalMinutes = 600) => {
 const getContributionColumns = (data) => {
   const today = new Date()
   const yearStart = new Date(today.getFullYear(), 0, 1)
-  const gridStart = new Date(yearStart)
-  gridStart.setDate(yearStart.getDate() - yearStart.getDay())
+  const yearEnd = new Date(today.getFullYear(), 11, 31)
+  const firstMonday = new Date(yearStart)
+  firstMonday.setDate(yearStart.getDate() - getMondayIndex(yearStart))
 
   const practiceMap = normalizePracticeData(data)
   const weeks = []
-  let currentWeek = []
 
-  for (let cursor = new Date(gridStart); cursor <= today; cursor.setDate(cursor.getDate() + 1)) {
-    const isInCurrentYear = cursor >= yearStart
-    const date = isInCurrentYear ? new Date(cursor) : null
-    const dateKey = date ? date.toISOString().slice(0, 10) : null
+  for (let weekStart = new Date(firstMonday); weekStart <= yearEnd; weekStart.setDate(weekStart.getDate() + 7)) {
+    const week = []
 
-    currentWeek.push({
-      date,
-      practiceTime: dateKey ? practiceMap.get(dateKey) ?? 0 : 0,
-      key: dateKey ?? `empty-${weeks.length}-${currentWeek.length}`,
-    })
+    for (let offset = 0; offset < 7; offset += 1) {
+      const cursor = new Date(weekStart)
+      cursor.setDate(weekStart.getDate() + offset)
 
-    if (currentWeek.length === 7) {
-      weeks.push(currentWeek)
-      currentWeek = []
-    }
-  }
+      if (cursor < yearStart || cursor > yearEnd) {
+        continue
+      }
 
-  if (currentWeek.length > 0) {
-    while (currentWeek.length < 7) {
-      currentWeek.push({
-        date: null,
-        practiceTime: 0,
-        key: `tail-empty-${weeks.length}-${currentWeek.length}`,
+      const date = new Date(cursor)
+      const dateKey = getDateKey(date)
+
+      week.push({
+        date,
+        practiceTime: practiceMap.get(dateKey) ?? 0,
+        key: dateKey,
+        rowStart: getMondayIndex(date) + 2,
       })
     }
-    weeks.push(currentWeek)
+
+    weeks.push(week)
   }
 
   return weeks
@@ -259,12 +258,12 @@ const ContributionBar = ({ data = [] }) => {
           ))}
 
           {weeks.flatMap((week, columnIndex) =>
-            week.map((cell, rowIndex) => (
+            week.map((cell) => (
               <div
                 key={cell.key}
                 style={{
                   gridColumnStart: columnIndex + 2,
-                  gridRowStart: rowIndex + 2,
+                  gridRowStart: cell.rowStart,
                 }}
               >
                 <ContributionCell
