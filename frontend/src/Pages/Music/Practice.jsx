@@ -276,7 +276,7 @@ const ContributionBar = ({ data = [] }) => {
           )}
         </div>
 
-        <div className='flex items-center justify-start gap-2 text-[11px] uppercase tracking-[0.18em] text-neutral-500'>
+        <div className='flex self-start items-center justify-start gap-2 text-[11px] uppercase tracking-[0.18em] text-neutral-500'>
           <span>Less</span>
           <div className='flex items-center gap-1'>
             {legendSteps.map((step) => (
@@ -428,7 +428,7 @@ const Practice = () => {
           </div>
         </div>
 
-        <div className='min-w-0 rounded-2xl bg-neutral-900/70'>
+        <div className='min-w-0'>
           <ContributionBar data={practiceData} />
         </div>
 
