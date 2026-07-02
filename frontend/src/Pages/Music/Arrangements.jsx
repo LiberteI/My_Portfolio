@@ -1,15 +1,151 @@
+import { useEffect, useState } from 'react'
 import MusicHeader from '../../Components/Music/MusicHeader'
+
+const SURFACE_CARD_CLASS = 'rounded-2xl border border-neutral-700/70 bg-neutral-900/80'
+const YOUTUBE_CHANNEL_URL = 'https://www.youtube.com/@Liberteeeee-hd7zg'
+
+const mapVideoToArrangement = (video) => {
+  if (!video?.id) return null
+
+  return {
+    title: video.title || 'Untitled arrangement',
+    href: `https://www.youtube.com/watch?v=${video.id}`,
+    thumbnail: video.thumbnail || `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`,
+  }
+}
+
 const Arrangements = () => {
+  const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+  const [featuredArrangement, setFeaturedArrangement] = useState(null)
+  const [moreArrangements, setMoreArrangements] = useState([])
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadArrangements = async () => {
+      try {
+        const [featuredResponse, moreResponse] = await Promise.all([
+          fetch(`${apiBase}/api/youtube/featured-arrangement`),
+          fetch(`${apiBase}/api/youtube/more-arrangement`),
+        ])
+
+        if (!featuredResponse.ok || !moreResponse.ok) {
+          throw new Error('Failed to load arrangement videos')
+        }
+
+        const [featuredPayload, morePayload] = await Promise.all([
+          featuredResponse.json(),
+          moreResponse.json(),
+        ])
+
+        if (!isMounted) {
+          return
+        }
+
+        const featuredVideo = mapVideoToArrangement(featuredPayload?.videos?.[0])
+        const moreVideos = Array.isArray(morePayload?.videos)
+          ? morePayload.videos.map(mapVideoToArrangement).filter(Boolean)
+          : []
+
+        if (featuredVideo) {
+          setFeaturedArrangement(featuredVideo)
+        }
+
+        setMoreArrangements(moreVideos)
+      } catch (error) {
+        console.error('Unable to load arrangement videos', error)
+      }
+    }
+
+    loadArrangements()
+
+    return () => {
+      isMounted = false
+    }
+  }, [apiBase])
+
   return (
-    <section className='w-full rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
-      <div className='flex flex-col gap-8 md:gap-10'>
+    <section
+      className={`${SURFACE_CARD_CLASS} self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] p-6 md:w-[calc(100%-3rem)] md:p-8 lg:p-10`}
+    >
+      <div className='flex flex-col gap-8 overflow-hidden'>
         <MusicHeader
           number={2}
-          title='Arrangements'
-          subtitle='Creative interpretations of pieces.'
+          title='Arrangements Showcase'
+          subtitle='Reimagining music I love.'
         />
-        <div className='min-h-64 w-full rounded-2xl border border-neutral-700/70 bg-neutral-900/50 p-6 md:p-8'>
-          
+
+        <div className='grid gap-8 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-start'>
+          <div className='flex min-w-0 flex-col gap-6'>
+            {featuredArrangement ? (
+              <a
+                className='group relative overflow-hidden rounded-2xl border border-neutral-700/70 bg-neutral-950/70 transition-colors duration-150 hover:border-[#c6942f]/70'
+                href={featuredArrangement.href}
+                target='_blank'
+                rel='noreferrer'
+              >
+                <div className='relative aspect-video w-full bg-black/40'>
+                  <img
+                    className='absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]'
+                    src={featuredArrangement.thumbnail}
+                    alt={`${featuredArrangement.title} arrangement thumbnail`}
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/20' />
+                </div>
+
+                <div className='absolute inset-0 z-10 flex flex-col items-start justify-end gap-3 p-5'>
+                  <h3 className='text-2xl font-semibold text-neutral-100'>{featuredArrangement.title}</h3>
+                  <span className='inline-flex rounded-full border border-[#c6942f]/40 bg-[#c6942f]/10 px-4 py-2 text-sm font-medium text-[#E6B870] transition-colors duration-150 group-hover:border-[#c6942f]/70 group-hover:bg-[#c6942f]/15'>
+                    View Arrangement
+                  </span>
+                </div>
+              </a>
+            ) : (
+              <div className='flex min-h-56 items-center justify-center rounded-2xl border border-dashed border-neutral-700/80 bg-neutral-950/40 p-5 text-sm text-neutral-500'>
+                Featured arrangement unavailable
+              </div>
+            )}
+          </div>
+
+          <div className='flex min-w-0 flex-col gap-5'>
+          <div className='flex items-center justify-between gap-4'>
+            <h3 className='text-lg font-medium text-neutral-100'>More Arrangement</h3>
+          </div>
+
+          <div className='grid grid-cols-2 gap-4 min-[1280px]:grid-cols-4'>
+            {moreArrangements.map((arrangement) => (
+              <div key={arrangement.title} className='flex flex-col gap-3'>
+                <a
+                  className='group overflow-hidden rounded-2xl border border-neutral-700/70 bg-neutral-950/70 transition-colors duration-150 hover:border-[#c6942f]/70'
+                  href={arrangement.href}
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  <div className='aspect-video w-full bg-black/40'>
+                    <img
+                      className='h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]'
+                      src={arrangement.thumbnail}
+                      alt={`${arrangement.title} arrangement thumbnail`}
+                    />
+                  </div>
+                </a>
+                <p className='text-sm text-neutral-400'>{arrangement.title}</p>
+              </div>
+            ))}
+
+            <a
+              className='flex h-full min-h-[176px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-neutral-700/80 bg-neutral-950/40 p-5 text-center transition-colors duration-150 hover:border-[#c6942f]/70 hover:bg-neutral-900/70'
+              href={YOUTUBE_CHANNEL_URL}
+              target='_blank'
+              rel='noreferrer'
+            >
+              <span className='text-4xl text-neutral-300' aria-hidden='true'>+</span>
+              <span className='max-w-[10rem] text-sm font-medium text-neutral-300'>
+                View more arrangements
+              </span>
+            </a>
+          </div>
+        </div>
         </div>
       </div>
     </section>

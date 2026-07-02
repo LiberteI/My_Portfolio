@@ -333,7 +333,7 @@ const TopSummary = ({ data = [] }) => {
       min-[600px]:flex-row min-[600px]:items-center min-[600px]:justify-start min-[600px]:gap-5'>
       <div className='flex items-center gap-4 justify-center min-[600px]:justify-start'>
         <img
-          className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
+          className='h-12 w-12 object-contain -translate-y-2 translate-x-2 drop-shadow-[0_0_12px_rgba(230,184,112,0.85)]'
           src={fireStreakGif}
           alt='Fire streak icon'
         />

@@ -1,7 +1,8 @@
 import {Router} from "express";
-import {getVideo} from './controller.js'
+import {getFeaturedArrangement, getMoreArrangement} from './controller.js'
 
 const router = Router();
-router.get('/', getVideo);
+router.get('/featured-arrangement', getFeaturedArrangement);
+router.get('/more-arrangement', getMoreArrangement);
 
 export default router;

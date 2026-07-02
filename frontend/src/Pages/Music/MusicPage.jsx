@@ -6,15 +6,15 @@ import Performance from './Performance'
 const MusicPage = () => {
   return (
     <main className='flex min-h-screen flex-col items-center gap-12 bg-black px-6 py-10 text-neutral-100'>
-      <div className='relative flex w-full max-w-6xl items-end justify-between gap-8'>
+      <header className='relative flex w-full max-w-6xl items-end justify-between gap-8'>
         <div className='relative z-20 flex min-h-[100px] flex-col justify-end pb-2 translate-x-10'>
           <div className='flex items-center gap-3'>
-            <h1 className='text-[#E6B870] scale-y-300'>|</h1>
+            <span className='text-[#E6B870] scale-y-300' aria-hidden='true'>|</span>
             <h1 className='text-4xl font-bold'>Music</h1>
           </div>
           <p>Discipline, Creativity, Expression</p>
         </div>
-        <div className='relative z-10 flex min-h-[100px] flex-1 items-end justify-end'>
+        <div className='relative z-10 hidden min-h-[100px] flex-1 items-end justify-end min-[700px]:flex'>
           <div
             className='pointer-events-none absolute right-0 top-0 h-[100px] w-[500px] overflow-hidden'
             style={{
@@ -39,9 +39,12 @@ const MusicPage = () => {
             <p className='text-[#E6B870]'>___</p>
           </div>
         </div>
-      </div>
+      </header>
+
+      
       <div className='flex w-full max-w-6xl flex-col justify-center gap-4'>
         <Practice />
+        <Arrangements />
         {/* <Arrangements />
         <Performance /> */}
       </div>
