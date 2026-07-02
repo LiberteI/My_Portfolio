@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import MusicHeader from '../../Components/MusicHeader'
+import MusicHeader from '../../Components/Music/MusicHeader'
 
 const fireStreakGif = '/images/music/fire-streak.gif'
 const PRACTICE_DAYS_ENDPOINT =

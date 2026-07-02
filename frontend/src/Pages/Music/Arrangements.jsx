@@ -1,4 +1,4 @@
-import MusicHeader from '../../Components/MusicHeader'
+import MusicHeader from '../../Components/Music/MusicHeader'
 const Arrangements = () => {
   return (
     <section className='w-full rounded-3xl border border-neutral-700 bg-neutral-800 p-8 md:p-10'>
