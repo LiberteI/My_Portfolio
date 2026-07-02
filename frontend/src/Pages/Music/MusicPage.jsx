@@ -45,8 +45,8 @@ const MusicPage = () => {
       <div className='flex w-full max-w-6xl flex-col justify-center gap-4'>
         <Practice />
         <Arrangements />
-        {/* <Arrangements />
-        <Performance /> */}
+        <Performance />
+        
       </div>
     </main>
   )

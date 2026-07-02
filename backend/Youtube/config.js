@@ -36,3 +36,13 @@ export const getMoreArrangementVideoIds = () => {
 
   return videoIds
 }
+
+export const getPerformanceVideoIds = () => {
+  const videoIds = parseIdList(process.env.PERFORMANCE_VIDEO_IDS)
+
+  if (videoIds.length === 0) {
+    throw new YoutubeConfigError('Missing PERFORMANCE_VIDEO_IDS')
+  }
+
+  return videoIds
+}
