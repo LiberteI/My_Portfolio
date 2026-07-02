@@ -205,7 +205,7 @@ const ContributionBar = ({ data = [] }) => {
   const legendSteps = [0, 20, 45, 75, 100]
 
   return (
-    <div className='overflow-x-auto'>
+    <div className='overflow-x-auto '>
       <div className='inline-flex min-w-full flex-col gap-4'>
         <div
           className='inline-grid w-max gap-x-1 gap-y-1'
@@ -380,8 +380,9 @@ const Practice = () => {
           />
 
           <div 
-            className='mt-8 rounded-2xl p-6 md:p-8 -translate-y-0 translate-x-10 
-              max-[1280px]:translate-y-10'>
+            className='mt-8 overflow-hidden p-6 md:p-8 -translate-y-0 translate-x-10 
+              max-[1280px]:translate-y-10
+              max-[768px]:translate-x-0'>
               <ContributionBar data={demoPracticeData} />
           </div>
         </div>
