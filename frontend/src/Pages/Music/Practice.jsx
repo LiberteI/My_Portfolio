@@ -329,31 +329,28 @@ const TopSummary = ({ data = [] }) => {
   } = getPracticeStats(data)
 
   return (
-    <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end'>
+    <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end sm:gap-5'>
       <div className='flex items-center gap-4 justify-center sm:justify-start'>
         <img
           className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
           src={fireStreakGif}
           alt='Fire streak icon'
         />
-        <div className='flex flex-col'>
+        <div className='flex items-baseline gap-3'>
           <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
-          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
+          <p className='whitespace-nowrap text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
         </div>
       </div>
 
-      <span className='hidden text-neutral-700 min-[640px]:block'>|</span>
+      <span className='hidden text-neutral-700 sm:block'>|</span>
 
       <div className='mx-auto h-px w-full max-w-[180px] bg-neutral-800 sm:hidden' />
 
       <div className='flex w-full max-w-[320px] flex-col gap-2 sm:w-[220px]'>
-        <div className='flex items-baseline justify-between gap-3'>
-          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Weekly goal</p>
-          <p className={`text-lg font-medium ${BADGE_GOLD_TEXT_CLASS}`}>
-            {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
-          </p>
-        </div>
-
+        <p className={`text-lg font-medium ${BADGE_GOLD_TEXT_CLASS}`}>
+          {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
+        </p>
+        <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Weekly goal</p>
         <div className='h-2.5 w-full overflow-hidden rounded-full bg-neutral-800'>
           <div
             className='h-full rounded-full bg-[#E6B870] transition-[width] duration-300'
@@ -364,7 +361,6 @@ const TopSummary = ({ data = [] }) => {
     </div>
   )
 }
-
 const BottomStats = ({ data = [] }) => {
   const {
     thisWeekMinutes,
@@ -417,7 +413,7 @@ const Practice = () => {
       className={`${SURFACE_CARD_CLASS} self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] p-6 md:w-[calc(100%-3rem)] md:p-8`}
     >
       <div className='flex flex-col gap-6 overflow-hidden'>
-        <div className='grid gap-6 min-[1100px]:grid-cols-[minmax(0,1fr)_320px] min-[1100px]:items-start'>
+        <div className='grid gap-6 min-[1100px]:grid-cols-[max-content_minmax(360px,460px)] min-[1100px]:items-start min-[1100px]:justify-between'>
           <MusicHeader
             className='gap-5'
             number={1}
@@ -425,15 +421,13 @@ const Practice = () => {
             subtitle='Consistency builds mastery.'
           />
 
-          <div className='min-w-0'>
+          <div className='min-w-0 min-[1100px]:justify-self-end'>
             <TopSummary data={practiceData} />
           </div>
         </div>
 
-        <div className='min-w-0'>
-          <div className='w-full rounded-2xl border border-neutral-800/80 bg-neutral-900/60 p-4 md:p-6'>
-            <ContributionBar data={practiceData} />
-          </div>
+        <div className='min-w-0 py-2'>
+          <ContributionBar data={practiceData} />
         </div>
 
         <BottomStats data={practiceData} />
