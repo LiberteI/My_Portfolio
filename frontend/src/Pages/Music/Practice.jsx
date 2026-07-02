@@ -10,6 +10,7 @@ const CELL_BASE_CLASS =
 const GRID_LABEL_CLASS = 'text-[11px] uppercase tracking-[0.18em] text-neutral-500'
 const CELL_SIZE_REM = 0.875
 const BADGE_GOLD_TEXT_CLASS = 'text-[#c6942f]'
+const SURFACE_CARD_CLASS = 'rounded-2xl border border-neutral-700/70 bg-neutral-950/40'
 
 const formatDateLabel = (date) =>
   date.toLocaleDateString('en-US', {
@@ -226,8 +227,8 @@ const ContributionBar = ({ data = [] }) => {
   const legendSteps = [0, 20, 45, 75, 100]
 
   return (
-    <div className='overflow-x-auto '>
-      <div className='inline-flex min-w-full flex-col gap-4'>
+    <div className='w-full overflow-x-auto'>
+      <div className='inline-flex min-w-full flex-col gap-4 min-[1281px]:items-center'>
         <div
           className='inline-grid w-max gap-x-1 gap-y-1'
           style={{
@@ -293,83 +294,88 @@ const ContributionBar = ({ data = [] }) => {
   )
 }
 
-const Stats = ({ data = [] }) => {
+const DashboardBlock = ({ label, value, href, accent = false }) => {
+  const baseClassName = `${SURFACE_CARD_CLASS} min-h-[92px] p-5`
+
+  if (href) {
+    return (
+      <a
+        className={`${baseClassName} flex items-center justify-center text-center transition-colors duration-150 hover:border-[#c6942f]/70 hover:bg-neutral-900`}
+        href={href}
+        target='_blank'
+        rel='noreferrer'
+      >
+        <span className={`text-lg font-medium ${BADGE_GOLD_TEXT_CLASS}`}>{label}</span>
+      </a>
+    )
+  }
+
+  return (
+    <div className={`${baseClassName} flex flex-col items-center justify-center text-center`}>
+      <p className='text-sm uppercase tracking-[0.18em] text-neutral-500'>{label}</p>
+      <p className={`mt-3 font-serif text-3xl text-neutral-100 ${accent ? BADGE_GOLD_TEXT_CLASS : ''}`}>
+        {value}
+      </p>
+    </div>
+  )
+}
+
+const TopSummary = ({ data = [] }) => {
   const {
     streakDays,
     thisWeekMinutes,
-    thisMonthMinutes,
     weeklyGoalMinutes,
     progressPercent,
   } = getPracticeStats(data)
 
   return (
-    <div className='flex flex-col gap-4 md:gap-5'>
-      <div className='flex flex-col gap-4 min-[1281px]:flex-row min-[1281px]:items-stretch'>
-        {/* Summary card: current streak, this week, and this month at a glance. */}
-        <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4 min-[1281px]:flex-1'>
-          <div className='flex flex-col gap-4 justify-center md:flex-row md:items-center md:gap-5 min-[1281px]:h-full min-[1281px]:justify-start'>
-            <div className='flex items-center gap-4 justify-center'>
-              <img
-                className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
-                src={fireStreakGif}
-                alt='Fire streak icon'
-              />
-              <div className='flex flex-col'>
-                <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
-                <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
-              </div>
-            </div>
-
-            <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
-
-            <div className='hidden flex-col min-[1281px]:flex'>
-              <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This week</p>
-              <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
-            </div>
-
-            <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
-
-            <div className='hidden flex-col min-[1281px]:flex'>
-              <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This month</p>
-              <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Weekly goal card keeps the label, current total, and progress fill together. */}
-        <div className='min-h-[50px] rounded-xl border border-neutral-700/70 bg-neutral-950/40 p-4 min-[1281px]:min-w-[320px] min-[1281px]:max-w-[360px] min-[1281px]:flex-1'>
-          <div className='flex w-full justify-center min-[1281px]:h-full min-[1281px]:items-center'>
-            <div className='w-[calc(100%-1rem)] max-w-[320px] md:w-[calc(100%-3rem)] min-[1281px]:w-full min-[1281px]:max-w-none'>
-              <div className='flex items-baseline justify-between gap-3 px-1 py-1'>
-                <p className={`text-xs uppercase tracking-[0.2em] ${BADGE_GOLD_TEXT_CLASS}`}>Weekly goal</p>
-                <p className={`text-right text-lg ${BADGE_GOLD_TEXT_CLASS}`}>
-                  {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
-                </p>
-              </div>
-
-              <div className='mt-4 h-2.5 w-full overflow-hidden rounded-full bg-neutral-800'>
-                {/* Width is derived from weekly progress percentage and capped in getPracticeStats. */}
-                <div
-                  className='h-full rounded-full bg-[#E6B870] transition-[width] duration-300'
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
-          </div>
+    <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end'>
+      <div className='flex items-center gap-4 justify-center sm:justify-start'>
+        <img
+          className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
+          src={fireStreakGif}
+          alt='Fire streak icon'
+        />
+        <div className='flex flex-col'>
+          <p className='font-serif text-3xl text-neutral-100'>{streakDays}</p>
+          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Day streak</p>
         </div>
       </div>
 
-      {/* External shortcut to the detailed piano practice logs repository. */}
-      <div className='flex min-h-[40px] justify-start'>
-        <a
-          className={`min-w-[200px] min-h-[40px] justify-center inline-flex w-fit items-center rounded-[5px] border border-[#c6942f]/45 bg-neutral-950/40 px-4 py-2 text-sm transition-colors duration-150 hover:border-[#c6942f]/70 hover:bg-neutral-900 ${BADGE_GOLD_TEXT_CLASS}`}
-          href='https://github.com/LiberteI/piano-log/tree/main/logs'
-          target='_blank'
-          rel='noreferrer'
-        >
-          View piano logs -&gt;
-        </a>
+      <span className='hidden text-neutral-700 min-[640px]:block'>|</span>
+
+      <div className='mx-auto h-px w-full max-w-[180px] bg-neutral-800 sm:hidden' />
+
+      <div className='flex w-full max-w-[320px] flex-col gap-2 sm:w-[220px]'>
+        <div className='flex items-baseline justify-between gap-3'>
+          <p className='text-xs uppercase tracking-[0.2em] text-neutral-500'>Weekly goal</p>
+          <p className={`text-lg font-medium ${BADGE_GOLD_TEXT_CLASS}`}>
+            {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
+          </p>
+        </div>
+
+        <div className='h-2.5 w-full overflow-hidden rounded-full bg-neutral-800'>
+          <div
+            className='h-full rounded-full bg-[#E6B870] transition-[width] duration-300'
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
       </div>
+    </div>
+  )
+}
+
+const BottomStats = ({ data = [] }) => {
+  const {
+    thisWeekMinutes,
+    thisMonthMinutes,
+  } = getPracticeStats(data)
+
+  return (
+    <div className='grid gap-4 md:grid-cols-3'>
+      <DashboardBlock label='This Week' value={formatHours(thisWeekMinutes)} />
+      <DashboardBlock label='This Month' value={formatHours(thisMonthMinutes)} />
+      <DashboardBlock label='View piano logs -&gt;' href='https://github.com/LiberteI/piano-log/tree/main/logs' />
     </div>
   )
 }
@@ -407,30 +413,30 @@ const Practice = () => {
   }, [])
 
   return (
-    <section 
-      className='self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-900 p-8 md:w-[calc(100%-3rem)] md:p-10
-      max-[1280px]:min-h-[400px]
-      max-[768px]:min-h-[450px]'>
-      <div className='flex flex-col gap-8'>
-        <div className='min-w-0 flex flex-col gap-8'>
+    <section
+      className={`${SURFACE_CARD_CLASS} self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] p-6 md:w-[calc(100%-3rem)] md:p-8`}
+    >
+      <div className='flex flex-col gap-6 overflow-hidden'>
+        <div className='grid gap-6 min-[1100px]:grid-cols-[minmax(0,1fr)_320px] min-[1100px]:items-start'>
           <MusicHeader
-            className='translate-y-5 translate-x-5'
+            className='gap-5'
             number={1}
             title='Practice Streak'
             subtitle='Consistency builds mastery.'
           />
 
-          <div 
-            className='mt-8 overflow-x-auto p-6 md:p-8 
-              min-[1281px]:px-0 min-[1281px]:pb-2 min-[1281px]:pt-8 min-[1281px]:self-center
-              max-[1280px]:translate-y-10 max-[1280px]:translate-x-0 max-[768px]:translate-x-0'>
-              <ContributionBar data={practiceData} />
+          <div className='min-w-0'>
+            <TopSummary data={practiceData} />
           </div>
         </div>
 
-        <div className='min-[1281px]:pt-2'>
-          <Stats data={practiceData} />
+        <div className='min-w-0'>
+          <div className='w-full rounded-2xl border border-neutral-800/80 bg-neutral-900/60 p-4 md:p-6'>
+            <ContributionBar data={practiceData} />
+          </div>
         </div>
+
+        <BottomStats data={practiceData} />
       </div>
     </section>
   )
