@@ -372,12 +372,15 @@ const Practice = () => {
             subtitle='Consistency builds mastery.'
           />
 
-          <div className='mt-8 rounded-2xl p-6 md:p-8 -translate-y-0 translate-x-10'>
+          <div 
+            className='mt-8 rounded-2xl p-6 md:p-8 -translate-y-0 translate-x-10 
+              max-[1280px]:translate-y-10'>
               <ContributionBar data={demoPracticeData} />
           </div>
         </div>
 
-        <div className='xl:w-[400px] xl:flex-none translate-y-12 -translate-x-10'>
+        <div className='xl:w-[400px] xl:flex-none translate-y-12 -translate-x-10 
+          max-[1280px]:translate-x-0'>
           <Stats data={demoPracticeData} />
         </div>
       </div>
