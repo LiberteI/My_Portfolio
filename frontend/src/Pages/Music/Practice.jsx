@@ -346,7 +346,7 @@ const TopSummary = ({ data = [] }) => {
 
       <div className='mx-auto h-px w-full max-w-[180px] bg-neutral-800 sm:hidden' />
 
-      <div className='flex w-full max-w-[320px] flex-col gap-2 sm:w-[220px]'>
+      <div className='flex w-full max-w-[320px] flex-col gap-2 sm:w-[220px] sm:shrink-0'>
         <p className={`text-lg font-medium ${BADGE_GOLD_TEXT_CLASS}`}>
           {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
         </p>
@@ -412,16 +412,16 @@ const Practice = () => {
     <section
       className={`${SURFACE_CARD_CLASS} self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] p-6 md:w-[calc(100%-3rem)] md:p-8`}
     >
-      <div className='flex flex-col gap-6 overflow-hidden'>
-        <div className='grid gap-6 min-[1100px]:grid-cols-[max-content_minmax(360px,460px)] min-[1100px]:items-start min-[1100px]:justify-between'>
+      <div className='flex flex-col gap-4 overflow-hidden'>
+        <div className='flex flex-col gap-0 min-[768px]:flex-row min-[768px]:items-start min-[768px]:justify-between min-[768px]:gap-8'>
           <MusicHeader
-            className='gap-5'
+            className='min-[768px]:min-w-0 min-[768px]:flex-1'
             number={1}
             title='Practice Streak'
             subtitle='Consistency builds mastery.'
           />
 
-          <div className='min-w-0 min-[1100px]:justify-self-end'>
+          <div className='min-w-0 min-[768px]:shrink-0'>
             <TopSummary data={practiceData} />
           </div>
         </div>
