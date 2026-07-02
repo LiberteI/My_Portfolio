@@ -31,14 +31,15 @@ const Arrangements = () => {
     <section
       className={`${SURFACE_CARD_CLASS} self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] p-6 md:w-[calc(100%-3rem)] md:p-8 lg:p-10`}
     >
-      <div className='flex flex-col gap-8 overflow-hidden lg:flex-row lg:items-start lg:gap-8'>
-        <div className='flex min-w-0 flex-[0.6] flex-col gap-6'>
-          <MusicHeader
-            number={2}
-            title='Arrangements Showcase'
-            subtitle='Reimagining music I love.'
-          />
+      <div className='flex flex-col gap-8 overflow-hidden'>
+        <MusicHeader
+          number={2}
+          title='Arrangements Showcase'
+          subtitle='Reimagining music I love.'
+        />
 
+        <div className='grid gap-8 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] lg:items-start'>
+          <div className='flex min-w-0 flex-col gap-6'>
           <a
             className='group relative overflow-hidden rounded-2xl border border-neutral-700/70 bg-neutral-950/70 transition-colors duration-150 hover:border-[#c6942f]/70'
             href={featuredArrangement.href}
@@ -59,16 +60,9 @@ const Arrangements = () => {
               </span>
             </div>
           </a>
-        </div>
+          </div>
 
-        <span
-          className='hidden self-stretch text-center text-3xl text-neutral-700 lg:flex lg:items-center'
-          aria-hidden='true'
-        >
-          |
-        </span>
-
-        <div className='flex min-w-0 flex-1 flex-col gap-5'>
+          <div className='flex min-w-0 flex-col gap-5'>
           <div className='flex items-center justify-between gap-4'>
             <h3 className='text-lg font-medium text-neutral-100'>More Arrangement</h3>
           </div>
@@ -104,6 +98,7 @@ const Arrangements = () => {
               </span>
             </a>
           </div>
+        </div>
         </div>
       </div>
     </section>
