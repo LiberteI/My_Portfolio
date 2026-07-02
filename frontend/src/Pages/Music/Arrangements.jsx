@@ -84,14 +84,16 @@ const Arrangements = () => {
                 target='_blank'
                 rel='noreferrer'
               >
-                <img
-                  className='absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]'
-                  src={featuredArrangement.thumbnail}
-                  alt={`${featuredArrangement.title} arrangement thumbnail`}
-                />
-                <div className='absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/20' />
+                <div className='relative aspect-video w-full bg-black/40'>
+                  <img
+                    className='absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]'
+                    src={featuredArrangement.thumbnail}
+                    alt={`${featuredArrangement.title} arrangement thumbnail`}
+                  />
+                  <div className='absolute inset-0 bg-gradient-to-r from-black/80 via-black/55 to-black/20' />
+                </div>
 
-                <div className='relative z-10 flex min-h-56 flex-col items-start justify-end gap-3 p-5'>
+                <div className='absolute inset-0 z-10 flex flex-col items-start justify-end gap-3 p-5'>
                   <h3 className='text-2xl font-semibold text-neutral-100'>{featuredArrangement.title}</h3>
                   <span className='inline-flex rounded-full border border-[#c6942f]/40 bg-[#c6942f]/10 px-4 py-2 text-sm font-medium text-[#E6B870] transition-colors duration-150 group-hover:border-[#c6942f]/70 group-hover:bg-[#c6942f]/15'>
                     View Arrangement
@@ -119,11 +121,13 @@ const Arrangements = () => {
                   target='_blank'
                   rel='noreferrer'
                 >
-                  <img
-                    className='h-36 w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]'
-                    src={arrangement.thumbnail}
-                    alt={`${arrangement.title} arrangement thumbnail`}
-                  />
+                  <div className='aspect-video w-full bg-black/40'>
+                    <img
+                      className='h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]'
+                      src={arrangement.thumbnail}
+                      alt={`${arrangement.title} arrangement thumbnail`}
+                    />
+                  </div>
                 </a>
                 <p className='text-sm text-neutral-400'>{arrangement.title}</p>
               </div>
