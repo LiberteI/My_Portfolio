@@ -1,11 +1,13 @@
 @import "tailwindcss";
 
-/* apply to all elements */
-*{
-    margin : 0;
-    padding : 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
+@layer base {
+    /* Keep the reset below Tailwind utilities so spacing/font classes still win. */
+    *{
+        margin : 0;
+        padding : 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+    }
 }
 
 body{
