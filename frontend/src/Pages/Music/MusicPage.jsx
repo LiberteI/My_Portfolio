@@ -7,9 +7,9 @@ const MusicPage = () => {
   return (
     <main className='flex min-h-screen flex-col items-center gap-12 bg-black px-6 py-10 text-neutral-100'>
       <div className='flex w-full max-w-6xl items-end justify-between gap-8'>
-        <div className='flex min-h-[100px] flex-col justify-end pb-2'>
+        <div className='flex min-h-[100px] flex-col justify-end pb-2 translate-x-10'>
           <div className='flex items-center gap-3'>
-            <h1 className='text-[#E6B870]'>|</h1>
+            <h1 className='text-[#E6B870] scale-y-300'>|</h1>
             <h1 className='text-4xl font-bold'>Music</h1>
           </div>
           <p>Discipline, Creativity, Expression</p>
@@ -29,8 +29,8 @@ const MusicPage = () => {
               className='h-[300px] w-auto max-w-none object-cover -translate-y-45 -translate-x-0'
             />
           </div>
-          <div className='text-right'>
-            <p className='text-lg text-neutral-400'>
+          <div className='text-right -translate-x-10'>
+            <p>
                 "Every day at the piano
             </p>
             <p>
