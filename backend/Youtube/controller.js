@@ -1,4 +1,8 @@
-import { getFeaturedArrangementVideos, getMoreArrangementVideos } from './service.js'
+import {
+  getFeaturedArrangementVideos,
+  getMoreArrangementVideos,
+  getPerformanceVideos,
+} from './service.js'
 
 const respondWithVideos = async (res, loader) => {
   try {
@@ -19,4 +23,8 @@ export const getFeaturedArrangement = async (req, res) => {
 
 export const getMoreArrangement = async (req, res) => {
   return respondWithVideos(res, getMoreArrangementVideos)
+}
+
+export const getPerformance = async (req, res) => {
+  return respondWithVideos(res, getPerformanceVideos)
 }

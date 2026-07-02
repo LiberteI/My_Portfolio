@@ -1,4 +1,8 @@
-import { getFeaturedArrangementVideoId, getMoreArrangementVideoIds } from './config.js'
+import {
+  getFeaturedArrangementVideoId,
+  getMoreArrangementVideoIds,
+  getPerformanceVideoIds,
+} from './config.js'
 import { fetchYoutubeVideosByIds } from './client.js'
 import { mapYoutubeVideo } from './mapper.js'
 
@@ -13,4 +17,8 @@ export const getFeaturedArrangementVideos = async () => {
 
 export const getMoreArrangementVideos = async () => {
   return getVideosForIds(getMoreArrangementVideoIds())
+}
+
+export const getPerformanceVideos = async () => {
+  return getVideosForIds(getPerformanceVideoIds())
 }
