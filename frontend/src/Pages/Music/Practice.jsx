@@ -292,11 +292,14 @@ const Stats = ({ data = [] }) => {
   } = getPracticeStats(data)
 
   return (
-    <div className='grid gap-4 md:gap-5'>
+    <div className='grid gap-4 md:gap-5 max-[1280px]:grid-cols-2 max-[762px]:grid-cols-1'>
       {/* Summary card: current streak, this week, and this month at a glance. */}
-      <div className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4'>
-        <div className='flex flex-col gap-4 md:flex-row md:items-center md:gap-5'>
-          <div className='flex items-center gap-4'>
+      <div 
+        className='rounded-2xl border border-neutral-700/70 bg-neutral-950/40 p-4
+        max-[1280px]:h-full
+        '>
+        <div className='flex flex-col gap-4 md:flex-row md:items-center md:gap-5 justify-center'>
+          <div className='flex items-center gap-4 justify-center'>
             <img
               className='h-12 w-12 object-contain -translate-y-2 translate-x-2'
               src={fireStreakGif}
@@ -308,16 +311,16 @@ const Stats = ({ data = [] }) => {
             </div>
           </div>
 
-          <span className='hidden text-neutral-600 md:block'>|</span>
+          <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
 
-          <div className='flex flex-col'>
+          <div className='hidden flex-col min-[1281px]:flex'>
             <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This week</p>
             <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisWeekMinutes)}</p>
           </div>
 
-          <span className='hidden text-neutral-600 md:block'>|</span>
+          <span className='hidden text-neutral-600 min-[1281px]:block'>|</span>
 
-          <div className='flex flex-col'>
+          <div className='hidden flex-col min-[1281px]:flex'>
             <p className='text-[10px] uppercase tracking-[0.2em] text-neutral-500'>This month</p>
             <p className='mt-3 font-serif text-3xl text-neutral-100'>{formatHours(thisMonthMinutes)}</p>
           </div>
@@ -325,9 +328,9 @@ const Stats = ({ data = [] }) => {
       </div>
 
       {/* Weekly goal card keeps the label, current total, and progress fill together. */}
-      <div className='rounded-xl border border-neutral-700/70 bg-neutral-950/40 p-4 min-h-[50px]'>
+      <div className='min-h-[50px] rounded-xl border border-neutral-700/70 bg-neutral-950/40 p-4 max-[1280px]:h-full'>
         <div className='flex w-full justify-center'>
-          <div className='w-[180px] sm:w-[220px] md:w-[260px] lg:w-[320px]'>
+          <div className='w-[calc(100%-1rem)] md:w-[calc(100%-3rem)] max-w-[320px]'>
             <div className='flex items-baseline justify-between gap-3 px-1 py-1'>
               <p className={`text-xs uppercase tracking-[0.2em] ${BADGE_GOLD_TEXT_CLASS}`}>Weekly goal</p>
               <p className={`text-right text-lg ${BADGE_GOLD_TEXT_CLASS}`}>
@@ -347,9 +350,10 @@ const Stats = ({ data = [] }) => {
       </div>
 
       {/* External shortcut to the detailed piano practice logs repository. */}
-      <div className='flex justify-end min-h-[40px]'>
+      <div className='flex min-h-[40px] justify-end
+        max-[1280px]:min-h-[40px] max-[1280px]:items-start max-[1280px]:justify-start max-[1279px]:hidden'>
         <a
-          className={`min-w-[200px] justify-center inline-flex w-fit items-center rounded-[5px] border border-[#c6942f]/45 bg-neutral-950/40 px-4 py-2 text-sm transition-colors duration-150 hover:border-[#c6942f]/70 hover:bg-neutral-900 ${BADGE_GOLD_TEXT_CLASS}`}
+          className={`min-w-[200px] min-h-[40px] justify-center inline-flex w-fit items-center rounded-[5px] border border-[#c6942f]/45 bg-neutral-950/40 px-4 py-2 text-sm transition-colors duration-150 hover:border-[#c6942f]/70 hover:bg-neutral-900 ${BADGE_GOLD_TEXT_CLASS}`}
           href='https://github.com/LiberteI/piano-log/tree/main/logs'
           target='_blank'
           rel='noreferrer'
@@ -362,7 +366,10 @@ const Stats = ({ data = [] }) => {
 }
 const Practice = () => {
   return (
-    <section className='self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-900 p-8 md:w-[calc(100%-3rem)] md:p-10'>
+    <section 
+      className='self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] rounded-3xl border border-neutral-700 bg-neutral-900 p-8 md:w-[calc(100%-3rem)] md:p-10
+      max-[1280px]:min-h-[400px]
+      max-[768px]:min-h-[450px]'>
       <div className='flex flex-col gap-8 xl:flex-row xl:items-start xl:gap-10'>
         <div className='min-w-0 flex-1 flex-col gap-8 xl:flex'>
           <MusicHeader
