@@ -10,7 +10,7 @@ const CELL_BASE_CLASS =
 const GRID_LABEL_CLASS = 'text-[11px] uppercase tracking-[0.18em] text-neutral-500'
 const CELL_SIZE_REM = 0.875
 const BADGE_GOLD_TEXT_CLASS = 'text-[#c6942f]'
-const SURFACE_CARD_CLASS = 'rounded-2xl border border-neutral-700/70 bg-neutral-950/40'
+const SURFACE_CARD_CLASS = 'rounded-2xl border border-neutral-700/70 bg-neutral-900/80'
 
 const formatDateLabel = (date) =>
   date.toLocaleDateString('en-US', {
@@ -227,7 +227,7 @@ const ContributionBar = ({ data = [] }) => {
   const legendSteps = [0, 20, 45, 75, 100]
 
   return (
-    <div className='w-full overflow-x-auto'>
+    <div className='custom-scrollbar-dark w-full overflow-x-auto'>
       <div className='inline-flex min-w-full flex-col gap-4 min-[1281px]:items-center'>
         <div
           className='inline-grid w-max gap-x-1 gap-y-1'
@@ -412,10 +412,10 @@ const Practice = () => {
 
   return (
     <section
-      className={`${SURFACE_CARD_CLASS} self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] p-6 md:w-[calc(100%-3rem)] md:p-8`}
+      className={`${SURFACE_CARD_CLASS} self-center min-h-[300px] w-[calc(100%-1.5rem)] max-w-[110rem] p-6 md:w-[calc(100%-3rem)] md:p-8 lg:p-10`}
     >
-      <div className='flex flex-col gap-4 overflow-hidden'>
-        <div className='flex flex-col gap-0 min-[768px]:flex-row min-[768px]:items-start min-[768px]:justify-between min-[768px]:gap-8'>
+      <div className='flex flex-col gap-8 overflow-hidden md:gap-10'>
+        <div className='flex flex-col gap-5 min-[768px]:flex-row min-[768px]:items-start min-[768px]:justify-between min-[768px]:gap-10'>
           <MusicHeader
             className='min-[768px]:min-w-0 min-[768px]:flex-1'
             number={1}
@@ -428,7 +428,7 @@ const Practice = () => {
           </div>
         </div>
 
-        <div className='min-w-0 py-2'>
+        <div className='min-w-0 rounded-2xl bg-neutral-900/70'>
           <ContributionBar data={practiceData} />
         </div>
 
