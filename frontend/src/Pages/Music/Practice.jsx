@@ -348,7 +348,8 @@ const TopSummary = ({ data = [] }) => {
       <div className='mx-auto h-px w-full max-w-[180px] bg-neutral-800
         min-[600px]:hidden' />
 
-      <div className='flex w-full self-center max-w-[320px] flex-col gap-2 sm:w-[220px] sm:shrink-0'>
+      <div className='flex w-full self-center max-w-[320px] flex-col gap-2
+        min-[600px]:w-[220px] min-[600px]:shrink-0'>
         <p className={`text-lg font-medium ${BADGE_GOLD_TEXT_CLASS}`}>
           {formatHours(thisWeekMinutes)} / {formatHours(weeklyGoalMinutes)}
         </p>
