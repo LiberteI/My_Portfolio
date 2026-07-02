@@ -1,14 +1,59 @@
+import { useState } from 'react'
 import Arrangements from './Arrangements'
 import Practice from './Practice'
 import Performance from './Performance'
 import MusicSidebar from '../../Components/Music/MusicSidebar'
 
+const HamburgerIcon = ({ open = false }) => {
+  return (
+    <div className='relative h-5 w-6'>
+      <span
+        className={[
+          'absolute left-0 top-0 h-0.5 w-6 rounded-full bg-neutral-100 transition-transform duration-300',
+          open ? 'translate-y-[9px] rotate-45' : '',
+        ].join(' ')}
+      />
+      <span
+        className={[
+          'absolute left-0 top-[9px] h-0.5 w-6 rounded-full bg-neutral-100 transition-opacity duration-200',
+          open ? 'opacity-0' : 'opacity-100',
+        ].join(' ')}
+      />
+      <span
+        className={[
+          'absolute left-0 top-[18px] h-0.5 w-6 rounded-full bg-neutral-100 transition-transform duration-300',
+          open ? '-translate-y-[9px] -rotate-45' : '',
+        ].join(' ')}
+      />
+    </div>
+  )
+}
 
 const MusicPage = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
   return (
     <>
-      <MusicSidebar />
-      <main className='flex min-h-screen flex-col items-center gap-12 bg-black px-6 py-10 text-neutral-100 lg:pl-[116px]'>
+      <MusicSidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      {isSidebarOpen && (
+        <button
+          type='button'
+          aria-label='Close sidebar overlay'
+          onClick={() => setIsSidebarOpen(false)}
+          className='fixed inset-0 z-30 bg-black/55 min-[1280px]:hidden'
+        />
+      )}
+
+      <button
+        type='button'
+        aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+        onClick={() => setIsSidebarOpen((current) => !current)}
+        className='fixed left-5 top-5 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-neutral-700/80 bg-[#050506]/90 text-neutral-100 backdrop-blur transition-colors duration-150 hover:border-[#c6942f]/70 min-[1280px]:hidden'
+      >
+        <HamburgerIcon open={isSidebarOpen} />
+      </button>
+
+      <main className='flex min-h-screen flex-col items-center gap-12 bg-black px-6 py-10 text-neutral-100 max-[1279px]:pt-24 lg:pl-[116px]'>
         <header className='relative flex w-full max-w-6xl items-end justify-between gap-8'>
           <div className='relative z-20 flex min-h-[100px] flex-col justify-end pb-2 translate-x-10'>
             <div className='flex items-center gap-3'>

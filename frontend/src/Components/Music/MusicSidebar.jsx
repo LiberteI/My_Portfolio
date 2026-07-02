@@ -53,24 +53,28 @@ const navItems = [
   { label: 'Contact', icon: IconMail, action: { type: 'route', target: '/contact' } },
 ]
 
-const MusicSidebar = () => {
+const MusicSidebar = ({ isOpen = false, onClose = () => {} }) => {
   const navigate = useNavigate()
 
   const handleNav = (action) => {
     if (action.type === 'scroll') {
       navigate('/', { state: { scrollTo: action.target } })
+      onClose()
       return
     }
 
     navigate(action.target)
+    onClose()
   }
 
   return (
-    <aside className='fixed inset-y-0 left-0 z-30 hidden w-[92px] border-r border-neutral-800/80 bg-[#050506]/95 backdrop-blur lg:flex lg:flex-col'>
-      <div className='flex h-28 items-center justify-center border-b border-neutral-800/80'>
-        <span className='font-serif text-6xl text-neutral-100'>Y</span>
-      </div>
-
+    <aside
+      className={[
+        'fixed inset-y-0 left-0 z-40 flex w-[92px] flex-col border-r border-neutral-800/80 bg-[#050506]/95 backdrop-blur transition-transform duration-300',
+        isOpen ? 'translate-x-0' : '-translate-x-full',
+        'min-[1280px]:translate-x-0',
+      ].join(' ')}
+    >
       <nav className='flex flex-1 flex-col justify-center'>
         {navItems.map((item) => {
           const Icon = item.icon
