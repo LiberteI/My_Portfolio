@@ -2,7 +2,7 @@ import './Home.css'
 import React, { useEffect, useRef, useState } from 'react'
 
 // Parallax skyline layers
-import Chatbot from '../Chatbot/Chatbot'
+import HomepageNpc from '../HomepageNpc/HomepageNpc'
 
 const moon = '/images/city/bg/Moon.png'
 const sky = '/images/city/bg/Sky.png'
@@ -28,7 +28,7 @@ const initialLayerVisibility = {
     tile: true,
     bubble: true,
     socials: true,
-    chatbot: true,
+    homepageNpc: true,
 }
 
 const Home = () => {
@@ -204,7 +204,7 @@ const Home = () => {
                         <label><input type="checkbox" checked={layerVisibility.midNear} onChange={() => toggleLayerVisibility('midNear')} />Building Mid-Near</label>
                         <label><input type="checkbox" checked={layerVisibility.near} onChange={() => toggleLayerVisibility('near')} />Building Near</label>
                         <label><input type="checkbox" checked={layerVisibility.tile} onChange={() => toggleLayerVisibility('tile')} />Tile</label>
-                        <label><input type="checkbox" checked={layerVisibility.chatbot} onChange={() => toggleLayerVisibility('chatbot')} />Chatbot</label>
+                        <label><input type="checkbox" checked={layerVisibility.homepageNpc} onChange={() => toggleLayerVisibility('homepageNpc')} />Homepage NPC</label>
                         <label><input type="checkbox" checked={layerVisibility.bubble} onChange={() => toggleLayerVisibility('bubble')} />Bubble</label>
                         <label><input type="checkbox" checked={layerVisibility.socials} onChange={() => toggleLayerVisibility('socials')} />Socials</label>
                     </aside>
@@ -231,8 +231,8 @@ const Home = () => {
                         
                 </div>
                 
-                <button className="chatbot-button" onClick={handleClick} style={{ display: getLayerDisplay('chatbot') }}>
-                    <Chatbot clicked={clicked} shouldIdle={shouldIdle}/>
+                <button className="homepage-npc-button" onClick={handleClick} style={{ display: getLayerDisplay('homepageNpc') }}>
+                    <HomepageNpc clicked={clicked} shouldIdle={shouldIdle}/>
                 </button>
                 
             </section>

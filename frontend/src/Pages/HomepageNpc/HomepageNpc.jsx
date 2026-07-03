@@ -1,9 +1,9 @@
 import idleGIF from "../../assets/Animations/npc/Idle.gif"
 import thumbupGIF from "../../assets/Animations/npc/ThumbUp.gif"
 import waveGIF from "../../assets/Animations/npc/Wave.gif"
-import './Chatbot.css'
+import './HomepageNpc.css'
 import { useEffect, useState } from "react"
-const Chatbot = (props) => {
+const HomepageNpc = (props) => {
     const [currentAnimation, setCurrentAnimation] = useState(idleGIF);
 
     useEffect(() => {
@@ -20,9 +20,9 @@ const Chatbot = (props) => {
     }, [props.shouldIdle, props.clicked]);
 
     return(
-        <img className="chatbot" src={currentAnimation} alt="Chatbot" />
+        <img className="homepage-npc" src={currentAnimation} alt="Homepage NPC" />
         
     )
 }
 
-export default Chatbot
+export default HomepageNpc

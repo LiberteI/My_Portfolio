@@ -19,9 +19,9 @@
     --home-building-mid-near-width: 1920px;
     --home-building-near-width: 1920px;
     --home-tile-width: 1920px;
-    --home-chatbot-width: 168px;
-    --home-chatbot-height: 168px;
-    --home-chatbot-bottom: 45px;
+    --home-homepage-npc-width: 168px;
+    --home-homepage-npc-height: 168px;
+    --home-homepage-npc-bottom: 45px;
 
     position: relative;
     width: 100%;
@@ -144,13 +144,13 @@
     z-index: 6;
 }
 
-.chatbot-button {
+.homepage-npc-button {
     position: absolute;
     left: 50%;
-    bottom: var(--home-chatbot-bottom);
-    width: var(--home-chatbot-width);
-    height: var(--home-chatbot-height);
-    margin-left: calc(var(--home-chatbot-width) * -0.5);
+    bottom: var(--home-homepage-npc-bottom);
+    width: var(--home-homepage-npc-width);
+    height: var(--home-homepage-npc-height);
+    margin-left: calc(var(--home-homepage-npc-width) * -0.5);
     padding: 0;
     border: 0;
     background: transparent;
