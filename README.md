@@ -10,7 +10,8 @@ Interactive full-stack portfolio for Yiming Yang (Liberte), blending software en
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-13aa52)
 ![License](https://img.shields.io/badge/License-ISC-lightgrey)
 
-![Homepage preview](frontend/public/images/projects/portfolio.png)
+![Homepage preview](docs/screenshots/HomePage.png)
+![Music page preview](docs/screenshots/MusicPage.png)
 
 ## Recruiter Quick Scan
 
