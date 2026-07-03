@@ -26,7 +26,7 @@
     --home-tile-width: 1920px;
     --home-chatbot-width: 168px;
     --home-chatbot-height: 168px;
-    --home-chatbot-bottom: 56px;
+    --home-chatbot-bottom: 45px;
 }
 
 .home-scene img{
@@ -118,7 +118,7 @@
 
 .home-tile{
     left: 50%;
-    bottom: 0;
+    bottom: -120px;
     width: var(--home-tile-width);
     height: auto;
     max-width: none;
