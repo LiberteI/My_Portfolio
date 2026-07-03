@@ -1,157 +1,201 @@
-# 🎮 My Portfolio
+# My Portfolio
 
-## 📌 Overview
-This is my personal portfolio website. The MVP was completed on **Dec 26, 2025**, and the project will continue to evolve as I add features, polish interactions, and showcase new work.
+Interactive full-stack portfolio for Yiming Yang (Liberte), blending software engineering, game-inspired UI, music showcase, and authenticated testimonials.
 
-This site brings together **software engineering**, **game design**, and **music performance**, with a strong emphasis on interactivity and user experience.
+[Live Site](https://www.liberteii.com) · [GitHub](https://github.com/LiberteI/My_Portfolio) · [LinkedIn](https://www.linkedin.com/in/yiming-yang-89a0102a0/) · [Resume PDF](docs/Yiming_Yang_Resume.pdf)
 
----
+![Vite](https://img.shields.io/badge/Vite-7.1-blue)
+![React](https://img.shields.io/badge/React-19-149eca)
+![Node.js](https://img.shields.io/badge/Node.js-Express-43853d)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-13aa52)
+![License](https://img.shields.io/badge/License-ISC-lightgrey)
 
-## 🏠 Home
-A **gamified homepage** inspired by retro games.
+![Homepage preview](frontend/public/images/projects/portfolio.png)
 
-- 🎭 **Interactive NPC**
-  - Animation updates based on **timer** or **user interaction**
-  - On click: gives a **thumbs-up animation** and reveals **three social links**
+## Recruiter Quick Scan
 
-- 🌌 **Parallax Background**
-  - Side-scrolling sky for depth and motion
-  - Retro game atmosphere
+**Who I am:** Yiming Yang (Liberte), Computer Science student and full-stack developer with strong interests in interactive web experiences, game development, graphics, and music.
 
-- 🧭 **Navigation**
-  - Auto-hiding navbar when scrolling down
-  - Buttons smoothly scroll to designated sections
+**Core skills:** JavaScript, TypeScript, React, Node.js, Express, MongoDB, C++, OpenGL, Unity, Java, Python, Tailwind CSS, CSS, Git, Postman, n8n
 
----
+**Standout work:**
+- Built a gamified personal portfolio with layered parallax scenes, animated homepage NPC interactions, contact automation, and social/testimonial flows.
+- Shipped a modular YouTube integration for music content with a separate design doc and layered backend architecture.
+- Implemented authenticated testimonials using Google and LinkedIn sign-in, moderated publishing, and shared user identity handling.
 
-## 👤 About
-An overview of my journey, interests, and long-term direction.
+**Availability/status:** Portfolio is actively maintained and open for software, interactive media, and creative technology opportunities.
 
-- Personal background and development focus
-- Complete **tech stack**, organized by category
+**Location:** Halifax, Nova Scotia, Canada
 
----
+**Fastest contact:** **[liberteix@gmail.com](mailto:liberteix@gmail.com)** · **[LinkedIn](https://www.linkedin.com/in/yiming-yang-89a0102a0/)**
 
-## 💻 Projects (Computer Science)
-A showcase of my software and game development work.
+**Resume:** [Direct PDF](docs/Yiming_Yang_Resume.pdf)
 
-- Each project includes:
-  - 📄 Project description
-  - 🔗 GitHub repository link
-  - 🖼️ Clickable preview image
+## What It Is
 
-- Project detail pages allow users to:
-  - 📥 Download builds
-  - 🎥 Watch demos
-  - 📚 Access related resources
+This repository powers my personal portfolio site for recruiters, collaborators, and anyone reviewing my engineering work. It showcases software projects, game and graphics work, music performances, personal background, and contact/testimonial flows in one place.
 
----
+Current sections and routes:
+- `/` - Home scene, About, Testimonial
+- `/projects` - Project showcase
+- `/projects/knight-of-cinders` - Featured game detail page
+- `/music` - Arrangements, practice, and performance content
+- `/experience` - Experience page
+- `/contact` - Contact form and direct contact methods
+- `/comment-form` - Authenticated testimonial submission
 
-## 🎹 Performance (Music)
-A dedicated section for my music journey.
+## Tech Stack
 
-- Public performances
-- Musical arrangements
-- Exploration of the connection between **technology and music**
+- Frontend: React 19, React Router, Vite
+- Styling: page-level CSS plus targeted Tailwind utility usage on the music experience
+- Backend: Node.js, Express, cookie-parser, CORS
+- Database: MongoDB via Mongoose
+- Auth: Google OAuth, LinkedIn OAuth
+- Integrations: YouTube Data API, Resend email delivery
+- Hosting/deployment: Vercel for the frontend, deployed backend at `https://api.liberteii.com`
 
----
+## Features
 
-## 📬 Get In Touch
-Multiple ways to reach me.
+- Gamified homepage with layered parallax skyline and animated homepage NPC
+- Responsive navigation with expandable hamburger menu
+- About section with scannable tech stack visuals
+- Project gallery covering software, game development, graphics, and machine learning work
+- Music page backed by YouTube content feeds for arrangements and performances
+- Contact form that sends email notifications through Resend
+- Authenticated and moderated testimonial flow with Google and LinkedIn sign-in
+- Dedicated project detail route for Knight of Cinders with trailer and downloadable build
 
-- 📧 Email
-- 💼 LinkedIn
-- ✍️ Contact form for quick messages
-  - Submissions trigger an **email notification** to me
+## Design And Engineering Notes
 
----
+- The homepage is intentionally built like a scene instead of a standard hero section. Fixed-size layered assets are cropped by the viewport rather than responsively shrunk, which keeps the retro-game composition stable across screen sizes.
+- The YouTube module is structured as `route -> controller -> service -> client/config/mapper`, documented in [backend/Youtube/DESIGN.md](backend/Youtube/DESIGN.md). That separation keeps API concerns, config, mapping, and transport logic from bleeding into each other.
+- Authentication and testimonials are treated as real product features rather than static portfolio filler. Users can authenticate, submit comments, and see moderated results, while admin workflows stay separate from public display.
+- The frontend uses a mixed styling approach on purpose: traditional CSS for highly custom scene composition and Tailwind utilities where dense layout composition improves speed on the music page.
+- The site is built for desktop and mobile review. Navigation is explicitly toggle-driven, major scenes use fixed visual anchors, and pages are routable so portfolio sections can be linked directly.
 
-## 💬 Testimonials
-An authenticated and moderated testimonial system.
+## Getting Started
 
-- 🤖 NPC guides users on how to leave comments
-- 🔐 Login required via **Google or LinkedIn**
-- 🗄️ Shared database with **no duplicate users per email**
+### Prerequisites
 
-### User Capabilities
-- Submit a testimonial
-- View approved comments displayed on the page
+- Node.js 18+
+- npm 9+
+- MongoDB connection string
+- Google OAuth application
+- LinkedIn OAuth application
+- Resend API key
+- YouTube Data API key
 
-### Admin Capabilities
-- View all submitted comments
-- Approve or hide testimonials before display
+### Install
 
----
+```bash
+git clone https://github.com/LiberteI/My_Portfolio.git
+cd My_Portfolio
+npm install --prefix frontend
+npm install --prefix backend
+```
 
-## 🛠️ Tech Stack
+### Environment Variables
 
-### Core Stack
-- **MERN Stack**
-  - **MongoDB** – database
-  - **Express.js** – backend framework
-  - **React** – frontend UI
-  - **Node.js** – server runtime
+Create these files before running locally:
 
-### Game & Interactive Systems
-- **Unity**
-  - Tilemap system for 2D level design and world building
+- `frontend/.env`
+- `backend/.env`
 
-### APIs & Integrations
-- **Google API** – authentication and user identity
-- **LinkedIn API** – authentication and profile access
-- **YouTube API** – video and performance content integration
+Templates are included here:
 
-### Infrastructure & Services
-- **Render** – deployment and hosting
-- **Resend** – email delivery for contact form and notifications
+- [frontend/.env.example](frontend/.env.example)
+- [backend/.env.example](backend/.env.example)
 
-### Languages
-- **JavaScript**
-- **CSS**
+### Run Locally
 
-## ⚙️ Setup Instructions
+Frontend:
 
-### 1️⃣ Clone the Repository
-- git clone https://github.com/LiberteI/My_Portfolio.git
-- cd Portfolio
-### 2️⃣ Environment Variables
-- Locate the .env.example file
+```bash
+cd frontend
+npm run dev
+```
 
-- Create a .env file and fill in the required values
+Runs on Vite's default local port, typically `http://localhost:5173`.
 
-### 3️⃣ Run the Frontend
-- cd frontend
-- npm install
-- npm run dev
-### 4️⃣ Run the Backend
-- Open a new terminal:
-- cd backend
-- npm install
-- node server.js
-**The frontend and backend will now be running locally.**
+Backend:
 
-## 🧪 Environment Variables (`.env.example`)
-## backend
-- YT_API_KEY=
-- VIVA_LA_VIDA_ID=
-- FLOWER_DANCE_ID=
+```bash
+cd backend
+npm start
+```
 
-- MONGO_URI=
+Runs on `http://localhost:8080` unless `PORT` is overridden.
 
-- RESEND_API_KEY=
+### Build
 
-- GOOGLE_CLIENT_ID=
-- GOOGLE_CLIENT_SECRET=
-- GOOGLE_CALLBACK_URL=
+Frontend production build:
 
-- FRONTEND_ORIGIN=
-- NODE_ENV=development
+```bash
+cd frontend
+npm run build
+```
 
-- LINKEDIN_CLIENT_ID=
-- LINKEDIN_CLIENT_SECRET=
-- LINKEDIN_CALLBACK_URL=
-## frontend
-- VITE_API_BASE_URL=
+Frontend preview:
 
-# Deployed Frontend: https://www.liberteii.com
-# Deployed Backend: https://api.liberteii.com 
+```bash
+cd frontend
+npm run preview
+```
+
+Backend production start:
+
+```bash
+cd backend
+npm start
+```
+
+## Project Structure
+
+```text
+.
+├── backend/
+│   ├── Comment/              # testimonial routes and controller logic
+│   ├── CRUD/                 # data access helpers for users/comments
+│   ├── DatabaseModel/        # mongoose schemas
+│   ├── Middleware/           # auth middleware
+│   ├── ThirdParty/           # Google + LinkedIn OAuth handlers
+│   ├── Youtube/              # YouTube module and design doc
+│   ├── contact/              # contact form email endpoint
+│   ├── User/                 # current user endpoint
+│   ├── .env.example
+│   └── server.js             # Express entry point
+├── docs/
+│   └── 
+├── frontend/
+│   ├── public/               # static assets, images, videos
+│   ├── src/
+│   │   ├── Components/       # reusable UI pieces like Navbar and HomepageNpc
+│   │   ├── Pages/            # route-level screens and page sections
+│   │   ├── assets/           # imported animations and thumbnails
+│   │   ├── App.jsx           # route composition
+│   │   └── main.jsx          # React entry point
+│   ├── .env.example
+│   └── vercel.json           # SPA rewrite config
+└── README.md
+```
+
+Content in this portfolio is code-driven rather than CMS-driven. Projects, homepage layers, music integrations, and interactive behaviors are defined directly in the React and backend source.
+
+## Roadmap
+
+- Add stronger content management for projects and music items instead of hardcoding arrays and route-level content
+- Expand documentation around admin/testimonial flows and deployment setup
+- Add automated tests for backend integrations and critical frontend flows
+- Continue polishing homepage scene composition, animation control, and mobile ergonomics
+
+## Contact
+
+- Live site: [liberteii.com](https://www.liberteii.com)
+- Email: [liberteix@gmail.com](mailto:liberteix@gmail.com)
+- Student email: [yn265022@dal.ca](mailto:yn265022@dal.ca)
+- LinkedIn: [Yiming Yang](https://www.linkedin.com/in/yiming-yang-89a0102a0/)
+- GitHub: [LiberteI](https://github.com/LiberteI)
+
+## License
+
+This repository is released under the ISC License. See [LICENSE](LICENSE).
