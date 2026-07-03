@@ -19,6 +19,6 @@
 }
 
 .chatbot-button:hover .chatbot{
-    transform: translateY(-55%) scale(1.4);
+    transform: translateY(-35%) scale(1.4);
     filter: drop-shadow(0 0 24px rgba(191, 219, 254, 0.9));
 }
