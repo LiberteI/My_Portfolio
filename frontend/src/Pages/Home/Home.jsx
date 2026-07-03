@@ -15,7 +15,7 @@ const tile = '/images/city/bg/tile.png'
 const youtubeIcon = '/images/social/youtube.png'
 const linkedinIcon = '/images/social/linkedin.png'
 const githubIcon = '/images/social/github.png'
-const SHOW_HOME_SCENE_DEBUG = true
+const SHOW_HOME_SCENE_DEBUG = false;
 
 const initialLayerVisibility = {
     sky: true,

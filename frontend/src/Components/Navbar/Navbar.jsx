@@ -63,6 +63,19 @@ const Navbar = () => {
 
         <ul className={`navbar_menu ${isExpanded ? 'navbar_menu--open' : 'navbar_menu--closed'}`}>
           
+          <li className='navbar_item'>
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault()
+                setIsExpanded(false)
+                navigate('/')
+              }}
+              aria-label='Go to home'>
+              Home
+            </a>
+          </li>
+
           <li className='navbar_item navbar_item--left'>
             <a href="#about" onClick={(e) => handleClick(e, 'about')} aria-label='Go to about'>About</a>
           </li>
