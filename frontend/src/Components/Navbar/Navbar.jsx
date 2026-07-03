@@ -2,10 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import './Navbar.css'
 
-const logo = '/images/branding/LOGO_dark.png'
+const HamburgerIcon = ({ open = false }) => {
+  return (
+    <div className='navbar_hamburger' aria-hidden='true'>
+      <span className={open ? 'navbar_hamburger-bar navbar_hamburger-bar--top-open' : 'navbar_hamburger-bar'} />
+      <span className={open ? 'navbar_hamburger-bar navbar_hamburger-bar--middle-open' : 'navbar_hamburger-bar'} />
+      <span className={open ? 'navbar_hamburger-bar navbar_hamburger-bar--bottom-open' : 'navbar_hamburger-bar'} />
+    </div>
+  )
+}
 
 const Navbar = () => {
-  const [isHidden, setIsHidden] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   
@@ -18,29 +26,9 @@ const Navbar = () => {
     else{
       navigate('/', { state: { scrollTo: targetID } })
     }
+
+    setIsExpanded(false)
   }
-  
-  useEffect(() => {
-    // Track scroll direction to hide the navbar when scrolling down and reveal it on scroll up.
-    let lastScrollY = window.scrollY
-
-    const handleScroll = () => {
-      const currentY = window.scrollY
-      const scrollingDown = currentY > lastScrollY && currentY > 120
-      const scrollingUp = currentY < lastScrollY
-
-      if (scrollingDown && !isHidden) {
-        setIsHidden(true)
-      } else if (scrollingUp && isHidden) {
-        setIsHidden(false)
-      }
-
-      lastScrollY = currentY
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [isHidden])
 
   useEffect(() => {
     if (location.pathname !== '/' || !location.state?.scrollTo) {
@@ -61,45 +49,19 @@ const Navbar = () => {
     
   }, [location, navigate])
 
-  useEffect(() => {
-    // when mouse touches the upper side of the viewport, show the navbar again
-    const handlePointerNearTop = (event) => {
-      let clientY = Infinity
-
-      if (event.touches && event.touches.length > 0) {
-        clientY = event.touches[0].clientY
-      } else if (typeof event.clientY === 'number') {
-        clientY = event.clientY
-      }
-      // show
-      if (clientY <= 80) {
-        if (isHidden) {
-          setIsHidden(false)
-        }
-      // hide
-      } else if (clientY > 140 && window.scrollY > 120) {
-        if (!isHidden) {
-          setIsHidden(true)
-        }
-      }
-    }
-
-    window.addEventListener('mousemove', handlePointerNearTop, { passive: true })
-    window.addEventListener('touchstart', handlePointerNearTop, { passive: true })
-
-    return () => {
-      window.removeEventListener('mousemove', handlePointerNearTop)
-      window.removeEventListener('touchstart', handlePointerNearTop)
-    }
-  }, [isHidden])
   return (
-    <nav className={`navbar ${isHidden ? 'navbar--hidden' : ''}`}>
-        <a className='navbar_logo' href='/' onClick={(e) => handleClick(e, 'home')} aria-label='Go to homepage'>
-          <img src={logo} alt="Home" className='Logo'/>
-        </a>
-        
+    <nav className={`navbar ${isExpanded ? 'navbar--expanded' : 'navbar--collapsed'}`}>
+        <button
+          type='button'
+          className='navbar_toggle'
+          aria-label={isExpanded ? 'Minimize navigation' : 'Expand navigation'}
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((current) => !current)}
+        >
+          <HamburgerIcon open={isExpanded} />
+        </button>
 
-        <ul className='navbar_menu'>
+        <ul className={`navbar_menu ${isExpanded ? 'navbar_menu--open' : 'navbar_menu--closed'}`}>
           
           <li className='navbar_item navbar_item--left'>
             <a href="#about" onClick={(e) => handleClick(e, 'about')} aria-label='Go to about'>About</a>
@@ -110,6 +72,7 @@ const Navbar = () => {
               href="/experience" 
               onClick={(e) => {
                 e.preventDefault()
+                setIsExpanded(false)
                 navigate('/experience')
               }} 
               aria-label='Go to experience'>
@@ -122,6 +85,7 @@ const Navbar = () => {
               href="/projects" 
               onClick={(e) => {
                 e.preventDefault()
+                setIsExpanded(false)
                 navigate('/projects')
               }} 
               aria-label='Go to projects'>
@@ -135,6 +99,7 @@ const Navbar = () => {
               href="/music"
               onClick={(e) => {
                 e.preventDefault()
+                setIsExpanded(false)
                 navigate('/music')
               }}
               aria-label='Go to music'>
@@ -146,6 +111,7 @@ const Navbar = () => {
             <a href="/contact" 
               onClick={(e) => {
                 e.preventDefault()
+                setIsExpanded(false)
                 navigate('/contact')
               }} 
               aria-label='Go to contact'>
