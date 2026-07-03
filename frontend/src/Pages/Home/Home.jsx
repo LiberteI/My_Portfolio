@@ -2,7 +2,7 @@ import './Home.css'
 import React, { useEffect, useRef, useState } from 'react'
 
 // Parallax skyline layers
-import HomepageNpc from '../HomepageNpc/HomepageNpc'
+import HomepageNpc from '../../Components/HomepageNpc/HomepageNpc'
 
 const moon = '/images/city/bg/Moon.png'
 const sky = '/images/city/bg/Sky.png'
