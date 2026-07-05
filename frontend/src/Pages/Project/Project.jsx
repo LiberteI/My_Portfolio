@@ -5,6 +5,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
+import museumWallTextureUrl from "../../assets/Museum/wall-texture.jpg"
+import museumFloorTextureUrl from "../../assets/Museum/floor-texture.jpg"
 import projectorModelUrl from "../../assets/Projector/generic_white_digital_projector.glb"
 
 const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
@@ -146,6 +148,17 @@ const getProjectionFrameConfig = () => {
     }
 }
 
+const getDisplayPositions = () => {
+    const position = { x: -10, y: -6.5, z: 10 }
+
+    return {
+        position,
+        boxPosition: { x: position.x, y: position.y, z: position.z },
+        projectorPosition: { x: position.x, y: position.y+1.2, z: position.z },
+        projectorBeamOrigin: { x: position.x-0.2, y: position.y+1.2, z: position.z-0.5 }
+    }
+}
+
 const buildRoom = (scene) => {
     const roomXStart = -30
     const roomXEnd = 30
@@ -162,11 +175,30 @@ const buildRoom = (scene) => {
     const roomXCenter = (roomXStart + roomXEnd) / 2
     const roomYCenter = (roomYStart + roomYEnd) / 2
     const roomZCenter = (roomZStart + roomZEnd) / 2
+    const textureLoader = new THREE.TextureLoader()
+    const wallTexture = textureLoader.load(museumWallTextureUrl)
+    const floorTexture = textureLoader.load(museumFloorTextureUrl)
+    const ceilingTexture = textureLoader.load(museumWallTextureUrl)
 
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: "#151515", side: THREE.DoubleSide })
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: "#0c0c0c", side: THREE.DoubleSide })
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: "#1b1b1b", side: THREE.DoubleSide })
-    const backWallMaterial = new THREE.MeshStandardMaterial({ color: "#111111", side: THREE.DoubleSide })
+    wallTexture.wrapS = THREE.RepeatWrapping
+    wallTexture.wrapT = THREE.RepeatWrapping
+    wallTexture.repeat.set(6, 2)
+
+    floorTexture.wrapS = THREE.RepeatWrapping
+    floorTexture.wrapT = THREE.RepeatWrapping
+    floorTexture.repeat.set(6, 4)
+
+    ceilingTexture.wrapS = THREE.RepeatWrapping
+    ceilingTexture.wrapT = THREE.RepeatWrapping
+    ceilingTexture.repeat.set(6, 4)
+
+    const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture, side: THREE.DoubleSide })
+    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture, side: THREE.DoubleSide })
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilingTexture, side: THREE.DoubleSide })
+    const backWallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture.clone(), side: THREE.DoubleSide })
+    backWallMaterial.map.wrapS = THREE.RepeatWrapping
+    backWallMaterial.map.wrapT = THREE.RepeatWrapping
+    backWallMaterial.map.repeat.set(6, 2)
 
     const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(roomWidth, roomDepth),
@@ -228,50 +260,34 @@ const buildRoom = (scene) => {
     return {
         meshes: [floor, ceiling, backWall, leftWall, rightWall, frontWall],
         materials: [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial],
+        textures: [wallTexture, floorTexture, ceilingTexture, backWallMaterial.map],
         lineGeometries: [projectionFrameGeometry],
         lineMaterials: [projectionFrameMaterial]
     }
 }
 
-const buildLights = (scene) => {
-    const ambientLight = new THREE.AmbientLight("#ffffff", 1.8)
+const buildAmbientLight = (scene) => {
+    // AmbientLight takes (color, intensity)
+    const ambientLight = new THREE.AmbientLight("#ffffff", 0.1)
     scene.add(ambientLight)
 
-    const directionalLight = new THREE.DirectionalLight("#ffffff", 1.6)
-    directionalLight.position.set(0, 4, 6)
-    scene.add(directionalLight)
-
-    return [ambientLight, directionalLight]
+    return ambientLight
 }
 
-const buildProjectorBeam = (scene) => {
-    const roomZStart = -7
-    const projectionFrame = getProjectionFrameConfig()
-    const projectionFrameCenter = {
-        x: (projectionFrame.xStart + projectionFrame.xEnd) / 2,
-        y: (projectionFrame.yStart + projectionFrame.yEnd) / 2,
-        z: roomZStart
-    }
+const buildProjectBeamOrigin = (scene) => {
     const { projectorBeamOrigin } = getDisplayPositions()
 
-    const beamTarget = new THREE.Object3D()
-    beamTarget.position.set(
-        projectionFrameCenter.x,
-        projectionFrameCenter.y,
-        projectionFrameCenter.z
-    )
-    scene.add(beamTarget)
-    // new THREE.SpotLight(color, intensity, distance, angle, penumbra, decay)
-    const beamLight = new THREE.SpotLight("#e4d5c4", 50, 40, 0.55, 0.35, 1)
+    // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
+    const beamLight = new THREE.SpotLight("#e4d5c4", 8, 40, 0.55, 0.35, 1)
     beamLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
         projectorBeamOrigin.z
     )
-    beamLight.target = beamTarget
     scene.add(beamLight)
-    // new THREE.PointLight(color, intensity, distance, decay)
-    const beamPointLight = new THREE.PointLight("#e4d5c4", 100, 20, 2)
+
+    // PointLight takes (color, intensity, distance, decay)
+    const beamPointLight = new THREE.PointLight("#e4d5c4", 10, 20, 2)
     beamPointLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -291,6 +307,29 @@ const buildProjectorBeam = (scene) => {
     )
     beamPointLightMarker.position.copy(beamPointLight.position)
     scene.add(beamPointLightMarker)
+
+    return { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin }
+}
+
+const buildProjectorBeam = (scene) => {
+    const roomZStart = -7
+    const projectionFrame = getProjectionFrameConfig()
+    const projectionFrameCenter = {
+        x: (projectionFrame.xStart + projectionFrame.xEnd) / 2,
+        y: (projectionFrame.yStart + projectionFrame.yEnd) / 2,
+        z: roomZStart
+    }
+    const beamOriginAssets = buildProjectBeamOrigin(scene)
+    const { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin } = beamOriginAssets
+
+    const beamTarget = new THREE.Object3D()
+    beamTarget.position.set(
+        projectionFrameCenter.x,
+        projectionFrameCenter.y,
+        projectionFrameCenter.z
+    )
+    scene.add(beamTarget)
+    beamLight.target = beamTarget
 
     const beamOrigin = new THREE.Vector3(
         projectorBeamOrigin.x,
@@ -367,24 +406,19 @@ const buildProjectorBeam = (scene) => {
     }
 }
 
-const getDisplayPositions = () => {
-    const position = { x: -10, y: -6.5, z: 10 }
-
-    return {
-        position,
-        boxPosition: { x: position.x, y: position.y, z: position.z },
-        projectorPosition: { x: position.x, y: position.y+1.2, z: position.z },
-        projectorBeamOrigin: { x: position.x-0.2, y: position.y+1.2, z: position.z-0.5 }
-    }
-}
-
 const buildBox = (scene) => {
     const boxWidth = 1
     const boxHeight = 2
     const boxDepth = 1
     const { boxPosition } = getDisplayPositions()
+    const textureLoader = new THREE.TextureLoader()
+    const boxWallTexture = textureLoader.load(museumWallTextureUrl)
 
-    const boxMaterial = new THREE.MeshStandardMaterial({ color: "#ffffff" })
+    boxWallTexture.wrapS = THREE.RepeatWrapping
+    boxWallTexture.wrapT = THREE.RepeatWrapping
+    boxWallTexture.repeat.set(1, 1)
+
+    const boxMaterial = new THREE.MeshStandardMaterial({ map: boxWallTexture })
     const box = new THREE.Mesh(
         new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth),
         boxMaterial
@@ -393,7 +427,7 @@ const buildBox = (scene) => {
     box.position.set(boxPosition.x, boxPosition.y, boxPosition.z)
     scene.add(box)
 
-    return { mesh: box, material: boxMaterial }
+    return { mesh: box, material: boxMaterial, texture: boxWallTexture }
 }
 
 const buildDebugAxes = (scene) => {
@@ -520,7 +554,7 @@ const ProjectScene = () => {
     const canvasRef = useRef(null)
 
     useEffect(() => {
-        const enableCameraMovement = true
+        const enableCameraMovement = false
         const enableAxesDebug = false
 
         const container = canvasRef.current
@@ -539,7 +573,7 @@ const ProjectScene = () => {
         container.appendChild(renderer.domElement)
 
         const room = buildRoom(scene)
-        const lights = buildLights(scene)
+        const ambientLight = buildAmbientLight(scene)
         const projectorBeam = buildProjectorBeam(scene)
         const box = buildBox(scene)
         const debugAxes = enableAxesDebug ? buildDebugAxes(scene) : null
@@ -725,7 +759,7 @@ const ProjectScene = () => {
             window.removeEventListener("mousemove", handleMouseMove)
             container.removeEventListener("mousedown", handleCanvasMouseDown)
             window.cancelAnimationFrame(animationFrameId)
-            lights.forEach((light) => scene.remove(light))
+            scene.remove(ambientLight)
             scene.remove(projectorBeam.beamLight)
             scene.remove(projectorBeam.beamPointLight)
             scene.remove(projectorBeam.beamPointLightMarker)
@@ -753,6 +787,7 @@ const ProjectScene = () => {
             }
             box.mesh.geometry.dispose()
             box.material.dispose()
+            box.texture.dispose()
             projectorBeam.beamPointLightMarker.geometry.dispose()
             projectorBeam.beamPointLightMarkerMaterial.dispose()
             projectorBeam.beamPyramidGeometry.dispose()
@@ -765,6 +800,7 @@ const ProjectScene = () => {
             debugVisuals.lineMaterial.dispose()
             room.meshes.forEach((mesh) => mesh.geometry.dispose())
             room.materials.forEach((material) => material.dispose())
+            room.textures.forEach((texture) => texture.dispose())
             room.lineGeometries.forEach((geometry) => geometry.dispose())
             room.lineMaterials.forEach((material) => material.dispose())
             renderer.dispose()
