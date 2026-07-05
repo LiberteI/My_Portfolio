@@ -1,4 +1,6 @@
 
+import { useEffect, useRef } from "react"
+import * as THREE from "three"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
@@ -134,11 +136,55 @@ const projects = [
 ]
 
 const Project = () => {
+    const canvasRef = useRef(null)
+
+    useEffect(() => {
+        const container = canvasRef.current
+
+        if (!container) {
+            return
+        }
+
+        const scene = new THREE.Scene()
+        const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000)
+        camera.position.z = 5
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        container.appendChild(renderer.domElement)
+
+        const resize = () => {
+            const { clientWidth, clientHeight } = container
+
+            if (!clientWidth || !clientHeight) {
+                return
+            }
+
+            camera.aspect = clientWidth / clientHeight
+            camera.updateProjectionMatrix()
+            renderer.setSize(clientWidth, clientHeight)
+            renderer.render(scene, camera)
+        }
+
+        resize()
+        window.addEventListener("resize", resize)
+
+        return () => {
+            window.removeEventListener("resize", resize)
+            renderer.dispose()
+
+            if (container.contains(renderer.domElement)) {
+                container.removeChild(renderer.domElement)
+            }
+        }
+    }, [])
+
     return (
-        <section className="project-container" id="projects">
-
-            
-
+        <section className='relative h-screen bg-black'>
+            <div
+                ref={canvasRef}
+                className='absolute inset-0 h-full w-full bg-black'
+            />
         </section>
     )
 }
