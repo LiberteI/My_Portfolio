@@ -144,6 +144,11 @@ const buildRoom = (scene) => {
     const roomYEnd = 7.5
     const roomZStart = -7
     const roomZEnd = 15
+    const projectionFrameXStart = -16
+    const projectionFrameXEnd = 2
+    const projectionFrameYStart = -6
+    const projectionFrameYEnd = 5
+    const projectionFrameZ = roomZStart + 0.02
 
     const roomWidth = roomXEnd - roomXStart
     const roomHeight = roomYEnd - roomYStart
@@ -204,9 +209,21 @@ const buildRoom = (scene) => {
     frontWall.position.set(roomXCenter, roomYCenter, roomZEnd)
     scene.add(frontWall)
 
+    const projectionFrameMaterial = new THREE.LineBasicMaterial({ color: "#ff0000" })
+    const projectionFrameGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(projectionFrameXStart, projectionFrameYStart, projectionFrameZ),
+        new THREE.Vector3(projectionFrameXEnd, projectionFrameYStart, projectionFrameZ),
+        new THREE.Vector3(projectionFrameXEnd, projectionFrameYEnd, projectionFrameZ),
+        new THREE.Vector3(projectionFrameXStart, projectionFrameYEnd, projectionFrameZ)
+    ])
+    const projectionFrame = new THREE.LineLoop(projectionFrameGeometry, projectionFrameMaterial)
+    scene.add(projectionFrame)
+
     return {
         meshes: [floor, ceiling, backWall, leftWall, rightWall, frontWall],
-        materials: [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial]
+        materials: [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial],
+        lineGeometries: [projectionFrameGeometry],
+        lineMaterials: [projectionFrameMaterial]
     }
 }
 
@@ -227,7 +244,8 @@ const getDisplayPositions = () => {
     return {
         position,
         boxPosition: { x: position.x, y: position.y, z: position.z },
-        projectorPosition: { x: position.x, y: position.y+1.2, z: position.z }
+        projectorPosition: { x: position.x, y: position.y+1.2, z: position.z },
+        projectorBeamSendPosition: { x: position.x, y: position.y+1.2, z: position.z }
     }
 }
 
@@ -375,7 +393,7 @@ const ProjectScene = () => {
     useEffect(() => {
         const enableCameraMovement = false
         const enableAxesDebug = false
-        
+
         const container = canvasRef.current
 
         if (!container) {
@@ -605,6 +623,8 @@ const ProjectScene = () => {
             debugVisuals.lineMaterial.dispose()
             room.meshes.forEach((mesh) => mesh.geometry.dispose())
             room.materials.forEach((material) => material.dispose())
+            room.lineGeometries.forEach((geometry) => geometry.dispose())
+            room.lineMaterials.forEach((material) => material.dispose())
             renderer.dispose()
 
             if (container.contains(renderer.domElement)) {
