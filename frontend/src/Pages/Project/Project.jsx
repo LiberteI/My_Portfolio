@@ -1,5 +1,4 @@
-import "./Project.css"
-import ProjectCard from "./ProjectCard"
+
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
@@ -138,16 +137,7 @@ const Project = () => {
     return (
         <section className="project-container" id="projects">
 
-            <h1>My Projects</h1>
             
-            <div className="project-grid">
-                {projects.map((project) => (
-                    <ProjectCard 
-                        key={project.slug} 
-                        projectData={project}
-                    />     
-                ))}
-            </div>
 
         </section>
     )
