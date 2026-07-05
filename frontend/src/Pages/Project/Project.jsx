@@ -215,7 +215,7 @@ const buildRoom = (scene) => {
     frontWall.position.set(roomXCenter, roomYCenter, roomZEnd)
     scene.add(frontWall)
 
-    const projectionFrameMaterial = new THREE.LineBasicMaterial({ color: "#ff0000" })
+    const projectionFrameMaterial = new THREE.LineBasicMaterial({ color: "#decdbb" })
     const projectionFrameGeometry = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, projectionFrameZ),
         new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yStart, projectionFrameZ),
@@ -262,7 +262,7 @@ const buildProjectorBeam = (scene) => {
     )
     scene.add(beamTarget)
     // new THREE.SpotLight(color, intensity, distance, angle, penumbra, decay)
-    const beamLight = new THREE.SpotLight("#fff2b3", 50, 40, 0.55, 0.35, 1)
+    const beamLight = new THREE.SpotLight("#e4d5c4", 50, 40, 0.55, 0.35, 1)
     beamLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -271,7 +271,7 @@ const buildProjectorBeam = (scene) => {
     beamLight.target = beamTarget
     scene.add(beamLight)
     // new THREE.PointLight(color, intensity, distance, decay)
-    const beamPointLight = new THREE.PointLight("#fff2b3", 100, 20, 2)
+    const beamPointLight = new THREE.PointLight("#e4d5c4", 100, 20, 2)
     beamPointLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -280,7 +280,7 @@ const buildProjectorBeam = (scene) => {
     scene.add(beamPointLight)
 
     const beamPointLightMarkerMaterial = new THREE.MeshBasicMaterial({
-        color: "#ff0000",
+        color: "#e4d5c4",
         transparent: true,
         opacity: 0.55,
         depthWrite: false
@@ -303,7 +303,7 @@ const buildProjectorBeam = (scene) => {
     const projectionBottomLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, roomZStart)
 
     const beamPyramidMaterial = new THREE.LineBasicMaterial({
-        color: "#ff6666",
+        color: "#decdbb",
         transparent: true,
         opacity: 0.7
     })
@@ -318,6 +318,7 @@ const buildProjectorBeam = (scene) => {
         projectionBottomLeft, projectionTopLeft
     ])
     const beamPyramid = new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
+    beamPyramid.visible = false
     scene.add(beamPyramid)
 
     const beamPyramidFillGeometry = new THREE.BufferGeometry()
@@ -342,7 +343,7 @@ const buildProjectorBeam = (scene) => {
     beamPyramidFillGeometry.computeVertexNormals()
 
     const beamPyramidFillMaterial = new THREE.MeshBasicMaterial({
-        color: "#ff6666",
+        color: "#e2d0ba",
         transparent: true,
         opacity: 0.12,
         side: THREE.DoubleSide,
