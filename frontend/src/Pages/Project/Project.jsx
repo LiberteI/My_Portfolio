@@ -287,7 +287,40 @@ const buildProjectorBeam = (scene) => {
     beamPointLightMarker.position.copy(beamPointLight.position)
     scene.add(beamPointLightMarker)
 
-    return { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, beamTarget }
+    const beamOrigin = new THREE.Vector3(
+        projectorBeamOrigin.x,
+        projectorBeamOrigin.y,
+        projectorBeamOrigin.z
+    )
+    const projectionTopLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yEnd, roomZStart)
+    const projectionTopRight = new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yEnd, roomZStart)
+    const projectionBottomRight = new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yStart, roomZStart)
+    const projectionBottomLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, roomZStart)
+
+    const beamPyramidMaterial = new THREE.LineBasicMaterial({ color: "#ff6666" })
+    const beamPyramidGeometry = new THREE.BufferGeometry().setFromPoints([
+        beamOrigin, projectionTopLeft,
+        beamOrigin, projectionTopRight,
+        beamOrigin, projectionBottomRight,
+        beamOrigin, projectionBottomLeft,
+        projectionTopLeft, projectionTopRight,
+        projectionTopRight, projectionBottomRight,
+        projectionBottomRight, projectionBottomLeft,
+        projectionBottomLeft, projectionTopLeft
+    ])
+    const beamPyramid = new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
+    scene.add(beamPyramid)
+
+    return {
+        beamLight,
+        beamPointLight,
+        beamPointLightMarker,
+        beamPointLightMarkerMaterial,
+        beamTarget,
+        beamPyramid,
+        beamPyramidGeometry,
+        beamPyramidMaterial
+    }
 }
 
 const getDisplayPositions = () => {
@@ -652,6 +685,7 @@ const ProjectScene = () => {
             scene.remove(projectorBeam.beamLight)
             scene.remove(projectorBeam.beamPointLight)
             scene.remove(projectorBeam.beamPointLightMarker)
+            scene.remove(projectorBeam.beamPyramid)
             scene.remove(projectorBeam.beamTarget)
             if (debugAxes) {
                 scene.remove(debugAxes)
@@ -676,6 +710,8 @@ const ProjectScene = () => {
             box.material.dispose()
             projectorBeam.beamPointLightMarker.geometry.dispose()
             projectorBeam.beamPointLightMarkerMaterial.dispose()
+            projectorBeam.beamPyramidGeometry.dispose()
+            projectorBeam.beamPyramidMaterial.dispose()
             debugVisuals.marker.geometry.dispose()
             debugVisuals.markerMaterial.dispose()
             debugVisuals.lineGeometry.dispose()
