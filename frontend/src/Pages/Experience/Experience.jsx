@@ -2,6 +2,7 @@
 const magicianImg = "/images/magician/magician.png"
 const leftArmImg = "/images/magician/left-arm.png"
 const rightArmImg = "/images/magician/right-arm.png"
+
 const questLogo = "/images/icons/QuestLogo.svg"
 const experiences = [
 
@@ -29,6 +30,7 @@ const Experience = () => {
                     <img 
                         className="absolute inset-0 h-auto w-full z-10" 
                         src={magicianImg} alt="Magician illustration" />
+
                     <img 
                         className="absolute left-[-2%] top-[19%] w-[48%] z-5" 
                         src={leftArmImg} alt="" aria-hidden="true" />
