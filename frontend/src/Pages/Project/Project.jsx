@@ -374,6 +374,8 @@ const ProjectScene = () => {
 
     useEffect(() => {
         const enableCameraMovement = false
+        const enableAxesDebug = false
+        
         const container = canvasRef.current
 
         if (!container) {
@@ -392,7 +394,7 @@ const ProjectScene = () => {
         const room = buildRoom(scene)
         const lights = buildLights(scene)
         const box = buildBox(scene)
-        const debugAxes = buildDebugAxes(scene)
+        const debugAxes = enableAxesDebug ? buildDebugAxes(scene) : null
         const debugVisuals = buildCameraDebugVisuals(scene)
         const pressedKeys = new Set()
         const clock = new THREE.Clock()
@@ -576,7 +578,9 @@ const ProjectScene = () => {
             container.removeEventListener("mousedown", handleCanvasMouseDown)
             window.cancelAnimationFrame(animationFrameId)
             lights.forEach((light) => scene.remove(light))
-            scene.remove(debugAxes)
+            if (debugAxes) {
+                scene.remove(debugAxes)
+            }
             scene.remove(debugVisuals.marker)
             scene.remove(debugVisuals.lineSegments)
             if (projector) {
