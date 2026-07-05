@@ -373,6 +373,7 @@ const ProjectScene = () => {
     const canvasRef = useRef(null)
 
     useEffect(() => {
+        const enableCameraMovement = false
         const container = canvasRef.current
 
         if (!container) {
@@ -441,10 +442,18 @@ const ProjectScene = () => {
         }
 
         const handleKeyDown = (event) => {
+            if (!enableCameraMovement) {
+                return
+            }
+
             pressedKeys.add(event.code)
         }
 
         const handleKeyUp = (event) => {
+            if (!enableCameraMovement) {
+                return
+            }
+
             pressedKeys.delete(event.code)
         }
 
@@ -478,10 +487,18 @@ const ProjectScene = () => {
                 }
             })
 
+            if (!enableCameraMovement) {
+                return
+            }
+
             container.requestPointerLock?.()
         }
 
         const handleMouseMove = (event) => {
+            if (!enableCameraMovement) {
+                return
+            }
+
             if (document.pointerLockElement !== container) {
                 return
             }
@@ -496,42 +513,44 @@ const ProjectScene = () => {
 
         const animate = () => {
             const delta = clock.getDelta()
-            const forward = new THREE.Vector3()
-            camera.getWorldDirection(forward)
-            const forwardFlat = new THREE.Vector3(forward.x, 0, forward.z)
-            const right = new THREE.Vector3(-forwardFlat.z, 0, forwardFlat.x)
-            const movement = new THREE.Vector3()
+            if (enableCameraMovement) {
+                const forward = new THREE.Vector3()
+                camera.getWorldDirection(forward)
+                const forwardFlat = new THREE.Vector3(forward.x, 0, forward.z)
+                const right = new THREE.Vector3(-forwardFlat.z, 0, forwardFlat.x)
+                const movement = new THREE.Vector3()
 
-            if (forwardFlat.lengthSq() > 0) {
-                forwardFlat.normalize()
-            }
+                if (forwardFlat.lengthSq() > 0) {
+                    forwardFlat.normalize()
+                }
 
-            if (right.lengthSq() > 0) {
-                right.normalize()
-            }
+                if (right.lengthSq() > 0) {
+                    right.normalize()
+                }
 
-            if (pressedKeys.has("KeyW")) {
-                movement.add(forwardFlat)
-            }
-            if (pressedKeys.has("KeyS")) {
-                movement.sub(forwardFlat)
-            }
-            if (pressedKeys.has("KeyA")) {
-                movement.sub(right)
-            }
-            if (pressedKeys.has("KeyD")) {
-                movement.add(right)
-            }
-            if (pressedKeys.has("ArrowUp")) {
-                movement.y += 1
-            }
-            if (pressedKeys.has("ArrowDown")) {
-                movement.y -= 1
-            }
+                if (pressedKeys.has("KeyW")) {
+                    movement.add(forwardFlat)
+                }
+                if (pressedKeys.has("KeyS")) {
+                    movement.sub(forwardFlat)
+                }
+                if (pressedKeys.has("KeyA")) {
+                    movement.sub(right)
+                }
+                if (pressedKeys.has("KeyD")) {
+                    movement.add(right)
+                }
+                if (pressedKeys.has("ArrowUp")) {
+                    movement.y += 1
+                }
+                if (pressedKeys.has("ArrowDown")) {
+                    movement.y -= 1
+                }
 
-            if (movement.lengthSq() > 0) {
-                movement.normalize().multiplyScalar(moveSpeed * delta)
-                camera.position.add(movement)
+                if (movement.lengthSq() > 0) {
+                    movement.normalize().multiplyScalar(moveSpeed * delta)
+                    camera.position.add(movement)
+                }
             }
 
             updateCameraDebugVisuals(camera, debugVisuals)
