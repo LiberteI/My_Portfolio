@@ -138,9 +138,19 @@ const projects = [
 ]
 
 const buildRoom = (scene) => {
-    const roomWidth = 60
-    const roomHeight = 15
-    const roomDepth = 30
+    const roomXStart = -30
+    const roomXEnd = 30
+    const roomYStart = -7.5
+    const roomYEnd = 7.5
+    const roomZStart = -7
+    const roomZEnd = 15
+
+    const roomWidth = roomXEnd - roomXStart
+    const roomHeight = roomYEnd - roomYStart
+    const roomDepth = roomZEnd - roomZStart
+    const roomXCenter = (roomXStart + roomXEnd) / 2
+    const roomYCenter = (roomYStart + roomYEnd) / 2
+    const roomZCenter = (roomZStart + roomZEnd) / 2
 
     const wallMaterial = new THREE.MeshStandardMaterial({ color: "#151515", side: THREE.DoubleSide })
     const floorMaterial = new THREE.MeshStandardMaterial({ color: "#0c0c0c", side: THREE.DoubleSide })
@@ -152,7 +162,7 @@ const buildRoom = (scene) => {
         floorMaterial
     )
     floor.rotation.x = -Math.PI / 2
-    floor.position.y = -roomHeight / 2
+    floor.position.set(roomXCenter, roomYStart, roomZCenter)
     scene.add(floor)
 
     const ceiling = new THREE.Mesh(
@@ -160,14 +170,14 @@ const buildRoom = (scene) => {
         ceilingMaterial
     )
     ceiling.rotation.x = Math.PI / 2
-    ceiling.position.y = roomHeight / 2
+    ceiling.position.set(roomXCenter, roomYEnd, roomZCenter)
     scene.add(ceiling)
 
     const backWall = new THREE.Mesh(
         new THREE.PlaneGeometry(roomWidth, roomHeight),
         backWallMaterial
     )
-    backWall.position.z = -roomDepth / 2
+    backWall.position.set(roomXCenter, roomYCenter, roomZStart)
     scene.add(backWall)
 
     const leftWall = new THREE.Mesh(
@@ -175,7 +185,7 @@ const buildRoom = (scene) => {
         wallMaterial
     )
     leftWall.rotation.y = Math.PI / 2
-    leftWall.position.x = -roomWidth / 2
+    leftWall.position.set(roomXStart, roomYCenter, roomZCenter)
     scene.add(leftWall)
 
     const rightWall = new THREE.Mesh(
@@ -183,7 +193,7 @@ const buildRoom = (scene) => {
         wallMaterial
     )
     rightWall.rotation.y = -Math.PI / 2
-    rightWall.position.x = roomWidth / 2
+    rightWall.position.set(roomXEnd, roomYCenter, roomZCenter)
     scene.add(rightWall)
 
     const frontWall = new THREE.Mesh(
@@ -191,7 +201,7 @@ const buildRoom = (scene) => {
         wallMaterial
     )
     frontWall.rotation.y = Math.PI
-    frontWall.position.z = roomDepth / 2
+    frontWall.position.set(roomXCenter, roomYCenter, roomZEnd)
     scene.add(frontWall)
 
     return {
@@ -268,8 +278,8 @@ const buildCamera = () => {
     const cameraAspect = 1
     const cameraNear = 0.1
     const cameraFar = 500
-    const cameraPosition = { x: -15.68, y: -4.8, z: 14.12 }
-    const cameraLookAt = { x: -14.38, y: -4.8, z: 9.97 }
+    const cameraPosition = { x: -16.24, y: -4.8, z: 14.27 }
+    const cameraLookAt = { x: -14.81, y: -4.9, z: 9.48 }
 
     const camera = new THREE.PerspectiveCamera(cameraFov, cameraAspect, cameraNear, cameraFar)
     camera.rotation.order = "YXZ"
