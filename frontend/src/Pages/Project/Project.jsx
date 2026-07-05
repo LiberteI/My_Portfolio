@@ -212,7 +212,7 @@ const buildLights = (scene) => {
 }
 
 const getDisplayPositions = () => {
-    const position = { x: 0, y: -3.9, z: 10 }
+    const position = { x: -10, y: -6.5, z: 10 }
 
     return {
         position,
@@ -264,11 +264,99 @@ const loadProjector = async (scene) => {
 }
 
 const buildCamera = () => {
-    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000)
-    camera.position.set(0, 0, 9)
-    camera.lookAt(0, 0, 0)
+    const cameraFov = 60
+    const cameraAspect = 1
+    const cameraNear = 0.1
+    const cameraFar = 500
+    const cameraPosition = { x: -15.68, y: -4.8, z: 14.12 }
+    const cameraLookAt = { x: -14.38, y: -4.8, z: 9.97 }
+
+    const camera = new THREE.PerspectiveCamera(cameraFov, cameraAspect, cameraNear, cameraFar)
+    camera.rotation.order = "YXZ"
+    camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
+    camera.lookAt(cameraLookAt.x, cameraLookAt.y, cameraLookAt.z)
+    camera.rotation.z = 0
 
     return camera
+}
+
+const buildCameraDebugVisuals = (scene) => {
+    const markerMaterial = new THREE.MeshBasicMaterial({ color: "#ff0000" })
+    const marker = new THREE.Mesh(
+        new THREE.SphereGeometry(0.18, 16, 16),
+        markerMaterial
+    )
+    scene.add(marker)
+
+    const lineMaterial = new THREE.LineBasicMaterial({ color: "#facc15" })
+    const lineGeometry = new THREE.BufferGeometry()
+    const linePositions = new Float32Array(54)
+    lineGeometry.setAttribute("position", new THREE.BufferAttribute(linePositions, 3))
+    const lineSegments = new THREE.LineSegments(lineGeometry, lineMaterial)
+    scene.add(lineSegments)
+
+    return {
+        marker,
+        markerMaterial,
+        lineGeometry,
+        lineMaterial,
+        linePositions,
+        lineSegments
+    }
+}
+
+const updateCameraDebugVisuals = (camera, debugVisuals) => {
+    const viewRange = 6
+    const up = new THREE.Vector3(0, 1, 0)
+    const forward = new THREE.Vector3()
+    camera.getWorldDirection(forward)
+    const right = new THREE.Vector3().crossVectors(forward, up).normalize()
+    const viewUp = new THREE.Vector3().crossVectors(right, forward).normalize()
+    const farCenter = new THREE.Vector3().copy(camera.position).addScaledVector(forward, viewRange)
+    const farHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * viewRange
+    const farWidth = farHeight * camera.aspect
+    const halfFarWidth = farWidth / 2
+    const halfFarHeight = farHeight / 2
+
+    const topLeft = new THREE.Vector3()
+        .copy(farCenter)
+        .addScaledVector(right, -halfFarWidth)
+        .addScaledVector(viewUp, halfFarHeight)
+    const topRight = new THREE.Vector3()
+        .copy(farCenter)
+        .addScaledVector(right, halfFarWidth)
+        .addScaledVector(viewUp, halfFarHeight)
+    const bottomRight = new THREE.Vector3()
+        .copy(farCenter)
+        .addScaledVector(right, halfFarWidth)
+        .addScaledVector(viewUp, -halfFarHeight)
+    const bottomLeft = new THREE.Vector3()
+        .copy(farCenter)
+        .addScaledVector(right, -halfFarWidth)
+        .addScaledVector(viewUp, -halfFarHeight)
+
+    debugVisuals.marker.position.copy(camera.position)
+
+    const points = [
+        camera.position, farCenter,
+        camera.position, topLeft,
+        camera.position, topRight,
+        camera.position, bottomRight,
+        camera.position, bottomLeft,
+        topLeft, topRight,
+        topRight, bottomRight,
+        bottomRight, bottomLeft,
+        bottomLeft, topLeft
+    ]
+
+    points.forEach((point, index) => {
+        const offset = index * 3
+        debugVisuals.linePositions[offset] = point.x
+        debugVisuals.linePositions[offset + 1] = point.y
+        debugVisuals.linePositions[offset + 2] = point.z
+    })
+
+    debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
 const ProjectScene = () => {
@@ -294,11 +382,16 @@ const ProjectScene = () => {
         const lights = buildLights(scene)
         const box = buildBox(scene)
         const debugAxes = buildDebugAxes(scene)
-        const dragState = {
-            isDragging: false,
-            lastX: 0,
-            lastY: 0
-        }
+        const debugVisuals = buildCameraDebugVisuals(scene)
+        const pressedKeys = new Set()
+        const clock = new THREE.Clock()
+        const moveSpeed = 6
+        const lookSensitivity = 0.0025
+        const initialForward = new THREE.Vector3()
+        camera.getWorldDirection(initialForward)
+        let cameraYaw = Math.atan2(-initialForward.x, -initialForward.z)
+        let cameraPitch = Math.asin(THREE.MathUtils.clamp(initialForward.y, -1, 1))
+        let animationFrameId = 0
         let projector = null
         let disposed = false
 
@@ -320,7 +413,6 @@ const ProjectScene = () => {
                 }
 
                 projector = loadedProjector
-                renderer.render(scene, camera)
             })
             .catch((error) => {
                 console.error("Failed to load projector model", error)
@@ -336,52 +428,128 @@ const ProjectScene = () => {
             camera.aspect = clientWidth / clientHeight
             camera.updateProjectionMatrix()
             renderer.setSize(clientWidth, clientHeight)
-            renderer.render(scene, camera)
         }
 
-        const handlePointerDown = (event) => {
-            dragState.isDragging = true
-            dragState.lastX = event.clientX
-            dragState.lastY = event.clientY
+        const handleKeyDown = (event) => {
+            pressedKeys.add(event.code)
         }
 
-        const handlePointerMove = (event) => {
-            if (!dragState.isDragging) {
+        const handleKeyUp = (event) => {
+            pressedKeys.delete(event.code)
+        }
+
+        const handleCanvasMouseDown = (event) => {
+            if (event.button !== 0) {
                 return
             }
 
-            const deltaX = event.clientX - dragState.lastX
-            const deltaY = event.clientY - dragState.lastY
-            const dragSpeed = 0.02
+            const lookDirection = new THREE.Vector3()
+            camera.getWorldDirection(lookDirection)
 
-            camera.position.x -= deltaX * dragSpeed
-            camera.position.y += deltaY * dragSpeed
-            camera.lookAt(0, 0, 0)
+            console.log("Camera params", {
+                fov: camera.fov,
+                aspect: camera.aspect,
+                near: camera.near,
+                far: camera.far,
+                position: {
+                    x: camera.position.x,
+                    y: camera.position.y,
+                    z: camera.position.z
+                },
+                rotation: {
+                    x: camera.rotation.x,
+                    y: camera.rotation.y,
+                    z: camera.rotation.z
+                },
+                lookDirection: {
+                    x: lookDirection.x,
+                    y: lookDirection.y,
+                    z: lookDirection.z
+                }
+            })
 
-            dragState.lastX = event.clientX
-            dragState.lastY = event.clientY
-
-            renderer.render(scene, camera)
+            container.requestPointerLock?.()
         }
 
-        const handlePointerUp = () => {
-            dragState.isDragging = false
+        const handleMouseMove = (event) => {
+            if (document.pointerLockElement !== container) {
+                return
+            }
+
+            cameraYaw -= event.movementX * lookSensitivity
+            cameraPitch -= event.movementY * lookSensitivity
+            cameraPitch = THREE.MathUtils.clamp(cameraPitch, -1.45, 1.45)
+            camera.rotation.y = cameraYaw
+            camera.rotation.x = cameraPitch
+            camera.rotation.z = 0
+        }
+
+        const animate = () => {
+            const delta = clock.getDelta()
+            const forward = new THREE.Vector3()
+            camera.getWorldDirection(forward)
+            const forwardFlat = new THREE.Vector3(forward.x, 0, forward.z)
+            const right = new THREE.Vector3(-forwardFlat.z, 0, forwardFlat.x)
+            const movement = new THREE.Vector3()
+
+            if (forwardFlat.lengthSq() > 0) {
+                forwardFlat.normalize()
+            }
+
+            if (right.lengthSq() > 0) {
+                right.normalize()
+            }
+
+            if (pressedKeys.has("KeyW")) {
+                movement.add(forwardFlat)
+            }
+            if (pressedKeys.has("KeyS")) {
+                movement.sub(forwardFlat)
+            }
+            if (pressedKeys.has("KeyA")) {
+                movement.sub(right)
+            }
+            if (pressedKeys.has("KeyD")) {
+                movement.add(right)
+            }
+            if (pressedKeys.has("ArrowUp")) {
+                movement.y += 1
+            }
+            if (pressedKeys.has("ArrowDown")) {
+                movement.y -= 1
+            }
+
+            if (movement.lengthSq() > 0) {
+                movement.normalize().multiplyScalar(moveSpeed * delta)
+                camera.position.add(movement)
+            }
+
+            updateCameraDebugVisuals(camera, debugVisuals)
+            renderer.render(scene, camera)
+            animationFrameId = window.requestAnimationFrame(animate)
         }
 
         resize()
+        updateCameraDebugVisuals(camera, debugVisuals)
         window.addEventListener("resize", resize)
-        container.addEventListener("pointerdown", handlePointerDown)
-        window.addEventListener("pointermove", handlePointerMove)
-        window.addEventListener("pointerup", handlePointerUp)
+        window.addEventListener("keydown", handleKeyDown)
+        window.addEventListener("keyup", handleKeyUp)
+        window.addEventListener("mousemove", handleMouseMove)
+        container.addEventListener("mousedown", handleCanvasMouseDown)
+        animationFrameId = window.requestAnimationFrame(animate)
 
         return () => {
             disposed = true
             window.removeEventListener("resize", resize)
-            container.removeEventListener("pointerdown", handlePointerDown)
-            window.removeEventListener("pointermove", handlePointerMove)
-            window.removeEventListener("pointerup", handlePointerUp)
+            window.removeEventListener("keydown", handleKeyDown)
+            window.removeEventListener("keyup", handleKeyUp)
+            window.removeEventListener("mousemove", handleMouseMove)
+            container.removeEventListener("mousedown", handleCanvasMouseDown)
+            window.cancelAnimationFrame(animationFrameId)
             lights.forEach((light) => scene.remove(light))
             scene.remove(debugAxes)
+            scene.remove(debugVisuals.marker)
+            scene.remove(debugVisuals.lineSegments)
             if (projector) {
                 scene.remove(projector)
                 projector.traverse((child) => {
@@ -398,6 +566,10 @@ const ProjectScene = () => {
             }
             box.mesh.geometry.dispose()
             box.material.dispose()
+            debugVisuals.marker.geometry.dispose()
+            debugVisuals.markerMaterial.dispose()
+            debugVisuals.lineGeometry.dispose()
+            debugVisuals.lineMaterial.dispose()
             room.meshes.forEach((mesh) => mesh.geometry.dispose())
             room.materials.forEach((material) => material.dispose())
             renderer.dispose()
