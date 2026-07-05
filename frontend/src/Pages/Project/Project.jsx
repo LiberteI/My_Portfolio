@@ -138,9 +138,9 @@ const projects = [
 ]
 
 const buildRoom = (scene) => {
-    const roomWidth = 18
-    const roomHeight = 10
-    const roomDepth = 22
+    const roomWidth = 60
+    const roomHeight = 15
+    const roomDepth = 30
 
     const wallMaterial = new THREE.MeshStandardMaterial({ color: "#151515", side: THREE.DoubleSide })
     const floorMaterial = new THREE.MeshStandardMaterial({ color: "#0c0c0c", side: THREE.DoubleSide })
@@ -211,30 +211,64 @@ const buildLights = (scene) => {
     return [ambientLight, directionalLight]
 }
 
+const getDisplayPositions = () => {
+    const position = { x: 0, y: -3.9, z: 10 }
+
+    return {
+        position,
+        boxPosition: { x: position.x, y: position.y, z: position.z },
+        projectorPosition: { x: position.x, y: position.y+1.2, z: position.z }
+    }
+}
+
 const buildBox = (scene) => {
+    const boxWidth = 1
+    const boxHeight = 2
+    const boxDepth = 1
+    const { boxPosition } = getDisplayPositions()
+
     const boxMaterial = new THREE.MeshStandardMaterial({ color: "#ffffff" })
     const box = new THREE.Mesh(
-        new THREE.BoxGeometry(3, 3, 3),
+        new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth),
         boxMaterial
     )
 
-    box.position.set(0, -3.9, -1.5)
+    box.position.set(boxPosition.x, boxPosition.y, boxPosition.z)
     scene.add(box)
 
     return { mesh: box, material: boxMaterial }
 }
 
+const buildDebugAxes = (scene) => {
+    const axesHelper = new THREE.AxesHelper(4)
+    scene.add(axesHelper)
+
+    return axesHelper
+}
+
 const loadProjector = async (scene) => {
+    const { projectorPosition } = getDisplayPositions()
+    const projectorScale = 0.25
+    const projectorRotationY = Math.PI
+
     const loader = new GLTFLoader()
     const gltf = await loader.loadAsync(projectorModelUrl)
     const projector = gltf.scene
 
-    projector.position.set(0, -3.4, -1.5)
-    projector.scale.setScalar(2.2)
-    projector.rotation.y = Math.PI
+    projector.position.set(projectorPosition.x, projectorPosition.y, projectorPosition.z)
+    projector.scale.setScalar(projectorScale)
+    projector.rotation.y = projectorRotationY
     scene.add(projector)
 
     return projector
+}
+
+const buildCamera = () => {
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000)
+    camera.position.set(0, 0, 9)
+    camera.lookAt(0, 0, 0)
+
+    return camera
 }
 
 const ProjectScene = () => {
@@ -250,9 +284,7 @@ const ProjectScene = () => {
         const scene = new THREE.Scene()
         scene.background = new THREE.Color("#000000")
 
-        const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000)
-        camera.position.set(0, 0, 9)
-        camera.lookAt(0, 0, 0)
+        const camera = buildCamera()
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -261,6 +293,12 @@ const ProjectScene = () => {
         const room = buildRoom(scene)
         const lights = buildLights(scene)
         const box = buildBox(scene)
+        const debugAxes = buildDebugAxes(scene)
+        const dragState = {
+            isDragging: false,
+            lastX: 0,
+            lastY: 0
+        }
         let projector = null
         let disposed = false
 
@@ -301,13 +339,49 @@ const ProjectScene = () => {
             renderer.render(scene, camera)
         }
 
+        const handlePointerDown = (event) => {
+            dragState.isDragging = true
+            dragState.lastX = event.clientX
+            dragState.lastY = event.clientY
+        }
+
+        const handlePointerMove = (event) => {
+            if (!dragState.isDragging) {
+                return
+            }
+
+            const deltaX = event.clientX - dragState.lastX
+            const deltaY = event.clientY - dragState.lastY
+            const dragSpeed = 0.02
+
+            camera.position.x -= deltaX * dragSpeed
+            camera.position.y += deltaY * dragSpeed
+            camera.lookAt(0, 0, 0)
+
+            dragState.lastX = event.clientX
+            dragState.lastY = event.clientY
+
+            renderer.render(scene, camera)
+        }
+
+        const handlePointerUp = () => {
+            dragState.isDragging = false
+        }
+
         resize()
         window.addEventListener("resize", resize)
+        container.addEventListener("pointerdown", handlePointerDown)
+        window.addEventListener("pointermove", handlePointerMove)
+        window.addEventListener("pointerup", handlePointerUp)
 
         return () => {
             disposed = true
             window.removeEventListener("resize", resize)
+            container.removeEventListener("pointerdown", handlePointerDown)
+            window.removeEventListener("pointermove", handlePointerMove)
+            window.removeEventListener("pointerup", handlePointerUp)
             lights.forEach((light) => scene.remove(light))
+            scene.remove(debugAxes)
             if (projector) {
                 scene.remove(projector)
                 projector.traverse((child) => {
