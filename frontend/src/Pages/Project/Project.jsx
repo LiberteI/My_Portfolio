@@ -279,7 +279,12 @@ const buildProjectorBeam = (scene) => {
     )
     scene.add(beamPointLight)
 
-    const beamPointLightMarkerMaterial = new THREE.MeshBasicMaterial({ color: "#ff0000" })
+    const beamPointLightMarkerMaterial = new THREE.MeshBasicMaterial({
+        color: "#ff0000",
+        transparent: true,
+        opacity: 0.55,
+        depthWrite: false
+    })
     const beamPointLightMarker = new THREE.Mesh(
         new THREE.SphereGeometry(0.14, 16, 16),
         beamPointLightMarkerMaterial
@@ -297,7 +302,11 @@ const buildProjectorBeam = (scene) => {
     const projectionBottomRight = new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yStart, roomZStart)
     const projectionBottomLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, roomZStart)
 
-    const beamPyramidMaterial = new THREE.LineBasicMaterial({ color: "#ff6666" })
+    const beamPyramidMaterial = new THREE.LineBasicMaterial({
+        color: "#ff6666",
+        transparent: true,
+        opacity: 0.7
+    })
     const beamPyramidGeometry = new THREE.BufferGeometry().setFromPoints([
         beamOrigin, projectionTopLeft,
         beamOrigin, projectionTopRight,
@@ -311,6 +320,37 @@ const buildProjectorBeam = (scene) => {
     const beamPyramid = new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
     scene.add(beamPyramid)
 
+    const beamPyramidFillGeometry = new THREE.BufferGeometry()
+    const beamPyramidFillVertices = new Float32Array([
+        beamOrigin.x, beamOrigin.y, beamOrigin.z,
+        projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z,
+        projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
+
+        beamOrigin.x, beamOrigin.y, beamOrigin.z,
+        projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
+        projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
+
+        beamOrigin.x, beamOrigin.y, beamOrigin.z,
+        projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
+        projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
+
+        beamOrigin.x, beamOrigin.y, beamOrigin.z,
+        projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
+        projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z
+    ])
+    beamPyramidFillGeometry.setAttribute("position", new THREE.BufferAttribute(beamPyramidFillVertices, 3))
+    beamPyramidFillGeometry.computeVertexNormals()
+
+    const beamPyramidFillMaterial = new THREE.MeshBasicMaterial({
+        color: "#ff6666",
+        transparent: true,
+        opacity: 0.12,
+        side: THREE.DoubleSide,
+        depthWrite: false
+    })
+    const beamPyramidFill = new THREE.Mesh(beamPyramidFillGeometry, beamPyramidFillMaterial)
+    scene.add(beamPyramidFill)
+
     return {
         beamLight,
         beamPointLight,
@@ -319,7 +359,10 @@ const buildProjectorBeam = (scene) => {
         beamTarget,
         beamPyramid,
         beamPyramidGeometry,
-        beamPyramidMaterial
+        beamPyramidMaterial,
+        beamPyramidFill,
+        beamPyramidFillGeometry,
+        beamPyramidFillMaterial
     }
 }
 
@@ -686,6 +729,7 @@ const ProjectScene = () => {
             scene.remove(projectorBeam.beamPointLight)
             scene.remove(projectorBeam.beamPointLightMarker)
             scene.remove(projectorBeam.beamPyramid)
+            scene.remove(projectorBeam.beamPyramidFill)
             scene.remove(projectorBeam.beamTarget)
             if (debugAxes) {
                 scene.remove(debugAxes)
@@ -712,6 +756,8 @@ const ProjectScene = () => {
             projectorBeam.beamPointLightMarkerMaterial.dispose()
             projectorBeam.beamPyramidGeometry.dispose()
             projectorBeam.beamPyramidMaterial.dispose()
+            projectorBeam.beamPyramidFillGeometry.dispose()
+            projectorBeam.beamPyramidFillMaterial.dispose()
             debugVisuals.marker.geometry.dispose()
             debugVisuals.markerMaterial.dispose()
             debugVisuals.lineGeometry.dispose()
