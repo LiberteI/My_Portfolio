@@ -197,6 +197,51 @@ const buildProjectorBeam = (scene) => {
     scene.add(beamTarget)
     beamLight.target = beamTarget
 
+    // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
+    const wallSpillLight = new THREE.SpotLight("#e2d0ba", 3.5, 42, 0.95, 0.8, 1)
+    wallSpillLight.position.set(
+        projectorBeamOrigin.x,
+        projectorBeamOrigin.y,
+        projectorBeamOrigin.z
+    )
+    wallSpillLight.target = beamTarget
+    scene.add(wallSpillLight)
+
+    const wallGlowCanvas = document.createElement("canvas")
+    wallGlowCanvas.width = 1024
+    wallGlowCanvas.height = 1024
+    const wallGlowContext = wallGlowCanvas.getContext("2d")
+    const wallGlowGradient = wallGlowContext.createRadialGradient(512, 512, 90, 512, 512, 512)
+    wallGlowGradient.addColorStop(0, "rgba(228, 213, 196, 0.9)")
+    wallGlowGradient.addColorStop(0.35, "rgba(226, 208, 186, 0.38)")
+    wallGlowGradient.addColorStop(0.72, "rgba(222, 205, 187, 0.12)")
+    wallGlowGradient.addColorStop(1, "rgba(222, 205, 187, 0)")
+    wallGlowContext.fillStyle = wallGlowGradient
+    wallGlowContext.fillRect(0, 0, 1024, 1024)
+
+    const wallGlowTexture = new THREE.CanvasTexture(wallGlowCanvas)
+    const wallGlowMaterial = new THREE.MeshBasicMaterial({
+        map: wallGlowTexture,
+        transparent: true,
+        opacity: 0.55,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        side: THREE.DoubleSide
+    })
+    const wallGlowPlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(
+            (projectionFrame.xEnd - projectionFrame.xStart) * 2.2,
+            (projectionFrame.yEnd - projectionFrame.yStart) * 2.2
+        ),
+        wallGlowMaterial
+    )
+    wallGlowPlane.position.set(
+        projectionFrameCenter.x,
+        projectionFrameCenter.y,
+        roomZStart + 0.03
+    )
+    scene.add(wallGlowPlane)
+
     const beamOrigin = new THREE.Vector3(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -263,6 +308,10 @@ const buildProjectorBeam = (scene) => {
         beamPointLightMarker,
         beamPointLightMarkerMaterial,
         beamTarget,
+        wallSpillLight,
+        wallGlowPlane,
+        wallGlowMaterial,
+        wallGlowTexture,
         beamPyramid,
         beamPyramidGeometry,
         beamPyramidMaterial,
@@ -632,6 +681,8 @@ const ProjectScene = () => {
             scene.remove(projectorBeam.beamPyramid)
             scene.remove(projectorBeam.beamPyramidFill)
             scene.remove(projectorBeam.beamTarget)
+            scene.remove(projectorBeam.wallSpillLight)
+            scene.remove(projectorBeam.wallGlowPlane)
             if (debugAxes) {
                 scene.remove(debugAxes)
             }
@@ -660,6 +711,9 @@ const ProjectScene = () => {
             projectorBeam.beamPyramidMaterial.dispose()
             projectorBeam.beamPyramidFillGeometry.dispose()
             projectorBeam.beamPyramidFillMaterial.dispose()
+            projectorBeam.wallGlowPlane.geometry.dispose()
+            projectorBeam.wallGlowMaterial.dispose()
+            projectorBeam.wallGlowTexture.dispose()
             debugVisuals.marker.geometry.dispose()
             debugVisuals.markerMaterial.dispose()
             debugVisuals.lineGeometry.dispose()
