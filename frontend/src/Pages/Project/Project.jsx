@@ -1,9 +1,11 @@
 
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
+import projectorModelUrl from "../../assets/Projector/generic_white_digital_projector.glb"
 
 const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
 const bubbleThumb = "/images/project-thumbnails/Bubble.png"
@@ -135,7 +137,107 @@ const projects = [
 
 ]
 
-const Project = () => {
+const buildRoom = (scene) => {
+    const roomWidth = 18
+    const roomHeight = 10
+    const roomDepth = 22
+
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: "#151515", side: THREE.DoubleSide })
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: "#0c0c0c", side: THREE.DoubleSide })
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: "#1b1b1b", side: THREE.DoubleSide })
+    const backWallMaterial = new THREE.MeshStandardMaterial({ color: "#111111", side: THREE.DoubleSide })
+
+    const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(roomWidth, roomDepth),
+        floorMaterial
+    )
+    floor.rotation.x = -Math.PI / 2
+    floor.position.y = -roomHeight / 2
+    scene.add(floor)
+
+    const ceiling = new THREE.Mesh(
+        new THREE.PlaneGeometry(roomWidth, roomDepth),
+        ceilingMaterial
+    )
+    ceiling.rotation.x = Math.PI / 2
+    ceiling.position.y = roomHeight / 2
+    scene.add(ceiling)
+
+    const backWall = new THREE.Mesh(
+        new THREE.PlaneGeometry(roomWidth, roomHeight),
+        backWallMaterial
+    )
+    backWall.position.z = -roomDepth / 2
+    scene.add(backWall)
+
+    const leftWall = new THREE.Mesh(
+        new THREE.PlaneGeometry(roomDepth, roomHeight),
+        wallMaterial
+    )
+    leftWall.rotation.y = Math.PI / 2
+    leftWall.position.x = -roomWidth / 2
+    scene.add(leftWall)
+
+    const rightWall = new THREE.Mesh(
+        new THREE.PlaneGeometry(roomDepth, roomHeight),
+        wallMaterial
+    )
+    rightWall.rotation.y = -Math.PI / 2
+    rightWall.position.x = roomWidth / 2
+    scene.add(rightWall)
+
+    const frontWall = new THREE.Mesh(
+        new THREE.PlaneGeometry(roomWidth, roomHeight),
+        wallMaterial
+    )
+    frontWall.rotation.y = Math.PI
+    frontWall.position.z = roomDepth / 2
+    scene.add(frontWall)
+
+    return {
+        meshes: [floor, ceiling, backWall, leftWall, rightWall, frontWall],
+        materials: [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial]
+    }
+}
+
+const buildLights = (scene) => {
+    const ambientLight = new THREE.AmbientLight("#ffffff", 1.8)
+    scene.add(ambientLight)
+
+    const directionalLight = new THREE.DirectionalLight("#ffffff", 1.6)
+    directionalLight.position.set(0, 4, 6)
+    scene.add(directionalLight)
+
+    return [ambientLight, directionalLight]
+}
+
+const buildBox = (scene) => {
+    const boxMaterial = new THREE.MeshStandardMaterial({ color: "#ffffff" })
+    const box = new THREE.Mesh(
+        new THREE.BoxGeometry(3, 3, 3),
+        boxMaterial
+    )
+
+    box.position.set(0, -3.9, -1.5)
+    scene.add(box)
+
+    return { mesh: box, material: boxMaterial }
+}
+
+const loadProjector = async (scene) => {
+    const loader = new GLTFLoader()
+    const gltf = await loader.loadAsync(projectorModelUrl)
+    const projector = gltf.scene
+
+    projector.position.set(0, -3.4, -1.5)
+    projector.scale.setScalar(2.2)
+    projector.rotation.y = Math.PI
+    scene.add(projector)
+
+    return projector
+}
+
+const ProjectScene = () => {
     const canvasRef = useRef(null)
 
     useEffect(() => {
@@ -146,12 +248,45 @@ const Project = () => {
         }
 
         const scene = new THREE.Scene()
+        scene.background = new THREE.Color("#000000")
+
         const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000)
-        camera.position.z = 5
+        camera.position.set(0, 0, 9)
+        camera.lookAt(0, 0, 0)
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         container.appendChild(renderer.domElement)
+
+        const room = buildRoom(scene)
+        const lights = buildLights(scene)
+        const box = buildBox(scene)
+        let projector = null
+        let disposed = false
+
+        loadProjector(scene)
+            .then((loadedProjector) => {
+                if (disposed) {
+                    loadedProjector.traverse((child) => {
+                        if (child.isMesh) {
+                            child.geometry?.dispose()
+
+                            if (Array.isArray(child.material)) {
+                                child.material.forEach((material) => material.dispose())
+                            } else {
+                                child.material?.dispose()
+                            }
+                        }
+                    })
+                    return
+                }
+
+                projector = loadedProjector
+                renderer.render(scene, camera)
+            })
+            .catch((error) => {
+                console.error("Failed to load projector model", error)
+            })
 
         const resize = () => {
             const { clientWidth, clientHeight } = container
@@ -170,7 +305,27 @@ const Project = () => {
         window.addEventListener("resize", resize)
 
         return () => {
+            disposed = true
             window.removeEventListener("resize", resize)
+            lights.forEach((light) => scene.remove(light))
+            if (projector) {
+                scene.remove(projector)
+                projector.traverse((child) => {
+                    if (child.isMesh) {
+                        child.geometry?.dispose()
+
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach((material) => material.dispose())
+                        } else {
+                            child.material?.dispose()
+                        }
+                    }
+                })
+            }
+            box.mesh.geometry.dispose()
+            box.material.dispose()
+            room.meshes.forEach((mesh) => mesh.geometry.dispose())
+            room.materials.forEach((material) => material.dispose())
             renderer.dispose()
 
             if (container.contains(renderer.domElement)) {
@@ -189,4 +344,4 @@ const Project = () => {
     )
 }
 
-export default Project
+export default ProjectScene
