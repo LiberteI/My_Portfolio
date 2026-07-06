@@ -1,3 +1,4 @@
+import { useState } from "react"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
@@ -134,16 +135,64 @@ const projects = [
     }
 ]
 
+const ProjectScrollCard = () => {
+    return (
+        <div>
+            <div>
+                {/*project index - 1 based*/}
+                <p>1</p>
+                {/*is featured badge*/}
+                <p>isFeatured</p>
+            </div>
+            {/*small project img thumbnail*/}
+            <img src="" alt="" />
+            
+            <p>title</p>
+            {/*topic + 1 skill*/}
+            <p>subtitle</p>
+        </div>
+    )
+}
 const Project = () => {
+    const [activeProjectIndex, setActiveProjectIndex] = useState(0)
+    const featuredProject = projects[activeProjectIndex] ?? projects[0]
+    void setActiveProjectIndex
+
     return (
         <section className="relative h-screen overflow-hidden bg-black" data-project-count={projects.length}>
+            <nav>
+                <button>home start left</button>
+                <button>projects experience music about start right</button>
+            </nav>
             <ProjectScene
                 className="absolute inset-0 h-full w-full bg-black"
                 projects={projects}
+                featuredProject={featuredProject}
+                screenTextureUrl={featuredProject?.image}
+                lightColor={featuredProject?.lightColor}
             />
+            {/* description pulled from current project */}
             <div className="relative z-10">
-                {/* <h1>Projects</h1> */}
+                <p>index + isFeatured</p>
+                <h1>title</h1>
+                <p>description</p>
+                <p>---</p>
+                <p>duration</p>
+                <p>tech stack</p>
+                <p>category</p>
+                <button>view project</button>
             </div>
+
+            {/* menu bar */}
+            <div>
+                <button>left</button>
+                <div>
+                    project-cards here
+                </div>
+                <button>right</button>
+            </div>
+
+            <div>bottom pagination UI</div>
         </section>
     )
 }
