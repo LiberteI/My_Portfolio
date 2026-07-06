@@ -1,10 +1,21 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import slide1 from "./slides-imgs/1.png"
+import slide2 from "./slides-imgs/2.png"
+import slide3 from "./slides-imgs/3.png"
+import slide4 from "./slides-imgs/4.png"
+import slide5 from "./slides-imgs/5.png"
+import slide6 from "./slides-imgs/6.png"
+import slide7 from "./slides-imgs/7.png"
 
 const slideImages = [
-    "/images/project-thumbnails/KnightThumbnail.png",
-    "/images/project-thumbnails/Bubble.png",
-    "/images/project-thumbnails/agent.png"
+    slide1,
+    slide2,
+    slide3,
+    slide4,
+    slide5,
+    slide6,
+    slide7
 ]
 
 const Ppt = () => {

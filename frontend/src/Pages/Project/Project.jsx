@@ -3,6 +3,7 @@ import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
 import ProjectScene from "./ProjectScene"
+import slide1 from "./slides-imgs/1.png"
 
 const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
 const bubbleThumb = "/images/project-thumbnails/Bubble.png"
@@ -132,7 +133,7 @@ const Project = () => {
         <section className="relative h-screen overflow-hidden bg-black" data-project-count={projects.length}>
             <ProjectScene
                 className="absolute inset-0 h-full w-full bg-black"
-                screenTextureUrl={projectThumb}
+                screenTextureUrl={slide1}
                 onScreenClick={() => navigate("/ppt")}
             />
             <div className="relative z-10">
