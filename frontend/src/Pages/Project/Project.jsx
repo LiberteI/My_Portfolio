@@ -135,14 +135,11 @@ const projects = [
 ]
 
 const Project = () => {
-    const featuredProject = projects[0]
-
     return (
         <section className="relative h-screen overflow-hidden bg-black" data-project-count={projects.length}>
             <ProjectScene
                 className="absolute inset-0 h-full w-full bg-black"
-                screenTextureUrl={""}
-                lightColor={featuredProject.lightColor}
+                projects={projects}
             />
             <div className="relative z-10">
                 {/* <h1>Projects</h1> */}

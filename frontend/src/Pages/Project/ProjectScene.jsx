@@ -516,11 +516,12 @@ const updateCameraDebugVisuals = (camera, debugVisuals) => {
     debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
-const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick, lightColor = "#e4d5c4" }) => {
+const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScreenClick, lightColor = "#e4d5c4" }) => {
     const canvasRef = useRef(null)
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
     const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
+    void projects
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
     const enableCameraMovement = false
 
