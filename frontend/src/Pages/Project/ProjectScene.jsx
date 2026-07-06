@@ -294,12 +294,10 @@ const buildRoom = (scene) => {
         materialResponseTextures.push(floorMaps.roughnessMap, floorMaps.aoMap, floorMaps.normalMap)
 
         applyMaterialResponse(floorMaterial, floorMaps, {
-            roughness: 0.42,
-            metalness: 0.08,
-            normalScale: 0.75,
-            aoMapIntensity: 0.7,
-            clearcoat: 0.18,
-            clearcoatRoughness: 0.74
+            roughness: 1,
+            metalness: 0,
+            normalScale: 0.1,
+            aoMapIntensity: 0.7
         })
     })
     const ceilingTexture = textureLoader.load(museumWallTextureUrl)
@@ -312,15 +310,13 @@ const buildRoom = (scene) => {
         map: wallTexture,
         side: THREE.DoubleSide,
         roughness: 0.88,
-        metalness: 0.03
+        metalness: 0
     })
-    floorMaterial = new THREE.MeshPhysicalMaterial({
+    floorMaterial = new THREE.MeshStandardMaterial({
         map: floorTexture,
         side: THREE.DoubleSide,
-        roughness: 0.5,
-        metalness: 0.06,
-        clearcoat: 0.14,
-        clearcoatRoughness: 0.78
+        roughness: 1,
+        metalness: 0
     })
     ceilingMaterial = new THREE.MeshStandardMaterial({
         map: ceilingTexture,
@@ -443,44 +439,102 @@ const getRgbaColor = (hexColor, alpha) => {
     return `rgba(${red}, ${green}, ${blue}, ${alpha})`
 }
 
+const createSpotLightDebugger = (scene, light, debugConfig) => {
+    if (!debugConfig?.enabled || !light) {
+        return null
+    }
+
+    const markerMaterial = new THREE.MeshBasicMaterial({
+        color: debugConfig.color,
+        transparent: true,
+        opacity: debugConfig.markerOpacity,
+        depthWrite: false
+    })
+    const marker = new THREE.Mesh(
+        new THREE.SphereGeometry(
+            debugConfig.markerRadius,
+            debugConfig.sphereWidthSegments,
+            debugConfig.sphereHeightSegments
+        ),
+        markerMaterial
+    )
+    marker.position.copy(light.position)
+    scene.add(marker)
+
+    const rangeRadius = light.distance > 0 ? light.distance : debugConfig.fallbackDistance
+    const rangeGeometry = new THREE.WireframeGeometry(
+        new THREE.SphereGeometry(
+            rangeRadius,
+            debugConfig.sphereWidthSegments,
+            debugConfig.sphereHeightSegments
+        )
+    )
+    const rangeMaterial = new THREE.LineBasicMaterial({
+        color: debugConfig.color,
+        transparent: true,
+        opacity: debugConfig.sphereOpacity
+    })
+    const range = new THREE.LineSegments(rangeGeometry, rangeMaterial)
+    range.position.copy(light.position)
+    scene.add(range)
+
+    return { marker, markerMaterial, range, rangeGeometry, rangeMaterial }
+}
+
 const lightParam = () => {
     return {
         ambientLight: {
             name: "ambientLight",
             role: "Base fill light for the whole room so unlit surfaces do not fall completely into black.",
+            enabled: true,
             color: "#ffffff",
-            intensity: 0.15
+            intensity: 0.2
         },
         beamLight: {
             name: "beamLight",
             role: "Primary projector spotlight aimed at the projection wall. This is the main direct light source.",
+            enabled: true,
+            debugEnabled: false,
             colorSource: "lightColor",
             intensity: 8,
-            distance: 40,
+            distance: 25,
             angle: 0.55,
             penumbra: 0.35,
             decay: 1
         },
-        beamPointLight: {
-            name: "beamPointLight",
+        projectorOriginPointLight: {
+            name: "projectorOriginPointLight",
             role: "Small point light at the projector lens to brighten the projector head and nearby space.",
+            enabled: false,
             colorSource: "lightColor",
             intensity: 10,
             distance: 20,
             decay: 2
         },
-        beamPointLightMarker: {
-            name: "beamPointLightMarker",
+        projectorOriginPointLightMarker: {
+            name: "projectorOriginPointLightMarker",
             role: "Visual marker mesh for the projector lens glow. Debug-style visual aid, not a real light.",
+            enabled: true,
             colorSource: "lightColor",
             radius: 0.14,
             widthSegments: 16,
             heightSegments: 16,
             opacity: 0.55
         },
+        emissionLight: {
+            name: "emissionLight",
+            role: "Point light placed just in front of the screen to lift the nearby ceiling and floor.",
+            enabled: true,
+            colorSource: "lightColor",
+            intensity: 1,
+            distance: 24,
+            decay: 0.1,
+            positionZOffset: 0.9
+        },
         wallGlowPlane: {
             name: "wallGlowPlane",
             role: "Additive glow card placed in front of the wall to fake projector bloom and soft center falloff.",
+            enabled: false,
             colorSource: "lightColor",
             widthScale: 2.2,
             heightScale: 2.2,
@@ -496,6 +550,7 @@ const lightParam = () => {
         beamPyramid: {
             name: "beamPyramid",
             role: "Wireframe outline of the projector frustum. Useful for debugging beam shape.",
+            enabled: false,
             colorSource: "lightColor",
             opacity: 0.7,
             visible: false
@@ -503,8 +558,20 @@ const lightParam = () => {
         beamPyramidFill: {
             name: "beamPyramidFill",
             role: "Visible volumetric beam mesh between projector and wall, rendered with the custom beam shader.",
+            enabled: false,
             colorSource: "lightColor",
             opacity: 0.28
+        },
+        spotLightDebug: {
+            name: "spotLightDebug",
+            role: "Reusable spotlight debugger showing the light center and a spherical range skeleton.",
+            color: "#22d3ee",
+            markerRadius: 0.2,
+            markerOpacity: 0.95,
+            sphereWidthSegments: 24,
+            sphereHeightSegments: 16,
+            sphereOpacity: 0.22,
+            fallbackDistance: 12
         }
     }
 }
@@ -512,6 +579,9 @@ const lightParam = () => {
 const buildAmbientLight = (scene) => {
     const lighting = lightParam()
     const ambientConfig = lighting.ambientLight
+    if (!ambientConfig.enabled) {
+        return null
+    }
     const ambientLight = new THREE.AmbientLight(ambientConfig.color, ambientConfig.intensity)
     scene.add(ambientLight)
 
@@ -521,60 +591,88 @@ const buildAmbientLight = (scene) => {
 const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
     const lighting = lightParam()
     const beamLightConfig = lighting.beamLight
-    const beamPointLightConfig = lighting.beamPointLight
-    const beamPointLightMarkerConfig = lighting.beamPointLightMarker
+    const projectorOriginPointLightConfig = lighting.projectorOriginPointLight
+    const projectorOriginPointLightMarkerConfig = lighting.projectorOriginPointLightMarker
+    const spotLightDebugConfig = lighting.spotLightDebug
     const { projectorBeamOrigin } = getDisplayPositions()
 
-    const beamLight = new THREE.SpotLight(
-        lightColor,
-        beamLightConfig.intensity,
-        beamLightConfig.distance,
-        beamLightConfig.angle,
-        beamLightConfig.penumbra,
-        beamLightConfig.decay
-    )
-    beamLight.position.set(
-        projectorBeamOrigin.x,
-        projectorBeamOrigin.y,
-        projectorBeamOrigin.z
-    )
-    scene.add(beamLight)
+    const beamLight = beamLightConfig.enabled
+        ? new THREE.SpotLight(
+            lightColor,
+            beamLightConfig.intensity,
+            beamLightConfig.distance,
+            beamLightConfig.angle,
+            beamLightConfig.penumbra,
+            beamLightConfig.decay
+        )
+        : null
+    if (beamLight) {
+        beamLight.position.set(
+            projectorBeamOrigin.x,
+            projectorBeamOrigin.y,
+            projectorBeamOrigin.z
+        )
+        scene.add(beamLight)
+    }
 
-    const beamPointLight = new THREE.PointLight(
-        lightColor,
-        beamPointLightConfig.intensity,
-        beamPointLightConfig.distance,
-        beamPointLightConfig.decay
-    )
-    beamPointLight.position.set(
-        projectorBeamOrigin.x,
-        projectorBeamOrigin.y,
-        projectorBeamOrigin.z
-    )
-    scene.add(beamPointLight)
+    const projectorOriginPointLight = projectorOriginPointLightConfig.enabled
+        ? new THREE.PointLight(
+            lightColor,
+            projectorOriginPointLightConfig.intensity,
+            projectorOriginPointLightConfig.distance,
+            projectorOriginPointLightConfig.decay
+        )
+        : null
+    if (projectorOriginPointLight) {
+        projectorOriginPointLight.position.set(
+            projectorBeamOrigin.x,
+            projectorBeamOrigin.y,
+            projectorBeamOrigin.z
+        )
+        scene.add(projectorOriginPointLight)
+    }
 
-    const beamPointLightMarkerMaterial = new THREE.MeshBasicMaterial({
-        color: lightColor,
-        transparent: true,
-        opacity: beamPointLightMarkerConfig.opacity,
-        depthWrite: false
+    const projectorOriginPointLightMarkerMaterial = projectorOriginPointLight && projectorOriginPointLightMarkerConfig.enabled
+        ? new THREE.MeshBasicMaterial({
+            color: lightColor,
+            transparent: true,
+            opacity: projectorOriginPointLightMarkerConfig.opacity,
+            depthWrite: false
+        })
+        : null
+    const projectorOriginPointLightMarker = projectorOriginPointLightMarkerMaterial
+        ? new THREE.Mesh(
+            new THREE.SphereGeometry(
+                projectorOriginPointLightMarkerConfig.radius,
+                projectorOriginPointLightMarkerConfig.widthSegments,
+                projectorOriginPointLightMarkerConfig.heightSegments
+            ),
+            projectorOriginPointLightMarkerMaterial
+        )
+        : null
+    if (projectorOriginPointLightMarker && projectorOriginPointLight) {
+        projectorOriginPointLightMarker.position.copy(projectorOriginPointLight.position)
+        scene.add(projectorOriginPointLightMarker)
+    }
+
+    const beamLightDebug = createSpotLightDebugger(scene, beamLight, {
+        ...spotLightDebugConfig,
+        enabled: beamLightConfig.debugEnabled
     })
-    const beamPointLightMarker = new THREE.Mesh(
-        new THREE.SphereGeometry(
-            beamPointLightMarkerConfig.radius,
-            beamPointLightMarkerConfig.widthSegments,
-            beamPointLightMarkerConfig.heightSegments
-        ),
-        beamPointLightMarkerMaterial
-    )
-    beamPointLightMarker.position.copy(beamPointLight.position)
-    scene.add(beamPointLightMarker)
 
-    return { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin }
+    return {
+        beamLight,
+        beamLightDebug,
+        projectorOriginPointLight,
+        projectorOriginPointLightMarker,
+        projectorOriginPointLightMarkerMaterial,
+        projectorBeamOrigin
+    }
 }
 
 const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const lighting = lightParam()
+    const emissionLightConfig = lighting.emissionLight
     const wallGlowPlaneConfig = lighting.wallGlowPlane
     const beamPyramidConfig = lighting.beamPyramid
     const beamPyramidFillConfig = lighting.beamPyramidFill
@@ -586,7 +684,14 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         z: roomZStart
     }
     const beamOriginAssets = buildProjectBeamOrigin(scene, lightColor)
-    const { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin } = beamOriginAssets
+    const {
+        beamLight,
+        beamLightDebug,
+        projectorOriginPointLight,
+        projectorOriginPointLightMarker,
+        projectorOriginPointLightMarkerMaterial,
+        projectorBeamOrigin
+    } = beamOriginAssets
 
     const beamTarget = new THREE.Object3D()
     beamTarget.position.set(
@@ -595,41 +700,66 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         projectionFrameCenter.z
     )
     scene.add(beamTarget)
-    beamLight.target = beamTarget
+    if (beamLight) {
+        beamLight.target = beamTarget
+    }
 
-    const wallGlowCanvas = document.createElement("canvas")
-    wallGlowCanvas.width = 1024
-    wallGlowCanvas.height = 1024
-    const wallGlowContext = wallGlowCanvas.getContext("2d")
-    const wallGlowGradient = wallGlowContext.createRadialGradient(512, 512, 90, 512, 512, 512)
-    wallGlowPlaneConfig.gradientStops.forEach(({ offset, alpha }) => {
-        wallGlowGradient.addColorStop(offset, getRgbaColor(lightColor, alpha))
-    })
-    wallGlowContext.fillStyle = wallGlowGradient
-    wallGlowContext.fillRect(0, 0, 1024, 1024)
+    const emissionLight = emissionLightConfig.enabled
+        ? new THREE.PointLight(
+            lightColor,
+            emissionLightConfig.intensity,
+            emissionLightConfig.distance,
+            emissionLightConfig.decay
+        )
+        : null
+    if (emissionLight) {
+        emissionLight.position.set(
+            projectionFrameCenter.x,
+            projectionFrameCenter.y,
+            roomZStart + emissionLightConfig.positionZOffset
+        )
+        scene.add(emissionLight)
+    }
 
-    const wallGlowTexture = new THREE.CanvasTexture(wallGlowCanvas)
-    const wallGlowMaterial = new THREE.MeshBasicMaterial({
-        map: wallGlowTexture,
-        transparent: true,
-        opacity: wallGlowPlaneConfig.opacity,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        side: THREE.DoubleSide
-    })
-    const wallGlowPlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-            (projectionFrame.xEnd - projectionFrame.xStart) * wallGlowPlaneConfig.widthScale,
-            (projectionFrame.yEnd - projectionFrame.yStart) * wallGlowPlaneConfig.heightScale
-        ),
-        wallGlowMaterial
-    )
-    wallGlowPlane.position.set(
-        projectionFrameCenter.x,
-        projectionFrameCenter.y,
-        roomZStart + wallGlowPlaneConfig.zOffset
-    )
-    scene.add(wallGlowPlane)
+    const wallGlowCanvas = wallGlowPlaneConfig.enabled ? document.createElement("canvas") : null
+    let wallGlowTexture = null
+    let wallGlowMaterial = null
+    let wallGlowPlane = null
+
+    if (wallGlowCanvas) {
+        wallGlowCanvas.width = 1024
+        wallGlowCanvas.height = 1024
+        const wallGlowContext = wallGlowCanvas.getContext("2d")
+        const wallGlowGradient = wallGlowContext.createRadialGradient(512, 512, 90, 512, 512, 512)
+        wallGlowPlaneConfig.gradientStops.forEach(({ offset, alpha }) => {
+            wallGlowGradient.addColorStop(offset, getRgbaColor(lightColor, alpha))
+        })
+        wallGlowContext.fillStyle = wallGlowGradient
+        wallGlowContext.fillRect(0, 0, 1024, 1024)
+
+        wallGlowTexture = new THREE.CanvasTexture(wallGlowCanvas)
+        wallGlowMaterial = new THREE.MeshBasicMaterial({
+            map: wallGlowTexture,
+            transparent: true,
+            opacity: wallGlowPlaneConfig.opacity,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide
+        })
+        wallGlowPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(
+                (projectionFrame.xEnd - projectionFrame.xStart) * wallGlowPlaneConfig.widthScale,
+                (projectionFrame.yEnd - projectionFrame.yStart) * wallGlowPlaneConfig.heightScale
+            ),
+            wallGlowMaterial
+        )
+        wallGlowPlane.position.set(
+            projectionFrameCenter.x,
+            projectionFrameCenter.y,
+            roomZStart + wallGlowPlaneConfig.zOffset
+        )
+        scene.add(wallGlowPlane)
+    }
 
     const beamOrigin = new THREE.Vector3(
         projectorBeamOrigin.x,
@@ -647,60 +777,80 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const projectionBottomRight = new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yStart, roomZStart)
     const projectionBottomLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, roomZStart)
 
-    const beamPyramidMaterial = new THREE.LineBasicMaterial({
-        color: lightColor,
-        transparent: true,
-        opacity: beamPyramidConfig.opacity
-    })
-    const beamPyramidGeometry = new THREE.BufferGeometry().setFromPoints([
-        beamOrigin, projectionTopLeft,
-        beamOrigin, projectionTopRight,
-        beamOrigin, projectionBottomRight,
-        beamOrigin, projectionBottomLeft,
-        projectionTopLeft, projectionTopRight,
-        projectionTopRight, projectionBottomRight,
-        projectionBottomRight, projectionBottomLeft,
-        projectionBottomLeft, projectionTopLeft
-    ])
-    const beamPyramid = new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
-    beamPyramid.visible = beamPyramidConfig.visible
-    scene.add(beamPyramid)
+    const beamPyramidMaterial = beamPyramidConfig.enabled
+        ? new THREE.LineBasicMaterial({
+            color: lightColor,
+            transparent: true,
+            opacity: beamPyramidConfig.opacity
+        })
+        : null
+    const beamPyramidGeometry = beamPyramidConfig.enabled
+        ? new THREE.BufferGeometry().setFromPoints([
+            beamOrigin, projectionTopLeft,
+            beamOrigin, projectionTopRight,
+            beamOrigin, projectionBottomRight,
+            beamOrigin, projectionBottomLeft,
+            projectionTopLeft, projectionTopRight,
+            projectionTopRight, projectionBottomRight,
+            projectionBottomRight, projectionBottomLeft,
+            projectionBottomLeft, projectionTopLeft
+        ])
+        : null
+    const beamPyramid = beamPyramidGeometry && beamPyramidMaterial
+        ? new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
+        : null
+    if (beamPyramid) {
+        beamPyramid.visible = beamPyramidConfig.visible
+        scene.add(beamPyramid)
+    }
 
-    const beamPyramidFillGeometry = new THREE.BufferGeometry()
-    const beamPyramidFillVertices = new Float32Array([
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z,
-        projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
+    const beamPyramidFillGeometry = beamPyramidFillConfig.enabled ? new THREE.BufferGeometry() : null
+    const beamPyramidFillVertices = beamPyramidFillConfig.enabled
+        ? new Float32Array([
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z,
+            projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
 
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
-        projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
+            projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
 
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
-        projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
+            projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
 
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
-        projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z
-    ])
-    beamPyramidFillGeometry.setAttribute("position", new THREE.BufferAttribute(beamPyramidFillVertices, 3))
-    const beamPyramidFillMaterial = createBeamMaterial({
-        beamColor: lightColor,
-        beamOrigin,
-        beamAxis,
-        beamLength,
-        beamOpacity: beamPyramidFillConfig.opacity
-    })
-    const beamPyramidFill = new THREE.Mesh(beamPyramidFillGeometry, beamPyramidFillMaterial)
-    scene.add(beamPyramidFill)
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
+            projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z
+        ])
+        : null
+    if (beamPyramidFillGeometry && beamPyramidFillVertices) {
+        beamPyramidFillGeometry.setAttribute("position", new THREE.BufferAttribute(beamPyramidFillVertices, 3))
+    }
+    const beamPyramidFillMaterial = beamPyramidFillConfig.enabled
+        ? createBeamMaterial({
+            beamColor: lightColor,
+            beamOrigin,
+            beamAxis,
+            beamLength,
+            beamOpacity: beamPyramidFillConfig.opacity
+        })
+        : null
+    const beamPyramidFill = beamPyramidFillGeometry && beamPyramidFillMaterial
+        ? new THREE.Mesh(beamPyramidFillGeometry, beamPyramidFillMaterial)
+        : null
+    if (beamPyramidFill) {
+        scene.add(beamPyramidFill)
+    }
 
     return {
         beamLight,
-        beamPointLight,
-        beamPointLightMarker,
-        beamPointLightMarkerMaterial,
+        projectorOriginPointLight,
+        projectorOriginPointLightMarker,
+        projectorOriginPointLightMarkerMaterial,
+        beamLightDebug,
         beamTarget,
+        emissionLight,
         wallGlowPlane,
         wallGlowMaterial,
         wallGlowTexture,
@@ -899,6 +1049,7 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
         const box = buildBox(scene)
         const debugAxes = enableAxesDebug ? buildDebugAxes(scene) : null
         const debugVisuals = buildCameraDebugVisuals(scene)
+        const pressedKeys = pressedKeysRef.current
         const initialForward = new THREE.Vector3()
         camera.getWorldDirection(initialForward)
         cameraRotationRef.current = {
@@ -977,18 +1128,39 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
         return () => {
             disposed = true
             cameraRef.current = null
-            pressedKeysRef.current.clear()
+            pressedKeys.clear()
             window.removeEventListener("resize", resize)
             container.removeEventListener("click", handleCanvasClick)
             window.cancelAnimationFrame(animationFrameId)
-            scene.remove(ambientLight)
-            scene.remove(projectorBeam.beamLight)
-            scene.remove(projectorBeam.beamPointLight)
-            scene.remove(projectorBeam.beamPointLightMarker)
-            scene.remove(projectorBeam.beamPyramid)
-            scene.remove(projectorBeam.beamPyramidFill)
+            if (ambientLight) {
+                scene.remove(ambientLight)
+            }
+            if (projectorBeam.beamLight) {
+                scene.remove(projectorBeam.beamLight)
+            }
+            if (projectorBeam.projectorOriginPointLight) {
+                scene.remove(projectorBeam.projectorOriginPointLight)
+            }
+            if (projectorBeam.projectorOriginPointLightMarker) {
+                scene.remove(projectorBeam.projectorOriginPointLightMarker)
+            }
+            if (projectorBeam.beamLightDebug) {
+                scene.remove(projectorBeam.beamLightDebug.marker)
+                scene.remove(projectorBeam.beamLightDebug.range)
+            }
+            if (projectorBeam.beamPyramid) {
+                scene.remove(projectorBeam.beamPyramid)
+            }
+            if (projectorBeam.beamPyramidFill) {
+                scene.remove(projectorBeam.beamPyramidFill)
+            }
             scene.remove(projectorBeam.beamTarget)
-            scene.remove(projectorBeam.wallGlowPlane)
+            if (projectorBeam.emissionLight) {
+                scene.remove(projectorBeam.emissionLight)
+            }
+            if (projectorBeam.wallGlowPlane) {
+                scene.remove(projectorBeam.wallGlowPlane)
+            }
             if (debugAxes) {
                 scene.remove(debugAxes)
             }
@@ -1019,15 +1191,39 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
                 projectionScreen.material.dispose()
                 projectionScreen.texture.dispose()
             }
-            projectorBeam.beamPointLightMarker.geometry.dispose()
-            projectorBeam.beamPointLightMarkerMaterial.dispose()
-            projectorBeam.beamPyramidGeometry.dispose()
-            projectorBeam.beamPyramidMaterial.dispose()
-            projectorBeam.beamPyramidFillGeometry.dispose()
-            projectorBeam.beamPyramidFillMaterial.dispose()
-            projectorBeam.wallGlowPlane.geometry.dispose()
-            projectorBeam.wallGlowMaterial.dispose()
-            projectorBeam.wallGlowTexture.dispose()
+            if (projectorBeam.projectorOriginPointLightMarker) {
+                projectorBeam.projectorOriginPointLightMarker.geometry.dispose()
+            }
+            if (projectorBeam.projectorOriginPointLightMarkerMaterial) {
+                projectorBeam.projectorOriginPointLightMarkerMaterial.dispose()
+            }
+            if (projectorBeam.beamLightDebug) {
+                projectorBeam.beamLightDebug.marker.geometry.dispose()
+                projectorBeam.beamLightDebug.markerMaterial.dispose()
+                projectorBeam.beamLightDebug.rangeGeometry.dispose()
+                projectorBeam.beamLightDebug.rangeMaterial.dispose()
+            }
+            if (projectorBeam.beamPyramidGeometry) {
+                projectorBeam.beamPyramidGeometry.dispose()
+            }
+            if (projectorBeam.beamPyramidMaterial) {
+                projectorBeam.beamPyramidMaterial.dispose()
+            }
+            if (projectorBeam.beamPyramidFillGeometry) {
+                projectorBeam.beamPyramidFillGeometry.dispose()
+            }
+            if (projectorBeam.beamPyramidFillMaterial) {
+                projectorBeam.beamPyramidFillMaterial.dispose()
+            }
+            if (projectorBeam.wallGlowPlane) {
+                projectorBeam.wallGlowPlane.geometry.dispose()
+            }
+            if (projectorBeam.wallGlowMaterial) {
+                projectorBeam.wallGlowMaterial.dispose()
+            }
+            if (projectorBeam.wallGlowTexture) {
+                projectorBeam.wallGlowTexture.dispose()
+            }
             debugVisuals.marker.geometry.dispose()
             debugVisuals.markerMaterial.dispose()
             debugVisuals.lineGeometry.dispose()
@@ -1048,6 +1244,7 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
     // user input handling for camera movement
     useEffect(() => {
         const container = canvasRef.current
+        const pressedKeys = pressedKeysRef.current
         const moveSpeed = 6
         const lookSensitivity = 0.0025
 
@@ -1175,7 +1372,7 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
         animationFrameId = window.requestAnimationFrame(animateMovement)
 
         return () => {
-            pressedKeysRef.current.clear()
+            pressedKeys.clear()
             window.removeEventListener("keydown", handleKeyDown)
             window.removeEventListener("keyup", handleKeyUp)
             window.removeEventListener("mousemove", handleMouseMove)
