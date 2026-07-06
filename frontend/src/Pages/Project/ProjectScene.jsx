@@ -465,7 +465,7 @@ const lightParam = () => {
             name: "beamPointLight",
             role: "Small point light at the projector lens to brighten the projector head and nearby space.",
             colorSource: "lightColor",
-            intensity: 20,
+            intensity: 10,
             distance: 20,
             decay: 2
         },
@@ -477,16 +477,6 @@ const lightParam = () => {
             widthSegments: 16,
             heightSegments: 16,
             opacity: 0.55
-        },
-        wallSpillLight: {
-            name: "wallSpillLight",
-            role: "Secondary wide spotlight that softens the projection area and creates broad spill on the wall.",
-            colorSource: "lightColor",
-            intensity: 3.5,
-            distance: 42,
-            angle: 0.95,
-            penumbra: 0.8,
-            decay: 1
         },
         wallGlowPlane: {
             name: "wallGlowPlane",
@@ -585,7 +575,6 @@ const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
 
 const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const lighting = lightParam()
-    const wallSpillLightConfig = lighting.wallSpillLight
     const wallGlowPlaneConfig = lighting.wallGlowPlane
     const beamPyramidConfig = lighting.beamPyramid
     const beamPyramidFillConfig = lighting.beamPyramidFill
@@ -607,22 +596,6 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     )
     scene.add(beamTarget)
     beamLight.target = beamTarget
-
-    const wallSpillLight = new THREE.SpotLight(
-        lightColor,
-        wallSpillLightConfig.intensity,
-        wallSpillLightConfig.distance,
-        wallSpillLightConfig.angle,
-        wallSpillLightConfig.penumbra,
-        wallSpillLightConfig.decay
-    )
-    wallSpillLight.position.set(
-        projectorBeamOrigin.x,
-        projectorBeamOrigin.y,
-        projectorBeamOrigin.z
-    )
-    wallSpillLight.target = beamTarget
-    scene.add(wallSpillLight)
 
     const wallGlowCanvas = document.createElement("canvas")
     wallGlowCanvas.width = 1024
@@ -728,7 +701,6 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         beamPointLightMarker,
         beamPointLightMarkerMaterial,
         beamTarget,
-        wallSpillLight,
         wallGlowPlane,
         wallGlowMaterial,
         wallGlowTexture,
@@ -892,7 +864,7 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
     const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
     void projects
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = false
+    const enableCameraMovement = true
 
     // initialize and render the 3D scene
     useEffect(() => {
@@ -1016,7 +988,6 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
             scene.remove(projectorBeam.beamPyramid)
             scene.remove(projectorBeam.beamPyramidFill)
             scene.remove(projectorBeam.beamTarget)
-            scene.remove(projectorBeam.wallSpillLight)
             scene.remove(projectorBeam.wallGlowPlane)
             if (debugAxes) {
                 scene.remove(debugAxes)
