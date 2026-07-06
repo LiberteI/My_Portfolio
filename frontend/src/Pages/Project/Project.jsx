@@ -13,7 +13,7 @@ const dalTutorThumb = "/images/projects/daltutor.png"
 const iceSpyThumb = "/images/projects/iceSpy.png"
 const portfolioThumb = "/images/projects/portfolio.png"
 
-export const projects = [
+const projects = [
     {
         title: "My Portfolio",
         slug: "my-portfolio",
