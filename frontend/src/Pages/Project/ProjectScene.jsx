@@ -160,6 +160,25 @@ const buildProjectionScreen = (scene, screenTextureUrl) => {
     return { mesh: screen, material: screenMaterial, texture: screenTexture }
 }
 
+const getValidScreenTextureUrl = (screenTextureUrl) => {
+    if (typeof screenTextureUrl !== "string") {
+        return null
+    }
+
+    const normalizedTextureUrl = screenTextureUrl.trim()
+
+    return normalizedTextureUrl ? normalizedTextureUrl : null
+}
+
+const getRgbaColor = (hexColor, alpha) => {
+    const color = new THREE.Color(hexColor)
+    const red = Math.round(color.r * 255)
+    const green = Math.round(color.g * 255)
+    const blue = Math.round(color.b * 255)
+
+    return `rgba(${red}, ${green}, ${blue}, ${alpha})`
+}
+
 const buildAmbientLight = (scene) => {
     // AmbientLight takes (color, intensity)
     const ambientLight = new THREE.AmbientLight("#ffffff", 0.1)
@@ -168,11 +187,11 @@ const buildAmbientLight = (scene) => {
     return ambientLight
 }
 
-const buildProjectBeamOrigin = (scene) => {
+const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
     const { projectorBeamOrigin } = getDisplayPositions()
 
     // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
-    const beamLight = new THREE.SpotLight("#e4d5c4", 8, 40, 0.55, 0.35, 1)
+    const beamLight = new THREE.SpotLight(lightColor, 8, 40, 0.55, 0.35, 1)
     beamLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -181,7 +200,7 @@ const buildProjectBeamOrigin = (scene) => {
     scene.add(beamLight)
 
     // PointLight takes (color, intensity, distance, decay)
-    const beamPointLight = new THREE.PointLight("#e4d5c4", 10, 20, 2)
+    const beamPointLight = new THREE.PointLight(lightColor, 10, 20, 2)
     beamPointLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -190,7 +209,7 @@ const buildProjectBeamOrigin = (scene) => {
     scene.add(beamPointLight)
 
     const beamPointLightMarkerMaterial = new THREE.MeshBasicMaterial({
-        color: "#e4d5c4",
+        color: lightColor,
         transparent: true,
         opacity: 0.55,
         depthWrite: false
@@ -205,7 +224,7 @@ const buildProjectBeamOrigin = (scene) => {
     return { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin }
 }
 
-const buildProjectorBeam = (scene) => {
+const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const roomZStart = -7
     const projectionFrame = getProjectionFrameConfig()
     const projectionFrameCenter = {
@@ -213,7 +232,7 @@ const buildProjectorBeam = (scene) => {
         y: (projectionFrame.yStart + projectionFrame.yEnd) / 2,
         z: roomZStart
     }
-    const beamOriginAssets = buildProjectBeamOrigin(scene)
+    const beamOriginAssets = buildProjectBeamOrigin(scene, lightColor)
     const { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin } = beamOriginAssets
 
     const beamTarget = new THREE.Object3D()
@@ -226,7 +245,7 @@ const buildProjectorBeam = (scene) => {
     beamLight.target = beamTarget
 
     // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
-    const wallSpillLight = new THREE.SpotLight("#e2d0ba", 3.5, 42, 0.95, 0.8, 1)
+    const wallSpillLight = new THREE.SpotLight(lightColor, 3.5, 42, 0.95, 0.8, 1)
     wallSpillLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -240,10 +259,10 @@ const buildProjectorBeam = (scene) => {
     wallGlowCanvas.height = 1024
     const wallGlowContext = wallGlowCanvas.getContext("2d")
     const wallGlowGradient = wallGlowContext.createRadialGradient(512, 512, 90, 512, 512, 512)
-    wallGlowGradient.addColorStop(0, "rgba(228, 213, 196, 0.9)")
-    wallGlowGradient.addColorStop(0.35, "rgba(226, 208, 186, 0.38)")
-    wallGlowGradient.addColorStop(0.72, "rgba(222, 205, 187, 0.12)")
-    wallGlowGradient.addColorStop(1, "rgba(222, 205, 187, 0)")
+    wallGlowGradient.addColorStop(0, getRgbaColor(lightColor, 0.9))
+    wallGlowGradient.addColorStop(0.35, getRgbaColor(lightColor, 0.38))
+    wallGlowGradient.addColorStop(0.72, getRgbaColor(lightColor, 0.12))
+    wallGlowGradient.addColorStop(1, getRgbaColor(lightColor, 0))
     wallGlowContext.fillStyle = wallGlowGradient
     wallGlowContext.fillRect(0, 0, 1024, 1024)
 
@@ -287,7 +306,7 @@ const buildProjectorBeam = (scene) => {
     const projectionBottomLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, roomZStart)
 
     const beamPyramidMaterial = new THREE.LineBasicMaterial({
-        color: "#decdbb",
+        color: lightColor,
         transparent: true,
         opacity: 0.7
     })
@@ -325,7 +344,7 @@ const buildProjectorBeam = (scene) => {
     ])
     beamPyramidFillGeometry.setAttribute("position", new THREE.BufferAttribute(beamPyramidFillVertices, 3))
     const beamPyramidFillMaterial = createBeamMaterial({
-        beamColor: "#e2d0ba",
+        beamColor: lightColor,
         beamOrigin,
         beamAxis,
         beamLength,
@@ -497,11 +516,16 @@ const updateCameraDebugVisuals = (camera, debugVisuals) => {
     debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
-const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
+const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick, lightColor = "#e4d5c4" }) => {
     const canvasRef = useRef(null)
+    const cameraRef = useRef(null)
+    const pressedKeysRef = useRef(new Set())
+    const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
+    const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
+    const enableCameraMovement = false
 
+    // initialize and render the 3D scene
     useEffect(() => {
-        const enableCameraMovement = false
         const enableAxesDebug = false
 
         const container = canvasRef.current
@@ -514,6 +538,7 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         scene.background = new THREE.Color("#000000")
 
         const camera = buildCamera()
+        cameraRef.current = camera
         const raycaster = new THREE.Raycaster()
         const pointer = new THREE.Vector2()
 
@@ -524,22 +549,20 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         container.appendChild(renderer.domElement)
 
         const room = buildRoom(scene)
-        const projectionScreen = screenTextureUrl
-            ? buildProjectionScreen(scene, screenTextureUrl)
+        const projectionScreen = validScreenTextureUrl
+            ? buildProjectionScreen(scene, validScreenTextureUrl)
             : null
         const ambientLight = buildAmbientLight(scene)
-        const projectorBeam = buildProjectorBeam(scene)
+        const projectorBeam = buildProjectorBeam(scene, lightColor)
         const box = buildBox(scene)
         const debugAxes = enableAxesDebug ? buildDebugAxes(scene) : null
         const debugVisuals = buildCameraDebugVisuals(scene)
-        const pressedKeys = new Set()
-        const clock = new THREE.Clock()
-        const moveSpeed = 6
-        const lookSensitivity = 0.0025
         const initialForward = new THREE.Vector3()
         camera.getWorldDirection(initialForward)
-        let cameraYaw = Math.atan2(-initialForward.x, -initialForward.z)
-        let cameraPitch = Math.asin(THREE.MathUtils.clamp(initialForward.y, -1, 1))
+        cameraRotationRef.current = {
+            yaw: Math.atan2(-initialForward.x, -initialForward.z),
+            pitch: Math.asin(THREE.MathUtils.clamp(initialForward.y, -1, 1))
+        }
         let animationFrameId = 0
         let projector = null
         let disposed = false
@@ -579,59 +602,6 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
             renderer.setSize(clientWidth, clientHeight)
         }
 
-        const handleKeyDown = (event) => {
-            if (!enableCameraMovement) {
-                return
-            }
-
-            pressedKeys.add(event.code)
-        }
-
-        const handleKeyUp = (event) => {
-            if (!enableCameraMovement) {
-                return
-            }
-
-            pressedKeys.delete(event.code)
-        }
-
-        const handleCanvasMouseDown = (event) => {
-            if (event.button !== 0) {
-                return
-            }
-
-            const lookDirection = new THREE.Vector3()
-            camera.getWorldDirection(lookDirection)
-
-            console.log("Camera params", {
-                fov: camera.fov,
-                aspect: camera.aspect,
-                near: camera.near,
-                far: camera.far,
-                position: {
-                    x: camera.position.x,
-                    y: camera.position.y,
-                    z: camera.position.z
-                },
-                rotation: {
-                    x: camera.rotation.x,
-                    y: camera.rotation.y,
-                    z: camera.rotation.z
-                },
-                lookDirection: {
-                    x: lookDirection.x,
-                    y: lookDirection.y,
-                    z: lookDirection.z
-                }
-            })
-
-            if (!enableCameraMovement) {
-                return
-            }
-
-            container.requestPointerLock?.()
-        }
-
         const handleCanvasClick = (event) => {
             if (!projectionScreen || !onScreenClick) {
                 return
@@ -650,65 +620,7 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
             }
         }
 
-        const handleMouseMove = (event) => {
-            if (!enableCameraMovement) {
-                return
-            }
-
-            if (document.pointerLockElement !== container) {
-                return
-            }
-
-            cameraYaw -= event.movementX * lookSensitivity
-            cameraPitch -= event.movementY * lookSensitivity
-            cameraPitch = THREE.MathUtils.clamp(cameraPitch, -1.45, 1.45)
-            camera.rotation.y = cameraYaw
-            camera.rotation.x = cameraPitch
-            camera.rotation.z = 0
-        }
-
         const animate = () => {
-            const delta = clock.getDelta()
-            if (enableCameraMovement) {
-                const forward = new THREE.Vector3()
-                camera.getWorldDirection(forward)
-                const forwardFlat = new THREE.Vector3(forward.x, 0, forward.z)
-                const right = new THREE.Vector3(-forwardFlat.z, 0, forwardFlat.x)
-                const movement = new THREE.Vector3()
-
-                if (forwardFlat.lengthSq() > 0) {
-                    forwardFlat.normalize()
-                }
-
-                if (right.lengthSq() > 0) {
-                    right.normalize()
-                }
-
-                if (pressedKeys.has("KeyW")) {
-                    movement.add(forwardFlat)
-                }
-                if (pressedKeys.has("KeyS")) {
-                    movement.sub(forwardFlat)
-                }
-                if (pressedKeys.has("KeyA")) {
-                    movement.sub(right)
-                }
-                if (pressedKeys.has("KeyD")) {
-                    movement.add(right)
-                }
-                if (pressedKeys.has("ArrowUp")) {
-                    movement.y += 1
-                }
-                if (pressedKeys.has("ArrowDown")) {
-                    movement.y -= 1
-                }
-
-                if (movement.lengthSq() > 0) {
-                    movement.normalize().multiplyScalar(moveSpeed * delta)
-                    camera.position.add(movement)
-                }
-            }
-
             updateCameraDebugVisuals(camera, debugVisuals)
             renderer.render(scene, camera)
             animationFrameId = window.requestAnimationFrame(animate)
@@ -717,20 +629,14 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         resize()
         updateCameraDebugVisuals(camera, debugVisuals)
         window.addEventListener("resize", resize)
-        window.addEventListener("keydown", handleKeyDown)
-        window.addEventListener("keyup", handleKeyUp)
-        window.addEventListener("mousemove", handleMouseMove)
-        container.addEventListener("mousedown", handleCanvasMouseDown)
         container.addEventListener("click", handleCanvasClick)
         animationFrameId = window.requestAnimationFrame(animate)
 
         return () => {
             disposed = true
+            cameraRef.current = null
+            pressedKeysRef.current.clear()
             window.removeEventListener("resize", resize)
-            window.removeEventListener("keydown", handleKeyDown)
-            window.removeEventListener("keyup", handleKeyUp)
-            window.removeEventListener("mousemove", handleMouseMove)
-            container.removeEventListener("mousedown", handleCanvasMouseDown)
             container.removeEventListener("click", handleCanvasClick)
             window.cancelAnimationFrame(animationFrameId)
             scene.remove(ambientLight)
@@ -796,7 +702,146 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
                 container.removeChild(renderer.domElement)
             }
         }
-    }, [onScreenClick, screenTextureUrl])
+    }, [enableCameraMovement, lightColor, onScreenClick, validScreenTextureUrl])
+
+    // user input handling for camera movement
+    useEffect(() => {
+        const container = canvasRef.current
+        const moveSpeed = 6
+        const lookSensitivity = 0.0025
+
+        if (!enableCameraMovement || !container) {
+            return
+        }
+
+        const clock = new THREE.Clock()
+        let animationFrameId = 0
+
+        const handleKeyDown = (event) => {
+            pressedKeysRef.current.add(event.code)
+        }
+
+        const handleKeyUp = (event) => {
+            pressedKeysRef.current.delete(event.code)
+        }
+
+        const handleCanvasMouseDown = (event) => {
+            if (event.button !== 0) {
+                return
+            }
+
+            const camera = cameraRef.current
+
+            if (!camera) {
+                return
+            }
+
+            const lookDirection = new THREE.Vector3()
+            camera.getWorldDirection(lookDirection)
+
+            console.log("Camera params", {
+                fov: camera.fov,
+                aspect: camera.aspect,
+                near: camera.near,
+                far: camera.far,
+                position: {
+                    x: camera.position.x,
+                    y: camera.position.y,
+                    z: camera.position.z
+                },
+                rotation: {
+                    x: camera.rotation.x,
+                    y: camera.rotation.y,
+                    z: camera.rotation.z
+                },
+                lookDirection: {
+                    x: lookDirection.x,
+                    y: lookDirection.y,
+                    z: lookDirection.z
+                }
+            })
+
+            container.requestPointerLock?.()
+        }
+
+        const handleMouseMove = (event) => {
+            const camera = cameraRef.current
+
+            if (!camera || document.pointerLockElement !== container) {
+                return
+            }
+
+            const nextRotation = cameraRotationRef.current
+            nextRotation.yaw -= event.movementX * lookSensitivity
+            nextRotation.pitch -= event.movementY * lookSensitivity
+            nextRotation.pitch = THREE.MathUtils.clamp(nextRotation.pitch, -1.45, 1.45)
+            camera.rotation.y = nextRotation.yaw
+            camera.rotation.x = nextRotation.pitch
+            camera.rotation.z = 0
+        }
+
+        const animateMovement = () => {
+            const camera = cameraRef.current
+
+            if (camera) {
+                const delta = clock.getDelta()
+                const forward = new THREE.Vector3()
+                camera.getWorldDirection(forward)
+                const forwardFlat = new THREE.Vector3(forward.x, 0, forward.z)
+                const right = new THREE.Vector3(-forwardFlat.z, 0, forwardFlat.x)
+                const movement = new THREE.Vector3()
+
+                if (forwardFlat.lengthSq() > 0) {
+                    forwardFlat.normalize()
+                }
+
+                if (right.lengthSq() > 0) {
+                    right.normalize()
+                }
+
+                if (pressedKeysRef.current.has("KeyW")) {
+                    movement.add(forwardFlat)
+                }
+                if (pressedKeysRef.current.has("KeyS")) {
+                    movement.sub(forwardFlat)
+                }
+                if (pressedKeysRef.current.has("KeyA")) {
+                    movement.sub(right)
+                }
+                if (pressedKeysRef.current.has("KeyD")) {
+                    movement.add(right)
+                }
+                if (pressedKeysRef.current.has("ArrowUp")) {
+                    movement.y += 1
+                }
+                if (pressedKeysRef.current.has("ArrowDown")) {
+                    movement.y -= 1
+                }
+
+                if (movement.lengthSq() > 0) {
+                    movement.normalize().multiplyScalar(moveSpeed * delta)
+                    camera.position.add(movement)
+                }
+            }
+
+            animationFrameId = window.requestAnimationFrame(animateMovement)
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
+        window.addEventListener("keyup", handleKeyUp)
+        window.addEventListener("mousemove", handleMouseMove)
+        container.addEventListener("mousedown", handleCanvasMouseDown)
+        animationFrameId = window.requestAnimationFrame(animateMovement)
+
+        return () => {
+            pressedKeysRef.current.clear()
+            window.removeEventListener("keydown", handleKeyDown)
+            window.removeEventListener("keyup", handleKeyUp)
+            window.removeEventListener("mousemove", handleMouseMove)
+            container.removeEventListener("mousedown", handleCanvasMouseDown)
+            window.cancelAnimationFrame(animationFrameId)
+        }
+    }, [enableCameraMovement])
 
     return (
         <div
