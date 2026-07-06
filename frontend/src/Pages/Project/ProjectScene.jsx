@@ -443,19 +443,106 @@ const getRgbaColor = (hexColor, alpha) => {
     return `rgba(${red}, ${green}, ${blue}, ${alpha})`
 }
 
+const lightParam = () => {
+    return {
+        ambientLight: {
+            name: "ambientLight",
+            role: "Base fill light for the whole room so unlit surfaces do not fall completely into black.",
+            color: "#ffffff",
+            intensity: 0.15
+        },
+        beamLight: {
+            name: "beamLight",
+            role: "Primary projector spotlight aimed at the projection wall. This is the main direct light source.",
+            colorSource: "lightColor",
+            intensity: 8,
+            distance: 40,
+            angle: 0.55,
+            penumbra: 0.35,
+            decay: 1
+        },
+        beamPointLight: {
+            name: "beamPointLight",
+            role: "Small point light at the projector lens to brighten the projector head and nearby space.",
+            colorSource: "lightColor",
+            intensity: 20,
+            distance: 20,
+            decay: 2
+        },
+        beamPointLightMarker: {
+            name: "beamPointLightMarker",
+            role: "Visual marker mesh for the projector lens glow. Debug-style visual aid, not a real light.",
+            colorSource: "lightColor",
+            radius: 0.14,
+            widthSegments: 16,
+            heightSegments: 16,
+            opacity: 0.55
+        },
+        wallSpillLight: {
+            name: "wallSpillLight",
+            role: "Secondary wide spotlight that softens the projection area and creates broad spill on the wall.",
+            colorSource: "lightColor",
+            intensity: 3.5,
+            distance: 42,
+            angle: 0.95,
+            penumbra: 0.8,
+            decay: 1
+        },
+        wallGlowPlane: {
+            name: "wallGlowPlane",
+            role: "Additive glow card placed in front of the wall to fake projector bloom and soft center falloff.",
+            colorSource: "lightColor",
+            widthScale: 2.2,
+            heightScale: 2.2,
+            opacity: 0.55,
+            gradientStops: [
+                { offset: 0, alpha: 0.9 },
+                { offset: 0.35, alpha: 0.38 },
+                { offset: 0.72, alpha: 0.12 },
+                { offset: 1, alpha: 0 }
+            ],
+            zOffset: 0.03
+        },
+        beamPyramid: {
+            name: "beamPyramid",
+            role: "Wireframe outline of the projector frustum. Useful for debugging beam shape.",
+            colorSource: "lightColor",
+            opacity: 0.7,
+            visible: false
+        },
+        beamPyramidFill: {
+            name: "beamPyramidFill",
+            role: "Visible volumetric beam mesh between projector and wall, rendered with the custom beam shader.",
+            colorSource: "lightColor",
+            opacity: 0.28
+        }
+    }
+}
+
 const buildAmbientLight = (scene) => {
-    // AmbientLight takes (color, intensity)
-    const ambientLight = new THREE.AmbientLight("#ffffff", 0.1)
+    const lighting = lightParam()
+    const ambientConfig = lighting.ambientLight
+    const ambientLight = new THREE.AmbientLight(ambientConfig.color, ambientConfig.intensity)
     scene.add(ambientLight)
 
     return ambientLight
 }
 
 const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
+    const lighting = lightParam()
+    const beamLightConfig = lighting.beamLight
+    const beamPointLightConfig = lighting.beamPointLight
+    const beamPointLightMarkerConfig = lighting.beamPointLightMarker
     const { projectorBeamOrigin } = getDisplayPositions()
 
-    // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
-    const beamLight = new THREE.SpotLight(lightColor, 8, 40, 0.55, 0.35, 1)
+    const beamLight = new THREE.SpotLight(
+        lightColor,
+        beamLightConfig.intensity,
+        beamLightConfig.distance,
+        beamLightConfig.angle,
+        beamLightConfig.penumbra,
+        beamLightConfig.decay
+    )
     beamLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -463,8 +550,12 @@ const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
     )
     scene.add(beamLight)
 
-    // PointLight takes (color, intensity, distance, decay)
-    const beamPointLight = new THREE.PointLight(lightColor, 10, 20, 2)
+    const beamPointLight = new THREE.PointLight(
+        lightColor,
+        beamPointLightConfig.intensity,
+        beamPointLightConfig.distance,
+        beamPointLightConfig.decay
+    )
     beamPointLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -475,11 +566,15 @@ const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
     const beamPointLightMarkerMaterial = new THREE.MeshBasicMaterial({
         color: lightColor,
         transparent: true,
-        opacity: 0.55,
+        opacity: beamPointLightMarkerConfig.opacity,
         depthWrite: false
     })
     const beamPointLightMarker = new THREE.Mesh(
-        new THREE.SphereGeometry(0.14, 16, 16),
+        new THREE.SphereGeometry(
+            beamPointLightMarkerConfig.radius,
+            beamPointLightMarkerConfig.widthSegments,
+            beamPointLightMarkerConfig.heightSegments
+        ),
         beamPointLightMarkerMaterial
     )
     beamPointLightMarker.position.copy(beamPointLight.position)
@@ -489,6 +584,11 @@ const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
 }
 
 const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
+    const lighting = lightParam()
+    const wallSpillLightConfig = lighting.wallSpillLight
+    const wallGlowPlaneConfig = lighting.wallGlowPlane
+    const beamPyramidConfig = lighting.beamPyramid
+    const beamPyramidFillConfig = lighting.beamPyramidFill
     const roomZStart = -7
     const projectionFrame = getProjectionFrameConfig()
     const projectionFrameCenter = {
@@ -508,8 +608,14 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     scene.add(beamTarget)
     beamLight.target = beamTarget
 
-    // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
-    const wallSpillLight = new THREE.SpotLight(lightColor, 3.5, 42, 0.95, 0.8, 1)
+    const wallSpillLight = new THREE.SpotLight(
+        lightColor,
+        wallSpillLightConfig.intensity,
+        wallSpillLightConfig.distance,
+        wallSpillLightConfig.angle,
+        wallSpillLightConfig.penumbra,
+        wallSpillLightConfig.decay
+    )
     wallSpillLight.position.set(
         projectorBeamOrigin.x,
         projectorBeamOrigin.y,
@@ -523,10 +629,9 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     wallGlowCanvas.height = 1024
     const wallGlowContext = wallGlowCanvas.getContext("2d")
     const wallGlowGradient = wallGlowContext.createRadialGradient(512, 512, 90, 512, 512, 512)
-    wallGlowGradient.addColorStop(0, getRgbaColor(lightColor, 0.9))
-    wallGlowGradient.addColorStop(0.35, getRgbaColor(lightColor, 0.38))
-    wallGlowGradient.addColorStop(0.72, getRgbaColor(lightColor, 0.12))
-    wallGlowGradient.addColorStop(1, getRgbaColor(lightColor, 0))
+    wallGlowPlaneConfig.gradientStops.forEach(({ offset, alpha }) => {
+        wallGlowGradient.addColorStop(offset, getRgbaColor(lightColor, alpha))
+    })
     wallGlowContext.fillStyle = wallGlowGradient
     wallGlowContext.fillRect(0, 0, 1024, 1024)
 
@@ -534,22 +639,22 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const wallGlowMaterial = new THREE.MeshBasicMaterial({
         map: wallGlowTexture,
         transparent: true,
-        opacity: 0.55,
+        opacity: wallGlowPlaneConfig.opacity,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
         side: THREE.DoubleSide
     })
     const wallGlowPlane = new THREE.Mesh(
         new THREE.PlaneGeometry(
-            (projectionFrame.xEnd - projectionFrame.xStart) * 2.2,
-            (projectionFrame.yEnd - projectionFrame.yStart) * 2.2
+            (projectionFrame.xEnd - projectionFrame.xStart) * wallGlowPlaneConfig.widthScale,
+            (projectionFrame.yEnd - projectionFrame.yStart) * wallGlowPlaneConfig.heightScale
         ),
         wallGlowMaterial
     )
     wallGlowPlane.position.set(
         projectionFrameCenter.x,
         projectionFrameCenter.y,
-        roomZStart + 0.03
+        roomZStart + wallGlowPlaneConfig.zOffset
     )
     scene.add(wallGlowPlane)
 
@@ -572,7 +677,7 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const beamPyramidMaterial = new THREE.LineBasicMaterial({
         color: lightColor,
         transparent: true,
-        opacity: 0.7
+        opacity: beamPyramidConfig.opacity
     })
     const beamPyramidGeometry = new THREE.BufferGeometry().setFromPoints([
         beamOrigin, projectionTopLeft,
@@ -585,7 +690,7 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         projectionBottomLeft, projectionTopLeft
     ])
     const beamPyramid = new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
-    beamPyramid.visible = false
+    beamPyramid.visible = beamPyramidConfig.visible
     scene.add(beamPyramid)
 
     const beamPyramidFillGeometry = new THREE.BufferGeometry()
@@ -612,7 +717,7 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         beamOrigin,
         beamAxis,
         beamLength,
-        beamOpacity: 0.28
+        beamOpacity: beamPyramidFillConfig.opacity
     })
     const beamPyramidFill = new THREE.Mesh(beamPyramidFillGeometry, beamPyramidFillMaterial)
     scene.add(beamPyramidFill)
