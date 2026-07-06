@@ -1,8 +1,9 @@
-import "./Project.css"
-import ProjectCard from "./ProjectCard"
+import { useNavigate } from "react-router-dom"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
+import ProjectScene from "./ProjectScene"
+import slide1 from "./slides-imgs/1.png"
 
 const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
 const bubbleThumb = "/images/project-thumbnails/Bubble.png"
@@ -35,7 +36,6 @@ const projects = [
         isSoloProject: true,
         canLink: false
     },
-    
     {
         title: "Dal Tutor",
         slug: "dal-tutor",
@@ -57,7 +57,6 @@ const projects = [
         githubLink:"https://github.com/LiberteI/Submarine",
         canLink: false,
         isSoloProject: true
-
     },
     {
         title: "Astronomical Simulation",
@@ -69,7 +68,6 @@ const projects = [
         githubLink:"https://github.com/LiberteI/Astronomical_System",
         canLink: false,
         isSoloProject: true
-
     },
     {
         title: "Ice Spy",
@@ -92,9 +90,7 @@ const projects = [
         githubLink:"https://github.com/LiberteI/Computer_Animation",
         canLink: false,
         isSoloProject: true
-
     },
-    
     {
         title: "Easy Shop",
         slug: "easy-shop",
@@ -106,8 +102,6 @@ const projects = [
         isSoloProject: true,
         canLink: false
     },
-    
-    
     {
         title: "Knight of Cinders",
         slug: "knight-of-cinders",
@@ -130,25 +124,21 @@ const projects = [
         isSoloProject: false,
         canLink: false
     }
-    
-
 ]
 
 const Project = () => {
+    const navigate = useNavigate()
+
     return (
-        <section className="project-container" id="projects">
-
-            <h1>My Projects</h1>
-            
-            <div className="project-grid">
-                {projects.map((project) => (
-                    <ProjectCard 
-                        key={project.slug} 
-                        projectData={project}
-                    />     
-                ))}
+        <section className="relative h-screen overflow-hidden bg-black" data-project-count={projects.length}>
+            <ProjectScene
+                className="absolute inset-0 h-full w-full bg-black"
+                screenTextureUrl={slide1}
+                onScreenClick={() => navigate("/ppt")}
+            />
+            <div className="relative z-10">
+                {/* <h1>Projects</h1> */}
             </div>
-
         </section>
     )
 }

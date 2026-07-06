@@ -6,6 +6,7 @@ import Contact from './Pages/Contact/Contact'
 import Comment from './Pages/Comment/Comment'
 import About from './Pages/About/About'
 import Project from './Pages/Project/Project'
+import Ppt from './Pages/Project/Ppt'
 import CommentForm from './Pages/Comment/CommentForm'
 import Experience from './Pages/Experience/Experience'
 import MusicPage from './Pages/Music/MusicPage'
@@ -21,6 +22,7 @@ const App = () => {
       
       <Route path='/comment-form' element={<CommentFormPathWay/>}/>
       <Route path='/projects' element={<Projects />} />
+      <Route path='/ppt' element={<Ppt />} />
       <Route path='/music' element={<MusicPathway />} />
       <Route path='/contact' element={<ContactPage />}/>
       <Route path='experience' element={<ExperiencePage />}/>
