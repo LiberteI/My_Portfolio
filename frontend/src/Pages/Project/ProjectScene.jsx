@@ -26,6 +26,203 @@ const getDisplayPositions = () => {
     }
 }
 
+const clamp01 = (value) => {
+    return THREE.MathUtils.clamp(value, 0, 1)
+}
+
+const cloneUvAttribute = (geometry) => {
+    const uvAttribute = geometry.getAttribute("uv")
+
+    if (!uvAttribute) {
+        return
+    }
+
+    const uvClone = uvAttribute.array.slice()
+    geometry.setAttribute("uv1", new THREE.BufferAttribute(uvClone, 2))
+    geometry.setAttribute("uv2", new THREE.BufferAttribute(uvClone.slice(), 2))
+}
+
+const configureRepeatingTexture = (texture, repeatX, repeatY, colorSpace = null) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(repeatX, repeatY)
+
+    if (colorSpace) {
+        texture.colorSpace = colorSpace
+    }
+}
+
+const inheritTextureTransform = (texture, sourceTexture) => {
+    texture.wrapS = sourceTexture.wrapS
+    texture.wrapT = sourceTexture.wrapT
+    texture.repeat.copy(sourceTexture.repeat)
+    texture.offset.copy(sourceTexture.offset)
+    texture.center.copy(sourceTexture.center)
+    texture.rotation = sourceTexture.rotation
+}
+
+const createCanvasTexture = (canvas, sourceTexture) => {
+    const texture = new THREE.CanvasTexture(canvas)
+    inheritTextureTransform(texture, sourceTexture)
+    return texture
+}
+
+const createMaterialResponseMaps = (
+    sourceTexture,
+    {
+        normalStrength = 1,
+        roughnessMin = 0.45,
+        roughnessMax = 0.95,
+        aoStrength = 0.45
+    } = {}
+) => {
+    const sourceImage = sourceTexture.image
+
+    if (!sourceImage) {
+        return null
+    }
+
+    const sourceWidth = sourceImage.naturalWidth || sourceImage.videoWidth || sourceImage.width
+    const sourceHeight = sourceImage.naturalHeight || sourceImage.videoHeight || sourceImage.height
+
+    if (!sourceWidth || !sourceHeight) {
+        return null
+    }
+
+    const targetMaxSize = 512
+    const scale = Math.min(1, targetMaxSize / Math.max(sourceWidth, sourceHeight))
+    const width = Math.max(2, Math.round(sourceWidth * scale))
+    const height = Math.max(2, Math.round(sourceHeight * scale))
+    const sourceCanvas = document.createElement("canvas")
+    sourceCanvas.width = width
+    sourceCanvas.height = height
+    const sourceContext = sourceCanvas.getContext("2d")
+    sourceContext.drawImage(sourceImage, 0, 0, width, height)
+
+    const { data: sourceData } = sourceContext.getImageData(0, 0, width, height)
+    const luminance = new Float32Array(width * height)
+
+    for (let index = 0; index < luminance.length; index += 1) {
+        const colorIndex = index * 4
+        const red = sourceData[colorIndex] / 255
+        const green = sourceData[colorIndex + 1] / 255
+        const blue = sourceData[colorIndex + 2] / 255
+        luminance[index] = 0.2126 * red + 0.7152 * green + 0.0722 * blue
+    }
+
+    const roughnessCanvas = document.createElement("canvas")
+    roughnessCanvas.width = width
+    roughnessCanvas.height = height
+    const roughnessContext = roughnessCanvas.getContext("2d")
+    const roughnessImage = roughnessContext.createImageData(width, height)
+
+    const aoCanvas = document.createElement("canvas")
+    aoCanvas.width = width
+    aoCanvas.height = height
+    const aoContext = aoCanvas.getContext("2d")
+    const aoImage = aoContext.createImageData(width, height)
+
+    const normalCanvas = document.createElement("canvas")
+    normalCanvas.width = width
+    normalCanvas.height = height
+    const normalContext = normalCanvas.getContext("2d")
+    const normalImage = normalContext.createImageData(width, height)
+
+    const getLuminance = (x, y) => {
+        const clampedX = THREE.MathUtils.clamp(x, 0, width - 1)
+        const clampedY = THREE.MathUtils.clamp(y, 0, height - 1)
+        return luminance[clampedY * width + clampedX]
+    }
+
+    for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+            const current = getLuminance(x, y)
+            const left = getLuminance(x - 1, y)
+            const right = getLuminance(x + 1, y)
+            const up = getLuminance(x, y - 1)
+            const down = getLuminance(x, y + 1)
+            const neighborhoodAverage = (left + right + up + down) * 0.25
+            const localContrast = Math.abs(current - neighborhoodAverage)
+            const roughnessValue = clamp01(
+                roughnessMin
+                + (1 - current) * (roughnessMax - roughnessMin) * 0.65
+                + localContrast * 0.9
+            )
+            const cavity = clamp01(
+                (neighborhoodAverage - current) * aoStrength * 1.6
+                + (1 - current) * aoStrength * 0.3
+            )
+            const aoValue = 1 - cavity
+            const dx = (right - left) * normalStrength
+            const dy = (down - up) * normalStrength
+            const normal = new THREE.Vector3(-dx, -dy, 1).normalize()
+            const pixelIndex = (y * width + x) * 4
+            const roughnessChannel = Math.round(roughnessValue * 255)
+            const aoChannel = Math.round(aoValue * 255)
+
+            roughnessImage.data[pixelIndex] = roughnessChannel
+            roughnessImage.data[pixelIndex + 1] = roughnessChannel
+            roughnessImage.data[pixelIndex + 2] = roughnessChannel
+            roughnessImage.data[pixelIndex + 3] = 255
+
+            aoImage.data[pixelIndex] = aoChannel
+            aoImage.data[pixelIndex + 1] = aoChannel
+            aoImage.data[pixelIndex + 2] = aoChannel
+            aoImage.data[pixelIndex + 3] = 255
+
+            normalImage.data[pixelIndex] = Math.round((normal.x * 0.5 + 0.5) * 255)
+            normalImage.data[pixelIndex + 1] = Math.round((normal.y * 0.5 + 0.5) * 255)
+            normalImage.data[pixelIndex + 2] = Math.round((normal.z * 0.5 + 0.5) * 255)
+            normalImage.data[pixelIndex + 3] = 255
+        }
+    }
+
+    roughnessContext.putImageData(roughnessImage, 0, 0)
+    aoContext.putImageData(aoImage, 0, 0)
+    normalContext.putImageData(normalImage, 0, 0)
+
+    return {
+        roughnessMap: createCanvasTexture(roughnessCanvas, sourceTexture),
+        aoMap: createCanvasTexture(aoCanvas, sourceTexture),
+        normalMap: createCanvasTexture(normalCanvas, sourceTexture)
+    }
+}
+
+const applyMaterialResponse = (
+    material,
+    maps,
+    {
+        roughness,
+        metalness,
+        normalScale = 1,
+        aoMapIntensity = 1,
+        clearcoat,
+        clearcoatRoughness
+    }
+) => {
+    if (!maps) {
+        return
+    }
+
+    material.roughnessMap = maps.roughnessMap
+    material.normalMap = maps.normalMap
+    material.aoMap = maps.aoMap
+    material.roughness = roughness
+    material.metalness = metalness
+    material.aoMapIntensity = aoMapIntensity
+    material.normalScale = new THREE.Vector2(normalScale, normalScale)
+
+    if ("clearcoat" in material && typeof clearcoat === "number") {
+        material.clearcoat = clearcoat
+    }
+
+    if ("clearcoatRoughness" in material && typeof clearcoatRoughness === "number") {
+        material.clearcoatRoughness = clearcoatRoughness
+    }
+
+    material.needsUpdate = true
+}
+
 const buildRoom = (scene) => {
     const roomXStart = -30
     const roomXEnd = 30
@@ -43,73 +240,140 @@ const buildRoom = (scene) => {
     const roomYCenter = (roomYStart + roomYEnd) / 2
     const roomZCenter = (roomZStart + roomZEnd) / 2
     const textureLoader = new THREE.TextureLoader()
-    const wallTexture = textureLoader.load(museumWallTextureUrl)
-    const floorTexture = textureLoader.load(museumFloorTextureUrl)
+    const materialResponseTextures = []
+    let wallMaterial
+    let floorMaterial
+    let ceilingMaterial
+    let backWallMaterial
+
+    const wallTexture = textureLoader.load(museumWallTextureUrl, (loadedTexture) => {
+        const wallMaps = createMaterialResponseMaps(loadedTexture, {
+            normalStrength: 2.1,
+            roughnessMin: 0.58,
+            roughnessMax: 0.96,
+            aoStrength: 0.7
+        })
+
+        if (!wallMaps) {
+            return
+        }
+
+        materialResponseTextures.push(wallMaps.roughnessMap, wallMaps.aoMap, wallMaps.normalMap)
+
+        applyMaterialResponse(wallMaterial, wallMaps, {
+            roughness: 0.86,
+            metalness: 0.04,
+            normalScale: 0.95,
+            aoMapIntensity: 0.95
+        })
+        applyMaterialResponse(backWallMaterial, wallMaps, {
+            roughness: 0.84,
+            metalness: 0.04,
+            normalScale: 1,
+            aoMapIntensity: 1
+        })
+        applyMaterialResponse(ceilingMaterial, wallMaps, {
+            roughness: 0.9,
+            metalness: 0.02,
+            normalScale: 0.55,
+            aoMapIntensity: 0.55
+        })
+    })
+    const floorTexture = textureLoader.load(museumFloorTextureUrl, (loadedTexture) => {
+        const floorMaps = createMaterialResponseMaps(loadedTexture, {
+            normalStrength: 1.7,
+            roughnessMin: 0.28,
+            roughnessMax: 0.8,
+            aoStrength: 0.5
+        })
+
+        if (!floorMaps) {
+            return
+        }
+
+        materialResponseTextures.push(floorMaps.roughnessMap, floorMaps.aoMap, floorMaps.normalMap)
+
+        applyMaterialResponse(floorMaterial, floorMaps, {
+            roughness: 0.42,
+            metalness: 0.08,
+            normalScale: 0.75,
+            aoMapIntensity: 0.7,
+            clearcoat: 0.18,
+            clearcoatRoughness: 0.74
+        })
+    })
     const ceilingTexture = textureLoader.load(museumWallTextureUrl)
 
-    wallTexture.wrapS = THREE.RepeatWrapping
-    wallTexture.wrapT = THREE.RepeatWrapping
-    wallTexture.repeat.set(6, 2)
+    configureRepeatingTexture(wallTexture, 6, 2, THREE.SRGBColorSpace)
+    configureRepeatingTexture(floorTexture, 6, 4, THREE.SRGBColorSpace)
+    configureRepeatingTexture(ceilingTexture, 6, 4, THREE.SRGBColorSpace)
 
-    floorTexture.wrapS = THREE.RepeatWrapping
-    floorTexture.wrapT = THREE.RepeatWrapping
-    floorTexture.repeat.set(6, 4)
+    wallMaterial = new THREE.MeshStandardMaterial({
+        map: wallTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.88,
+        metalness: 0.03
+    })
+    floorMaterial = new THREE.MeshPhysicalMaterial({
+        map: floorTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.5,
+        metalness: 0.06,
+        clearcoat: 0.14,
+        clearcoatRoughness: 0.78
+    })
+    ceilingMaterial = new THREE.MeshStandardMaterial({
+        map: ceilingTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.92,
+        metalness: 0.01
+    })
+    const backWallTexture = wallTexture.clone()
+    configureRepeatingTexture(backWallTexture, 6, 2, THREE.SRGBColorSpace)
+    backWallMaterial = new THREE.MeshStandardMaterial({
+        map: backWallTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.86,
+        metalness: 0.03
+    })
 
-    ceilingTexture.wrapS = THREE.RepeatWrapping
-    ceilingTexture.wrapT = THREE.RepeatWrapping
-    ceilingTexture.repeat.set(6, 4)
-
-    const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture, side: THREE.DoubleSide })
-    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture, side: THREE.DoubleSide })
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilingTexture, side: THREE.DoubleSide })
-    const backWallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture.clone(), side: THREE.DoubleSide })
-    backWallMaterial.map.wrapS = THREE.RepeatWrapping
-    backWallMaterial.map.wrapT = THREE.RepeatWrapping
-    backWallMaterial.map.repeat.set(6, 2)
-
-    const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomDepth),
-        floorMaterial
-    )
+    const floorGeometry = new THREE.PlaneGeometry(roomWidth, roomDepth)
+    cloneUvAttribute(floorGeometry)
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial)
     floor.rotation.x = -Math.PI / 2
     floor.position.set(roomXCenter, roomYStart, roomZCenter)
     scene.add(floor)
 
-    const ceiling = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomDepth),
-        ceilingMaterial
-    )
+    const ceilingGeometry = new THREE.PlaneGeometry(roomWidth, roomDepth)
+    cloneUvAttribute(ceilingGeometry)
+    const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial)
     ceiling.rotation.x = Math.PI / 2
     ceiling.position.set(roomXCenter, roomYEnd, roomZCenter)
     scene.add(ceiling)
 
-    const backWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomHeight),
-        backWallMaterial
-    )
+    const backWallGeometry = new THREE.PlaneGeometry(roomWidth, roomHeight)
+    cloneUvAttribute(backWallGeometry)
+    const backWall = new THREE.Mesh(backWallGeometry, backWallMaterial)
     backWall.position.set(roomXCenter, roomYCenter, roomZStart)
     scene.add(backWall)
 
-    const leftWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomDepth, roomHeight),
-        wallMaterial
-    )
+    const leftWallGeometry = new THREE.PlaneGeometry(roomDepth, roomHeight)
+    cloneUvAttribute(leftWallGeometry)
+    const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial)
     leftWall.rotation.y = Math.PI / 2
     leftWall.position.set(roomXStart, roomYCenter, roomZCenter)
     scene.add(leftWall)
 
-    const rightWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomDepth, roomHeight),
-        wallMaterial
-    )
+    const rightWallGeometry = new THREE.PlaneGeometry(roomDepth, roomHeight)
+    cloneUvAttribute(rightWallGeometry)
+    const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial)
     rightWall.rotation.y = -Math.PI / 2
     rightWall.position.set(roomXEnd, roomYCenter, roomZCenter)
     scene.add(rightWall)
 
-    const frontWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomHeight),
-        wallMaterial
-    )
+    const frontWallGeometry = new THREE.PlaneGeometry(roomWidth, roomHeight)
+    cloneUvAttribute(frontWallGeometry)
+    const frontWall = new THREE.Mesh(frontWallGeometry, wallMaterial)
     frontWall.rotation.y = Math.PI
     frontWall.position.set(roomXCenter, roomYCenter, roomZEnd)
     scene.add(frontWall)
@@ -127,7 +391,7 @@ const buildRoom = (scene) => {
     return {
         meshes: [floor, ceiling, backWall, leftWall, rightWall, frontWall],
         materials: [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial],
-        textures: [wallTexture, floorTexture, ceilingTexture, backWallMaterial.map],
+        textures: [wallTexture, floorTexture, ceilingTexture, backWallMaterial.map, ...materialResponseTextures],
         lineGeometries: [projectionFrameGeometry],
         lineMaterials: [projectionFrameMaterial]
     }
