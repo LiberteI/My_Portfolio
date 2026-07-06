@@ -26,6 +26,17 @@ const getDisplayPositions = () => {
     }
 }
 
+const getCameraConfig = () => {
+    return {
+        fov: 60,
+        aspect: 1,
+        near: 0.1,
+        far: 500,
+        position: new THREE.Vector3(-16.24, -4.8, 14.27),
+        lookAt: new THREE.Vector3(-14.81, -4.9, 9.48)
+    }
+}
+
 const clamp01 = (value) => {
     return THREE.MathUtils.clamp(value, 0, 1)
 }
@@ -229,7 +240,7 @@ const buildRoom = (scene) => {
     const roomYStart = -7.5
     const roomYEnd = 7.5
     const roomZStart = -7
-    const roomZEnd = 15
+    const roomZEnd = 30
     const projectionFrame = getProjectionFrameConfig()
     const projectionFrameZ = roomZStart + 0.02
 
@@ -1137,17 +1148,16 @@ const loadProjector = async (scene) => {
 }
 
 const buildCamera = () => {
-    const cameraFov = 60
-    const cameraAspect = 1
-    const cameraNear = 0.1
-    const cameraFar = 500
-    const cameraPosition = { x: -16.24, y: -4.8, z: 14.27 }
-    const cameraLookAt = { x: -14.81, y: -4.9, z: 9.48 }
-
-    const camera = new THREE.PerspectiveCamera(cameraFov, cameraAspect, cameraNear, cameraFar)
+    const cameraConfig = getCameraConfig()
+    const camera = new THREE.PerspectiveCamera(
+        cameraConfig.fov,
+        cameraConfig.aspect,
+        cameraConfig.near,
+        cameraConfig.far
+    )
     camera.rotation.order = "YXZ"
-    camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-    camera.lookAt(cameraLookAt.x, cameraLookAt.y, cameraLookAt.z)
+    camera.position.copy(cameraConfig.position)
+    camera.lookAt(cameraConfig.lookAt)
     camera.rotation.z = 0
 
     return camera
@@ -1315,7 +1325,36 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
                 return
             }
 
-            camera.aspect = clientWidth / clientHeight
+            const aspect = clientWidth / clientHeight
+            const cameraConfig = getCameraConfig()
+            const responsiveWidthThreshold = 1280
+            const narrowViewportFactor = clamp01((responsiveWidthThreshold - clientWidth) / 480)
+            const ultraNarrowWidthThreshold = 570
+            const ultraNarrowViewportFactor = clamp01((ultraNarrowWidthThreshold - clientWidth) / 180)
+            const responsiveFov = THREE.MathUtils.lerp(cameraConfig.fov, 78, narrowViewportFactor)
+            const backwardDirection = new THREE.Vector3()
+                .subVectors(cameraConfig.position, cameraConfig.lookAt)
+                .normalize()
+            const responsivePosition = cameraConfig.position.clone().addScaledVector(
+                backwardDirection,
+                6 * narrowViewportFactor
+            )
+            const cameraRight = new THREE.Vector3()
+                .crossVectors(new THREE.Vector3(0, 1, 0), backwardDirection)
+                .normalize()
+            const shiftedPosition = responsivePosition.clone().addScaledVector(
+                cameraRight,
+                1.2 * ultraNarrowViewportFactor
+            )
+            const shiftedLookAt = cameraConfig.lookAt.clone().addScaledVector(
+                cameraRight,
+                1.8 * ultraNarrowViewportFactor
+            )
+
+            camera.fov = responsiveFov
+            camera.position.copy(shiftedPosition)
+            camera.lookAt(shiftedLookAt)
+            camera.aspect = aspect
             camera.updateProjectionMatrix()
             renderer.setSize(clientWidth, clientHeight)
         }
