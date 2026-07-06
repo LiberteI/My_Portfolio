@@ -567,7 +567,7 @@ const lightParam = () => {
             role: "Base fill light for the whole room so unlit surfaces do not fall completely into black.",
             enabled: true,
             color: "#ffffff",
-            intensity: 0.2
+            intensity: 0.25
         },
         projectorSpotLightToWall: {
             name: "projectorSpotLightToWall",
@@ -604,6 +604,19 @@ const lightParam = () => {
             intensity: 10,
             distance: 20,
             decay: 2
+        },
+        projectorBackRectAreaLight: {
+            name: "projectorBackRectAreaLight",
+            role: "Rect area light placed above the projector rear side to softly lift the projector body and pedestal.",
+            enabled: true,
+            color: "#fff1dc",
+            intensity: 4,
+            width: 2,
+            height: 1.4,
+            positionYOffset: 1.8,
+            positionZOffset: 1.6,
+            lookAtYOffset: 0.3,
+            lookAtZOffset: -2.4
         },
         emissionLight: {
             name: "emissionLight",
@@ -766,6 +779,7 @@ const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
 
 const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const lighting = lightParam()
+    const projectorBackRectAreaLightConfig = lighting.projectorBackRectAreaLight
     const emissionLightConfig = lighting.emissionLight
     const wallGlowPlaneConfig = lighting.wallGlowPlane
     const beamPyramidConfig = lighting.beamPyramid
@@ -773,6 +787,7 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
     const spotLightDebugConfig = lighting.spotLightDebug
     const roomZStart = -7
     const projectionFrame = getProjectionFrameConfig()
+    const { projectorPosition } = getDisplayPositions()
     const projectionFrameCenter = {
         x: (projectionFrame.xStart + projectionFrame.xEnd) / 2,
         y: (projectionFrame.yStart + projectionFrame.yEnd) / 2,
@@ -817,6 +832,28 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         ...spotLightDebugConfig,
         enabled: lighting.projectorSpotLightToFloor.debugEnabled
     })
+
+    const projectorBackRectAreaLight = projectorBackRectAreaLightConfig.enabled
+        ? new THREE.RectAreaLight(
+            projectorBackRectAreaLightConfig.color,
+            projectorBackRectAreaLightConfig.intensity,
+            projectorBackRectAreaLightConfig.width,
+            projectorBackRectAreaLightConfig.height
+        )
+        : null
+    if (projectorBackRectAreaLight) {
+        projectorBackRectAreaLight.position.set(
+            projectorPosition.x,
+            projectorPosition.y + projectorBackRectAreaLightConfig.positionYOffset,
+            projectorPosition.z + projectorBackRectAreaLightConfig.positionZOffset
+        )
+        projectorBackRectAreaLight.lookAt(
+            projectorPosition.x,
+            projectorPosition.y + projectorBackRectAreaLightConfig.lookAtYOffset,
+            projectorPosition.z + projectorBackRectAreaLightConfig.lookAtZOffset
+        )
+        scene.add(projectorBackRectAreaLight)
+    }
 
     const emissionLight = emissionLightConfig.enabled
         ? new THREE.PointLight(
@@ -968,6 +1005,7 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         projectorSpotLightToFloor,
         projectorSpotLightToFloorDebug,
         projectorOriginPointLightDebug,
+        projectorBackRectAreaLight,
         beamTarget,
         floorTarget,
         emissionLight,
@@ -990,22 +1028,47 @@ const buildBox = (scene) => {
     const boxDepth = 1
     const { boxPosition } = getDisplayPositions()
     const textureLoader = new THREE.TextureLoader()
-    const boxWallTexture = textureLoader.load(museumWallTextureUrl)
+    const materialResponseTextures = []
+    const boxWallTexture = textureLoader.load(museumWallTextureUrl, (loadedTexture) => {
+        const boxMaps = createMaterialResponseMaps(loadedTexture, {
+            normalStrength: 2.1,
+            roughnessMin: 0.58,
+            roughnessMax: 0.96,
+            aoStrength: 0.7
+        })
 
-    boxWallTexture.wrapS = THREE.RepeatWrapping
-    boxWallTexture.wrapT = THREE.RepeatWrapping
-    boxWallTexture.repeat.set(1, 1)
+        if (!boxMaps) {
+            return
+        }
 
-    const boxMaterial = new THREE.MeshStandardMaterial({ map: boxWallTexture })
+        materialResponseTextures.push(boxMaps.roughnessMap, boxMaps.aoMap, boxMaps.normalMap)
+
+        applyMaterialResponse(boxMaterial, boxMaps, {
+            roughness: 0.86,
+            metalness: 0.04,
+            normalScale: 0.95,
+            aoMapIntensity: 0.95
+        })
+    })
+
+    configureRepeatingTexture(boxWallTexture, 1, 1, THREE.SRGBColorSpace)
+
+    const boxMaterial = new THREE.MeshStandardMaterial({
+        map: boxWallTexture,
+        roughness: 0.86,
+        metalness: 0.04
+    })
+    const boxGeometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth)
+    cloneUvAttribute(boxGeometry)
     const box = new THREE.Mesh(
-        new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth),
+        boxGeometry,
         boxMaterial
     )
 
     box.position.set(boxPosition.x, boxPosition.y, boxPosition.z)
     scene.add(box)
 
-    return { mesh: box, material: boxMaterial, texture: boxWallTexture }
+    return { mesh: box, material: boxMaterial, texture: boxWallTexture, responseTextures: materialResponseTextures }
 }
 
 const buildDebugAxes = (scene) => {
@@ -1023,6 +1086,47 @@ const loadProjector = async (scene) => {
     const loader = new GLTFLoader()
     const gltf = await loader.loadAsync(projectorModelUrl)
     const projector = gltf.scene
+
+    projector.traverse((child) => {
+        if (!child.isMesh) {
+            return
+        }
+
+        child.castShadow = true
+        child.receiveShadow = true
+
+        const originalMaterials = Array.isArray(child.material) ? child.material : [child.material]
+        const upgradedMaterials = originalMaterials.map((sourceMaterial) => {
+            if (!sourceMaterial) {
+                return sourceMaterial
+            }
+
+            return new THREE.MeshPhysicalMaterial({
+                name: sourceMaterial.name,
+                color: sourceMaterial.color?.clone() ?? new THREE.Color("#d9d9d9"),
+                map: sourceMaterial.map ?? null,
+                normalMap: sourceMaterial.normalMap ?? null,
+                roughnessMap: sourceMaterial.roughnessMap ?? null,
+                metalnessMap: sourceMaterial.metalnessMap ?? null,
+                aoMap: sourceMaterial.aoMap ?? null,
+                emissiveMap: sourceMaterial.emissiveMap ?? null,
+                emissive: sourceMaterial.emissive?.clone() ?? new THREE.Color("#000000"),
+                emissiveIntensity: sourceMaterial.emissiveIntensity ?? 1,
+                transparent: sourceMaterial.transparent ?? false,
+                opacity: sourceMaterial.opacity ?? 1,
+                alphaTest: sourceMaterial.alphaTest ?? 0,
+                side: sourceMaterial.side ?? THREE.FrontSide,
+                roughness: Math.min(sourceMaterial.roughness ?? 0.55, 0.42),
+                metalness: Math.max(sourceMaterial.metalness ?? 0.1, 0.68),
+                envMapIntensity: 0.8,
+                clearcoat: 0.22,
+                clearcoatRoughness: 0.35
+            })
+        })
+
+        child.material = Array.isArray(child.material) ? upgradedMaterials : upgradedMaterials[0]
+        originalMaterials.forEach((material) => material?.dispose())
+    })
 
     projector.position.set(projectorPosition.x, projectorPosition.y, projectorPosition.z)
     projector.scale.setScalar(projectorScale)
@@ -1265,6 +1369,9 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
             if (projectorBeam.projectorOriginPointLight) {
                 scene.remove(projectorBeam.projectorOriginPointLight)
             }
+            if (projectorBeam.projectorBackRectAreaLight) {
+                scene.remove(projectorBeam.projectorBackRectAreaLight)
+            }
             if (projectorBeam.projectorSpotLightToWallDebug) {
                 scene.remove(projectorBeam.projectorSpotLightToWallDebug.marker)
                 scene.remove(projectorBeam.projectorSpotLightToWallDebug.targetMarker)
@@ -1322,6 +1429,7 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
             box.mesh.geometry.dispose()
             box.material.dispose()
             box.texture.dispose()
+            box.responseTextures.forEach((texture) => texture.dispose())
             if (projectionScreen) {
                 projectionScreen.mesh.geometry.dispose()
                 projectionScreen.material.dispose()
