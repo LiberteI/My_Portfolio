@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
@@ -125,10 +126,19 @@ export const projects = [
 ]
 
 const Project = () => {
+    const navigate = useNavigate()
+
     return (
-        <div data-project-count={projects.length}>
-            <ProjectScene />
-        </div>
+        <section className="relative h-screen overflow-hidden bg-black" data-project-count={projects.length}>
+            <ProjectScene
+                className="absolute inset-0 h-full w-full bg-black"
+                screenTextureUrl={projectThumb}
+                onScreenClick={() => navigate("/ppt")}
+            />
+            <div className="relative z-10">
+                {/* <h1>Projects</h1> */}
+            </div>
+        </section>
     )
 }
 

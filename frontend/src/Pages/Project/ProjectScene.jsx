@@ -133,6 +133,33 @@ const buildRoom = (scene) => {
     }
 }
 
+const buildProjectionScreen = (scene, screenTextureUrl) => {
+    const roomZStart = -7
+    const projectionFrame = getProjectionFrameConfig()
+    const screenWidth = projectionFrame.xEnd - projectionFrame.xStart
+    const screenHeight = projectionFrame.yEnd - projectionFrame.yStart
+    const screenCenterX = (projectionFrame.xStart + projectionFrame.xEnd) / 2
+    const screenCenterY = (projectionFrame.yStart + projectionFrame.yEnd) / 2
+    const textureLoader = new THREE.TextureLoader()
+    const screenTexture = textureLoader.load(screenTextureUrl)
+
+    screenTexture.colorSpace = THREE.SRGBColorSpace
+
+    const screenMaterial = new THREE.MeshBasicMaterial({
+        map: screenTexture,
+        toneMapped: false
+    })
+    const screen = new THREE.Mesh(
+        new THREE.PlaneGeometry(screenWidth, screenHeight),
+        screenMaterial
+    )
+
+    screen.position.set(screenCenterX, screenCenterY, roomZStart + 0.04)
+    scene.add(screen)
+
+    return { mesh: screen, material: screenMaterial, texture: screenTexture }
+}
+
 const buildAmbientLight = (scene) => {
     // AmbientLight takes (color, intensity)
     const ambientLight = new THREE.AmbientLight("#ffffff", 0.1)
@@ -470,11 +497,11 @@ const updateCameraDebugVisuals = (camera, debugVisuals) => {
     debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
-const ProjectScene = () => {
+const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
     const canvasRef = useRef(null)
 
     useEffect(() => {
-        const enableCameraMovement = true
+        const enableCameraMovement = false
         const enableAxesDebug = false
 
         const container = canvasRef.current
@@ -487,6 +514,8 @@ const ProjectScene = () => {
         scene.background = new THREE.Color("#000000")
 
         const camera = buildCamera()
+        const raycaster = new THREE.Raycaster()
+        const pointer = new THREE.Vector2()
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -495,6 +524,9 @@ const ProjectScene = () => {
         container.appendChild(renderer.domElement)
 
         const room = buildRoom(scene)
+        const projectionScreen = screenTextureUrl
+            ? buildProjectionScreen(scene, screenTextureUrl)
+            : null
         const ambientLight = buildAmbientLight(scene)
         const projectorBeam = buildProjectorBeam(scene)
         const box = buildBox(scene)
@@ -600,6 +632,24 @@ const ProjectScene = () => {
             container.requestPointerLock?.()
         }
 
+        const handleCanvasClick = (event) => {
+            if (!projectionScreen || !onScreenClick) {
+                return
+            }
+
+            const rect = renderer.domElement.getBoundingClientRect()
+            pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+            pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+            raycaster.setFromCamera(pointer, camera)
+
+            const intersections = raycaster.intersectObject(projectionScreen.mesh)
+
+            if (intersections.length > 0) {
+                onScreenClick()
+            }
+        }
+
         const handleMouseMove = (event) => {
             if (!enableCameraMovement) {
                 return
@@ -671,6 +721,7 @@ const ProjectScene = () => {
         window.addEventListener("keyup", handleKeyUp)
         window.addEventListener("mousemove", handleMouseMove)
         container.addEventListener("mousedown", handleCanvasMouseDown)
+        container.addEventListener("click", handleCanvasClick)
         animationFrameId = window.requestAnimationFrame(animate)
 
         return () => {
@@ -680,6 +731,7 @@ const ProjectScene = () => {
             window.removeEventListener("keyup", handleKeyUp)
             window.removeEventListener("mousemove", handleMouseMove)
             container.removeEventListener("mousedown", handleCanvasMouseDown)
+            container.removeEventListener("click", handleCanvasClick)
             window.cancelAnimationFrame(animationFrameId)
             scene.remove(ambientLight)
             scene.remove(projectorBeam.beamLight)
@@ -692,6 +744,9 @@ const ProjectScene = () => {
             scene.remove(projectorBeam.wallGlowPlane)
             if (debugAxes) {
                 scene.remove(debugAxes)
+            }
+            if (projectionScreen) {
+                scene.remove(projectionScreen.mesh)
             }
             scene.remove(debugVisuals.marker)
             scene.remove(debugVisuals.lineSegments)
@@ -712,6 +767,11 @@ const ProjectScene = () => {
             box.mesh.geometry.dispose()
             box.material.dispose()
             box.texture.dispose()
+            if (projectionScreen) {
+                projectionScreen.mesh.geometry.dispose()
+                projectionScreen.material.dispose()
+                projectionScreen.texture.dispose()
+            }
             projectorBeam.beamPointLightMarker.geometry.dispose()
             projectorBeam.beamPointLightMarkerMaterial.dispose()
             projectorBeam.beamPyramidGeometry.dispose()
@@ -736,15 +796,13 @@ const ProjectScene = () => {
                 container.removeChild(renderer.domElement)
             }
         }
-    }, [])
+    }, [onScreenClick, screenTextureUrl])
 
     return (
-        <section className='relative h-screen bg-black'>
-            <div
-                ref={canvasRef}
-                className='absolute inset-0 h-full w-full bg-black'
-            />
-        </section>
+        <div
+            ref={canvasRef}
+            className={className}
+        />
     )
 }
 
