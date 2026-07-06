@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
+import createBeamMaterial from "./shaders/createBeamMaterial"
 import museumWallTextureUrl from "../../assets/Museum/wall-texture.jpg"
 import museumFloorTextureUrl from "../../assets/Museum/floor-texture.jpg"
 import projectorModelUrl from "../../assets/Projector/generic_white_digital_projector.glb"
@@ -247,6 +248,12 @@ const buildProjectorBeam = (scene) => {
         projectorBeamOrigin.y,
         projectorBeamOrigin.z
     )
+    const beamAxis = new THREE.Vector3().subVectors(projectionFrameCenter, beamOrigin).normalize()
+    const beamLength = beamOrigin.distanceTo(new THREE.Vector3(
+        projectionFrameCenter.x,
+        projectionFrameCenter.y,
+        projectionFrameCenter.z
+    ))
     const projectionTopLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yEnd, roomZStart)
     const projectionTopRight = new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yEnd, roomZStart)
     const projectionBottomRight = new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yStart, roomZStart)
@@ -290,14 +297,12 @@ const buildProjectorBeam = (scene) => {
         projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z
     ])
     beamPyramidFillGeometry.setAttribute("position", new THREE.BufferAttribute(beamPyramidFillVertices, 3))
-    beamPyramidFillGeometry.computeVertexNormals()
-
-    const beamPyramidFillMaterial = new THREE.MeshBasicMaterial({
-        color: "#e2d0ba",
-        transparent: true,
-        opacity: 0.12,
-        side: THREE.DoubleSide,
-        depthWrite: false
+    const beamPyramidFillMaterial = createBeamMaterial({
+        beamColor: "#e2d0ba",
+        beamOrigin,
+        beamAxis,
+        beamLength,
+        beamOpacity: 0.28
     })
     const beamPyramidFill = new THREE.Mesh(beamPyramidFillGeometry, beamPyramidFillMaterial)
     scene.add(beamPyramidFill)
@@ -469,7 +474,7 @@ const ProjectScene = () => {
     const canvasRef = useRef(null)
 
     useEffect(() => {
-        const enableCameraMovement = false
+        const enableCameraMovement = true
         const enableAxesDebug = false
 
         const container = canvasRef.current
