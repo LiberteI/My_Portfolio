@@ -1239,7 +1239,7 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
     const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
     void projects
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = true
+    const enableCameraMovement = false
 
     // initialize and render the 3D scene
     useEffect(() => {
