@@ -1,130 +1,8 @@
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
-import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
-import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
 import ProjectScene from "./ProjectScene"
-
-const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
-const bubbleThumb = "/images/project-thumbnails/Bubble.png"
-const agentThumb = "/images/project-thumbnails/agent.png"
-const supervisedLearningThumb = "/images/projects/supervisedLearning.png"
-const dalTutorThumb = "/images/projects/daltutor.png"
-const iceSpyThumb = "/images/projects/iceSpy.png"
-const portfolioThumb = "/images/projects/portfolio.png"
-
-const projects = [
-    {
-        title: "My Portfolio",
-        slug: "my-portfolio",
-        image: portfolioThumb,
-        topic: "Full-Stack Development",
-        skills: "React · Node.js · MongoDB · Javascript · Full Stack",
-        description: "A full-stack portfolio site with interactive 3D scenes, responsive layouts, and dynamic content.",
-        githubLink: "https://github.com/LiberteI/My_Portfolio",
-        isSoloProject: true,
-        canLink: false
-    },
-    {
-        title: "Housing Price Predictor",
-        slug: "housing-price-predictor",
-        image: supervisedLearningThumb,
-        topic: "Supervised Learning",
-        skills: "Python · Regression Modeling · Data Preprocessing · Model Evaluation · Data Visualization",
-        description: "An end-to-end regression pipeline for predicting housing prices from real-world data.",
-        githubLink: "https://github.com/LiberteI/Supervised-Learning-Workshop",
-        isSoloProject: true,
-        canLink: false
-    },
-    {
-        title: "Dal Tutor",
-        slug: "dal-tutor",
-        image: dalTutorThumb,
-        topic: "Software Development",
-        skills: "Agile Development · Extreme Programming (XP) · Java · Android Studio · Team Collaboration",
-        description: "An Android tutoring platform built through Agile iterations and collaborative delivery.",
-        githubLink: "https://github.com/LiberteI/dalTutor",
-        isSoloProject: false,
-        canLink: false
-    },
-    {
-        title: "Ocean Simulation",
-        slug: "ocean-simulation",
-        image: oceanGif,
-        topic: "Computer Animation",
-        skills: "C++ · OpenGL (GLEW) · Vertex & Fragment Shaders · Lighting · Camera & Input Systems · Real-Time Animation Systems",
-        description: "A C++ OpenGL submarine simulator with lighting, fog, animated waves, and interactive navigation.",
-        githubLink: "https://github.com/LiberteI/Submarine",
-        canLink: false,
-        isSoloProject: true
-    },
-    {
-        title: "Astronomical Simulation",
-        slug: "astronomical-simulation",
-        image: astronomyGif,
-        topic: "Computer Animation",
-        skills: "skills: C++ · OpenGL (GLUT) · 3D Graphics & Transformations · Camera & Projection Systems · Vertex-Based Rendering · Double & Depth Buffering",
-        description: "A C++ OpenGL planetary scene with animated orbits, stars, and interactive camera controls.",
-        githubLink: "https://github.com/LiberteI/Astronomical_System",
-        canLink: false,
-        isSoloProject: true
-    },
-    {
-        title: "Ice Spy",
-        slug: "ice-spy",
-        image: iceSpyThumb,
-        topic: "Machine Learning",
-        skills: "Machine Learning · Data Analysis · Pathfinding · Geospatial Mapping · Algorithm Design",
-        description: "A hackathon project using ML and pathfinding to optimize Arctic shipping routes.",
-        githubLink: "https://github.com/hongh233/NASA",
-        isSoloProject: false,
-        canLink: false
-    },
-    {
-        title: "Shape Morphing",
-        slug: "shape-morphing",
-        image: shapeMorphingGif,
-        topic: "Computer Animation",
-        skills: "skills: C++ · OpenGL (GLUT) · Vertex-Based Shape Morphing · Linear Interpolation (LERP) · Modular OOP Design · Double-Buffered Rendering",
-        description: "A C++ OpenGL app that morphs custom shapes through interpolation and vertex resampling.",
-        githubLink: "https://github.com/LiberteI/Computer_Animation",
-        canLink: false,
-        isSoloProject: true
-    },
-    {
-        title: "Easy Shop",
-        slug: "easy-shop",
-        image: agentThumb,
-        topic: "Agentic AI",
-        skills: "AI Agents · Large Language Models (LLM) · Retrieval-Augmented Generation (RAG) · MongoDB · n8n Automation · Conversational System Design",
-        description: "A WhatsApp AI shopping agent with memory, inventory awareness, and automated ordering.",
-        githubLink: "https://github.com/LiberteI",
-        isSoloProject: true,
-        canLink: false
-    },
-    {
-        title: "Knight of Cinders",
-        slug: "knight-of-cinders",
-        image: projectThumb,
-        canLink: true,
-        topic: "Game Development",
-        skills: "Unity · Tilemap · Cinemachine · Physics & Raycasting · Singleton Architecture · State-Driven Systems",
-        description: "A dark 2D action game with stamina-based combat, boss fights, and cinematic atmosphere.",
-        githubLink: "https://github.com/LiberteI/KnightOfCinders_firstProject",
-        isSoloProject: true
-    },
-    {
-        title: "Bubble Biologist",
-        slug: "bubble-biologist",
-        image: bubbleThumb,
-        topic: "Game Development",
-        skills: "Unity · Gameplay Programming · Physics Systems · Git Collaboration · Rapid Iteration · 2D Game Development",
-        description: "A fast-paced Game Jam platformer built around bubble survival and physics-driven movement.",
-        githubLink: "https://github.com/LydiaV2001/GGJ2025",
-        isSoloProject: false,
-        canLink: false
-    }
-]
+import { projectRecords } from "./project.data"
+import { mapProjectsToDisplayModels } from "./project.mapper"
 
 const navItems = [
     { label: "Projects", type: "route", to: "/projects" },
@@ -133,27 +11,7 @@ const navItems = [
     { label: "About", type: "scroll", target: "about" }
 ]
 
-const getProjectMeta = (project) => {
-    const primarySkill = project.skills
-        .replace(/^skills:\s*/i, "")
-        .split("·")
-        .map((skill) => skill.trim())
-        .filter(Boolean)[0] ?? project.topic
-
-    return {
-        indexLabel: String(projects.findIndex(({ slug }) => slug === project.slug) + 1).padStart(2, "0"),
-        badgeLabel: project.canLink ? "FEATURED PROJECT" : "ARCHIVE PROJECT",
-        role: project.isSoloProject ? "Independent Builder" : "Team Collaborator",
-        duration: project.isSoloProject ? "Self-Directed Build" : "Team Delivery Sprint",
-        stack: project.skills.replace(/^skills:\s*/i, ""),
-        category: project.topic,
-        subtitle: `${project.topic} · ${primarySkill}`
-    }
-}
-
 const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
-    const meta = getProjectMeta(project)
-
     return (
         <button
             type="button"
@@ -179,7 +37,7 @@ const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
             <div className="space-y-1">
                 <p className="font-serif text-base text-stone-100">{project.title}</p>
                 <p className="text-[10px] uppercase tracking-[0.18em] text-stone-400">
-                    {meta.subtitle}
+                    {project.meta.subtitle}
                 </p>
             </div>
         </button>
@@ -277,7 +135,7 @@ const ProjectPageNav = ({ isNavExpanded, setIsNavExpanded, onNavItemClick, navig
     )
 }
 
-const FeaturedProjectPanel = ({ featuredProject, featuredMeta }) => {
+const FeaturedProjectPanel = ({ featuredProject }) => {
     return (
         <div className="pointer-events-none absolute inset-x-0 top-20 z-20 h-[70vh] px-6 md:top-10 md:px-12 lg:px-16">
             <div className="flex h-full w-full max-w-[35rem] items-start">
@@ -285,10 +143,10 @@ const FeaturedProjectPanel = ({ featuredProject, featuredMeta }) => {
                     <div className="space-y-4">
                         <div className="space-y-1">
                             <p className="text-[11px] uppercase tracking-[0.36em] text-stone-400">
-                                {featuredMeta.indexLabel}
+                                {featuredProject.meta.indexLabel}
                             </p>
                             <p className="text-[11px] uppercase tracking-[0.36em] text-stone-500">
-                                {featuredMeta.badgeLabel}
+                                {featuredProject.meta.badgeLabel}
                             </p>
                         </div>
 
@@ -304,10 +162,10 @@ const FeaturedProjectPanel = ({ featuredProject, featuredMeta }) => {
                         <div className="h-px w-full bg-gradient-to-r from-stone-300/40 via-stone-300/10 to-transparent" />
 
                         <div className="hidden gap-2 min-[770px]:grid md:grid-cols-2">
-                            <ProjectMetadata label="Role" value={featuredMeta.role} />
-                            <ProjectMetadata label="Duration" value={featuredMeta.duration} />
-                            <ProjectMetadata label="Stack" value={featuredMeta.stack} />
-                            <ProjectMetadata label="Category" value={featuredMeta.category} />
+                            <ProjectMetadata label="Role" value={featuredProject.meta.roleLabel} />
+                            <ProjectMetadata label="Duration" value={featuredProject.meta.durationLabel} />
+                            <ProjectMetadata label="Stack" value={featuredProject.meta.stackLabel} />
+                            <ProjectMetadata label="Category" value={featuredProject.meta.categoryLabel} />
                         </div>
 
                         <a
@@ -328,7 +186,7 @@ const FeaturedProjectPanel = ({ featuredProject, featuredMeta }) => {
     )
 }
 
-const ProjectCarouselDock = ({ activeProjectIndex, onSelectProject }) => {
+const ProjectCarouselDock = ({ activeProjectIndex, projects, onSelectProject }) => {
     return (
         <div className="absolute inset-x-0 bottom-0 z-20 flex h-[20vh] min-h-[12rem] flex-col justify-end px-4 pb-6 md:px-8 md:pb-8 lg:px-10">
             <div className="mx-auto flex w-full max-w-7xl shrink-0 items-end gap-3 p-3 md:gap-4 md:p-4">
@@ -382,10 +240,10 @@ const ProjectCarouselDock = ({ activeProjectIndex, onSelectProject }) => {
 }
 
 const Project = () => {
+    const projects = useMemo(() => mapProjectsToDisplayModels(projectRecords), [])
     const [activeProjectIndex, setActiveProjectIndex] = useState(0)
     const [isNavExpanded, setIsNavExpanded] = useState(false)
     const featuredProject = projects[activeProjectIndex] ?? projects[0]
-    const featuredMeta = useMemo(() => getProjectMeta(featuredProject), [featuredProject])
     const navigate = useNavigate()
 
     const handleSelectProject = (nextIndex) => {
@@ -422,10 +280,11 @@ const Project = () => {
                 navigate={navigate}
             />
 
-            <FeaturedProjectPanel featuredProject={featuredProject} featuredMeta={featuredMeta} />
+            <FeaturedProjectPanel featuredProject={featuredProject} />
 
             <ProjectCarouselDock
                 activeProjectIndex={activeProjectIndex}
+                projects={projects}
                 onSelectProject={handleSelectProject}
             />
         </section>
