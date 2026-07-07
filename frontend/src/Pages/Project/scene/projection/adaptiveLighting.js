@@ -66,12 +66,12 @@ export const updateAdaptiveProjectorLighting = (projectorRig) => {
 
     if (projectorRig.projectorSpotLightToWall) {
         projectorRig.projectorSpotLightToWall.color.copy(current.beamColor)
-        projectorRig.projectorSpotLightToWall.intensity = lighting.projectorSpotLightToWall.intensity * current.beamIntensityScale
+        projectorRig.projectorSpotLightToWall.intensity = config.adaptiveProjectorSpotLightBaseIntensity * current.beamIntensityScale
     }
 
     if (projectorRig.projectorOriginPointLight) {
         projectorRig.projectorOriginPointLight.color.copy(current.beamColor)
-        projectorRig.projectorOriginPointLight.intensity = lighting.projectorOriginPointLight.intensity * current.beamIntensityScale
+        projectorRig.projectorOriginPointLight.intensity = config.adaptiveProjectorOriginPointLightBaseIntensity * current.beamIntensityScale
     }
 
     if (projectorRig.beamPyramidMaterial) {
@@ -86,7 +86,7 @@ export const updateAdaptiveProjectorLighting = (projectorRig) => {
 
     if (projectorRig.emissionLight) {
         projectorRig.emissionLight.color.copy(current.bounceColor)
-        projectorRig.emissionLight.intensity = lighting.emissionLight.intensity * current.bounceIntensityScale
+        projectorRig.emissionLight.intensity = config.adaptiveEmissionLightBaseIntensity * current.bounceIntensityScale
     }
 
     if (projectorRig.wallGlowMaterial) {
