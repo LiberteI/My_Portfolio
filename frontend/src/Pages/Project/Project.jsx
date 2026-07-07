@@ -30,7 +30,7 @@ const projects = [
         slug: "housing-price-predictor",
         image: supervisedLearningThumb,
         topic: "Supervised Learning",
-        skills: "Supervised Learning · Regression Modeling · Data Preprocessing · Python · Model Evaluation · Data Visualization",
+        skills: "Python · Regression Modeling · Data Preprocessing · Model Evaluation · Data Visualization",
         description: "An end-to-end regression pipeline for predicting housing prices from real-world data.",
         githubLink: "https://github.com/LiberteI/Supervised-Learning-Workshop",
         lightColor: "#e4d5c4",
@@ -192,7 +192,7 @@ const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
 
 const ProjectMetadata = ({ label, value }) => {
     return (
-        <div className="space-y-2">
+        <div className="space-y-1">
             <p className="text-[11px] uppercase tracking-[0.34em] text-stone-500">{label}</p>
             <p className="text-sm leading-6 text-stone-200">{value}</p>
         </div>
@@ -241,56 +241,54 @@ const Project = () => {
                 </div>
             </nav>
 
-            <div className="absolute left-0 top-20 z-20 w-full max-w-[30rem] px-6 pb-72
-                md:top-10 md:px-12 
-                lg:px-16">
-                <div className="pointer-events-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
-                    <div className="space-y-6">
-                        <div className="space-y-3">
-                            <p className="text-[11px] uppercase tracking-[0.36em] text-stone-400">
-                                {featuredMeta.indexLabel}
-                            </p>
-                            <p className="text-[11px] uppercase tracking-[0.36em] text-stone-500">
-                                {featuredMeta.badgeLabel}
-                            </p>
-                        </div>
-
+            <div className="absolute inset-x-0 top-20 z-20 h-[70vh] px-6 md:top-10 md:px-12 lg:px-16">
+                <div className="flex h-full w-full max-w-[30rem] items-start">
+                    <div className="pointer-events-auto max-h-full overflow-y-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
                         <div className="space-y-4">
-                            <h1 className="max-w-md font-serif text-4xl leading-none text-stone-50 md:text-5xl">
-                                {featuredProject.title}
-                            </h1>
-                            <p className="max-w-md text-sm leading-7 text-stone-300 md:text-[15px]">
-                                {featuredProject.description}
-                            </p>
+                            <div className="space-y-1">
+                                <p className="text-[11px] uppercase tracking-[0.36em] text-stone-400">
+                                    {featuredMeta.indexLabel}
+                                </p>
+                                <p className="text-[11px] uppercase tracking-[0.36em] text-stone-500">
+                                    {featuredMeta.badgeLabel}
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <h1 className="max-w-md font-serif text-4xl leading-none text-stone-50 md:text-5xl">
+                                    {featuredProject.title}
+                                </h1>
+                                <p className="max-w-md text-sm leading-7 text-stone-300 md:text-[15px]">
+                                    {featuredProject.description}
+                                </p>
+                            </div>
+
+                            <div className="h-px w-full bg-gradient-to-r from-stone-300/40 via-stone-300/10 to-transparent" />
+
+                            <div className="grid gap-2 md:grid-cols-2">
+                                <ProjectMetadata label="Role" value={featuredMeta.role} />
+                                <ProjectMetadata label="Duration" value={featuredMeta.duration} />
+                                <ProjectMetadata label="Stack" value={featuredMeta.stack} />
+                                <ProjectMetadata label="Category" value={featuredMeta.category} />
+                            </div>
+
+                            <a
+                                href={featuredProject.githubLink}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-3 rounded-full border border-stone-200/40 bg-stone-100/10 px-5 py-3 text-sm uppercase tracking-[0.24em] text-stone-100 transition hover:border-stone-100 hover:bg-stone-100 hover:text-black"
+                            >
+                                View Project
+                                <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
+                                    →
+                                </span>
+                            </a>
                         </div>
-
-                        <div className="h-px w-full bg-gradient-to-r from-stone-300/40 via-stone-300/10 to-transparent" />
-
-                        <div className="grid gap-5 md:grid-cols-2">
-                            <ProjectMetadata label="Role" value={featuredMeta.role} />
-                            <ProjectMetadata label="Duration" value={featuredMeta.duration} />
-                            <ProjectMetadata label="Stack" value={featuredMeta.stack} />
-                            <ProjectMetadata label="Category" value={featuredMeta.category} />
-                        </div>
-
-                        <a
-                            href={featuredProject.githubLink}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-3 rounded-full border border-stone-200/40 bg-stone-100/10 px-5 py-3 text-sm uppercase tracking-[0.24em] text-stone-100 transition hover:border-stone-100 hover:bg-stone-100 hover:text-black"
-                        >
-                            View Project
-                            <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
-                                →
-                            </span>
-                        </a>
                     </div>
                 </div>
             </div>
-
-            <div className="absolute inset-x-0 bottom-8 z-20 px-4 md:px-8 lg:px-10">
-                <div className="mx-auto flex max-w-7xl items-end gap-3 p-3
-                    md:gap-4 md:p-4">
+            <div className="absolute inset-x-0 bottom-0 z-20 flex h-[20vh] min-h-[12rem] flex-col justify-end px-4 pb-6 md:px-8 md:pb-8 lg:px-10">
+                <div className="mx-auto flex w-full max-w-7xl shrink-0 items-end gap-3 p-3 md:gap-4 md:p-4">
                     <button
                         type="button"
                         onClick={() => handleSelectProject(activeProjectIndex - 1)}
@@ -300,7 +298,7 @@ const Project = () => {
                         ←
                     </button>
 
-                    <div className="pointer-events-auto flex min-w-0 flex-1 gap-3 overflow-x-auto pb-1">
+                    <div className="custom-scrollbar-dark pointer-events-auto flex min-w-0 flex-1 gap-3 overflow-x-auto pb-1">
                         {projects.map((project, index) => (
                             <ProjectScrollCard
                                 key={project.slug}
@@ -322,7 +320,7 @@ const Project = () => {
                     </button>
                 </div>
 
-                <div className="mt-4 flex items-center justify-center gap-2">
+                <div className="mt-3 flex shrink-0 items-center justify-center gap-2">
                     {projects.map((project, index) => (
                         <button
                             key={project.slug}

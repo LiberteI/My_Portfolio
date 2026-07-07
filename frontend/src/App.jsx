@@ -60,7 +60,6 @@ const HomePage = () => {
 const Projects = () => {
   return (
     <div className='app-container'>
-      <Navbar/>
       <Project />
     </div>
   )
