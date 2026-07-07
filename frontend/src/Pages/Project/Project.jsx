@@ -19,7 +19,7 @@ const projects = [
         image: portfolioThumb,
         topic: "Full-Stack Development",
         skills: "React · Node.js · MongoDB · Javascript · Full Stack",
-        description: "A full-stack portfolio showcasing game development, interactive OpenGL animations, and responsive web experiences. Features bold theming, animated hero, project badges, performance reels, testimonials, and contact flow. Built with React, smooth scroll, and backend integrations to keep content dynamic and personal.",
+        description: "A full-stack portfolio site with interactive 3D scenes, responsive layouts, and dynamic content.",
         githubLink: "https://github.com/LiberteI/My_Portfolio",
         lightColor: "#e4d5c4",
         isSoloProject: true,
@@ -31,7 +31,7 @@ const projects = [
         image: supervisedLearningThumb,
         topic: "Supervised Learning",
         skills: "Supervised Learning · Regression Modeling · Data Preprocessing · Python · Model Evaluation · Data Visualization",
-        description: "Completed an end-to-end supervised learning project predicting housing prices using real-world data. Built a reproducible scikit-learn pipeline covering data cleaning, preprocessing, regression modeling, evaluation with RMSE and MAE, visualization, and result interpretation across the full machine learning workflow.",
+        description: "An end-to-end regression pipeline for predicting housing prices from real-world data.",
         githubLink: "https://github.com/LiberteI/Supervised-Learning-Workshop",
         lightColor: "#e4d5c4",
         isSoloProject: true,
@@ -43,7 +43,7 @@ const projects = [
         image: dalTutorThumb,
         topic: "Software Development",
         skills: "Agile Development · Extreme Programming (XP) · Java · Android Studio · Team Collaboration",
-        description: "Developed Dal Tutor over four months using Agile and XP practices. Planned and delivered features across two iterations using user stories, story points, and burndown charts, emphasizing continuous integration, teamwork, and incremental delivery of a real-world tutoring platform.",
+        description: "An Android tutoring platform built through Agile iterations and collaborative delivery.",
         githubLink: "https://github.com/LiberteI/dalTutor",
         lightColor: "#e4d5c4",
         isSoloProject: false,
@@ -55,7 +55,7 @@ const projects = [
         image: oceanGif,
         topic: "Computer Animation",
         skills: "C++ · OpenGL (GLEW) · Vertex & Fragment Shaders · Lighting · Camera & Input Systems · Real-Time Animation Systems",
-        description: "Developed a C++ OpenGL submarine simulator featuring interactive camera controls, OBJ model loading, dynamic lighting, fog-based underwater effects, textured environments, animated surface waves, and autonomous fish movement. Implemented depth and double buffering, real-time transformations, and event-driven input to build an immersive, interactive 3D underwater scene demonstrating core graphics pipeline concepts.",
+        description: "A C++ OpenGL submarine simulator with lighting, fog, animated waves, and interactive navigation.",
         githubLink: "https://github.com/LiberteI/Submarine",
         lightColor: "#e4d5c4",
         canLink: false,
@@ -67,7 +67,7 @@ const projects = [
         image: astronomyGif,
         topic: "Computer Animation",
         skills: "skills: C++ · OpenGL (GLUT) · 3D Graphics & Transformations · Camera & Projection Systems · Vertex-Based Rendering · Double & Depth Buffering",
-        description: "Built a C++ OpenGL graphics project simulating an imaginary planetary system with animated orbits, twinkling stars, and a loaded 3D Starship Enterprise model. Implemented perspective camera controls, depth and double buffering, vertex-based rendering, and real-time transformations to demonstrate core OpenGL graphics pipeline concepts and interactive 3D scene design.",
+        description: "A C++ OpenGL planetary scene with animated orbits, stars, and interactive camera controls.",
         githubLink: "https://github.com/LiberteI/Astronomical_System",
         lightColor: "#e4d5c4",
         canLink: false,
@@ -79,7 +79,7 @@ const projects = [
         image: iceSpyThumb,
         topic: "Machine Learning",
         skills: "Machine Learning · Data Analysis · Pathfinding · Geospatial Mapping · Algorithm Design",
-        description: "Built Ice Spy during the Space Mission Accepted Hackathon, using satellite data, machine learning ice prediction, and a pathfinding to optimize Arctic shipping routes. Enabled bilingual support and SMS alerts to improve safety and logistics for remote northern communities.",
+        description: "A hackathon project using ML and pathfinding to optimize Arctic shipping routes.",
         githubLink: "https://github.com/hongh233/NASA",
         lightColor: "#e4d5c4",
         isSoloProject: false,
@@ -91,7 +91,7 @@ const projects = [
         image: shapeMorphingGif,
         topic: "Computer Animation",
         skills: "skills: C++ · OpenGL (GLUT) · Vertex-Based Shape Morphing · Linear Interpolation (LERP) · Modular OOP Design · Double-Buffered Rendering",
-        description: "Built a C++ OpenGL application that morphs custom shapes through vertex resampling and linear interpolation. Implemented double-buffered rendering, event-driven mouse input, and a clean modular architecture. Refactored a monolithic prototype into scalable components, gaining practical insight into the OpenGL pipeline and real-world rendering constraints, and improved maintainability, performance, and clarity.",
+        description: "A C++ OpenGL app that morphs custom shapes through interpolation and vertex resampling.",
         githubLink: "https://github.com/LiberteI/Computer_Animation",
         lightColor: "#e4d5c4",
         canLink: false,
@@ -103,7 +103,7 @@ const projects = [
         image: agentThumb,
         topic: "Agentic AI",
         skills: "AI Agents · Large Language Models (LLM) · Retrieval-Augmented Generation (RAG) · MongoDB · n8n Automation · Conversational System Design",
-        description: "Developed a WhatsApp-embedded AI agent using n8n, featuring persistent chat memory, dynamic inventory, and automated order processing. Integrated MongoDB for scalable memory management, demonstrating how agentic AI can automate and streamline real-world small business operations.",
+        description: "A WhatsApp AI shopping agent with memory, inventory awareness, and automated ordering.",
         githubLink: "https://github.com/LiberteI",
         lightColor: "#e4d5c4",
         isSoloProject: true,
@@ -116,7 +116,7 @@ const projects = [
         canLink: true,
         topic: "Game Development",
         skills: "Unity · Tilemap · Cinemachine · Physics & Raycasting · Singleton Architecture · State-Driven Systems",
-        description: "A dark 2D action game inspired by Souls-like combat, following a fallen knight driven by loss and revenge. The game features deliberate, stamina-based melee combat, multi-phase boss encounters with distinct attack patterns, and adaptive enemy behaviors. Atmospheric parallax-scrolled environments, and cinematic animations.",
+        description: "A dark 2D action game with stamina-based combat, boss fights, and cinematic atmosphere.",
         githubLink: "https://github.com/LiberteI/KnightOfCinders_firstProject",
         lightColor: "#e4d5c4",
         isSoloProject: true
@@ -127,7 +127,7 @@ const projects = [
         image: bubbleThumb,
         topic: "Game Development",
         skills: "Unity · Gameplay Programming · Physics Systems · Git Collaboration · Rapid Iteration · 2D Game Development",
-        description: "Developed a 2D platformer during Global Game Jam 2025 in a 48-hour sprint. Implemented physics-based movement, a shrinking bubble survival mechanic, and dynamic bounce controls in Unity. Collaborated on original pixel art, animations, and an animated cutscene, rapidly prototyping gameplay systems under tight time constraints.",
+        description: "A fast-paced Game Jam platformer built around bubble survival and physics-driven movement.",
         githubLink: "https://github.com/LydiaV2001/GGJ2025",
         lightColor: "#e4d5c4",
         isSoloProject: false,
@@ -165,8 +165,8 @@ const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
             className={[
                 "group flex w-40 shrink-0 flex-col gap-1 rounded-2xl border p-3 text-left transition duration-300",
                 isActive
-                    ? "border-stone-200/60 bg-stone-950/88 shadow-[0_0_36px_rgba(228,213,196,0.16)]"
-                    : "border-white/10 bg-black/58 opacity-70 hover:border-white/30 hover:opacity-100"
+                    ? "border-stone-200/60 shadow-[0_0_36px_rgba(228,213,196,0.16)]"
+                    : "border-white/0 opacity-70 hover:border-white/30 hover:opacity-100"
             ].join(" ")}
         >
             <div className="flex items-start justify-between text-[11px] uppercase tracking-[0.28em] text-stone-300/80">
@@ -182,7 +182,7 @@ const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
             </div>
             <div className="space-y-1">
                 <p className="font-serif text-base text-stone-100">{project.title}</p>
-                <p className="text-[11px] uppercase tracking-[0.18em] text-stone-400">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-stone-400">
                     {meta.subtitle}
                 </p>
             </div>
@@ -219,7 +219,7 @@ const Project = () => {
                 lightColor={featuredProject?.lightColor}
             />
 
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_28%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
 
             <nav className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 py-8 md:px-12 lg:px-16">
                 <button
@@ -241,8 +241,10 @@ const Project = () => {
                 </div>
             </nav>
 
-            <div className="absolute left-0 top-24 z-20 w-full max-w-[30rem] px-6 pb-72 md:top-28 md:px-12 lg:px-16">
-                <div className="pointer-events-auto rounded-[2rem] border border-white/10 bg-black/42 p-6 shadow-[0_22px_90px_rgba(0,0,0,0.45)] backdrop-blur-md md:p-8">
+            <div className="absolute left-0 top-20 z-20 w-full max-w-[30rem] px-6 pb-72
+                md:top-10 md:px-12 
+                lg:px-16">
+                <div className="pointer-events-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
                     <div className="space-y-6">
                         <div className="space-y-3">
                             <p className="text-[11px] uppercase tracking-[0.36em] text-stone-400">
@@ -287,11 +289,12 @@ const Project = () => {
             </div>
 
             <div className="absolute inset-x-0 bottom-8 z-20 px-4 md:px-8 lg:px-10">
-                <div className="mx-auto flex max-w-7xl items-end gap-3 rounded-[2rem] border border-white/10 bg-black/52 p-3 shadow-[0_28px_110px_rgba(0,0,0,0.5)] backdrop-blur-md md:gap-4 md:p-4">
+                <div className="mx-auto flex max-w-7xl items-end gap-3 p-3
+                    md:gap-4 md:p-4">
                     <button
                         type="button"
                         onClick={() => handleSelectProject(activeProjectIndex - 1)}
-                        className="pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-stone-100 transition hover:border-white/30 hover:bg-white/10"
+                        className="pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-xl text-stone-100 transition hover:border-white/30 hover:bg-white/10"
                         aria-label="Previous project"
                     >
                         ←
@@ -312,7 +315,7 @@ const Project = () => {
                     <button
                         type="button"
                         onClick={() => handleSelectProject(activeProjectIndex + 1)}
-                        className="pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-stone-100 transition hover:border-white/30 hover:bg-white/10"
+                        className="pointer-events-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-xl text-stone-100 transition hover:border-white/30 hover:bg-white/10"
                         aria-label="Next project"
                     >
                         →
