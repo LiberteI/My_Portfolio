@@ -18,11 +18,20 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
     const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
+    const sceneRef = useRef(null)
+    const rendererRef = useRef(null)
+    const projectorRigRef = useRef(null)
+    const projectionScreenRef = useRef(null)
+    const onScreenClickRef = useRef(onScreenClick)
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
     const enableCameraMovement = false
 
-    // initialize and render the 3D scene
+    useEffect(() => {
+        onScreenClickRef.current = onScreenClick
+    }, [onScreenClick])
+
+    // initialize and render the 3D scene once
     useEffect(() => {
         const enableAxesDebug = false
 
@@ -34,6 +43,7 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
 
         const scene = new THREE.Scene()
         scene.background = new THREE.Color("#000000")
+        sceneRef.current = scene
 
         const camera = createCamera()
         cameraRef.current = camera
@@ -43,17 +53,12 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         renderer.toneMapping = THREE.ACESFilmicToneMapping
         renderer.toneMappingExposure = 1
         container.appendChild(renderer.domElement)
+        rendererRef.current = renderer
 
         const room = buildRoom(scene)
         const ambientLight = buildAmbientLight(scene)
         const projectorRig = buildProjectorRig(scene, lightColor)
-        const projectionScreen = validScreenTextureUrl
-            ? buildProjectionScreen(scene, validScreenTextureUrl, {
-                onTextureAnalyzed: (analysis) => {
-                    projectorRig.applyAdaptiveTargets(analysis)
-                }
-            })
-            : null
+        projectorRigRef.current = projectorRig
         const pedestal = buildPedestal(scene)
         const debugAxes = enableAxesDebug ? new THREE.AxesHelper(4) : null
         if (debugAxes) {
@@ -74,8 +79,8 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
             container,
             renderer,
             camera,
-            projectionScreen,
-            onScreenClick
+            getProjectionScreen: () => projectionScreenRef.current,
+            getOnScreenClick: () => onScreenClickRef.current
         })
 
         const animate = () => {
@@ -90,14 +95,13 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         animationFrameId = window.requestAnimationFrame(animate)
 
         return () => {
-            cameraRef.current = null
             pressedKeys.clear()
             window.cancelAnimationFrame(animationFrameId)
             responsiveCameraController.dispose()
             pointerInteractionController.dispose()
             ambientLight?.dispose()
             projectorRig.dispose()
-            projectionScreen?.dispose()
+            projectionScreenRef.current?.dispose()
             projectorModel.dispose()
             pedestal.dispose()
             room.dispose()
@@ -116,8 +120,41 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
             if (container.contains(renderer.domElement)) {
                 container.removeChild(renderer.domElement)
             }
+
+            cameraRef.current = null
+            sceneRef.current = null
+            rendererRef.current = null
+            projectorRigRef.current = null
+            projectionScreenRef.current = null
         }
-    }, [enableCameraMovement, lightColor, onScreenClick, validScreenTextureUrl])
+    }, [lightColor])
+
+    useEffect(() => {
+        const scene = sceneRef.current
+        const projectorRig = projectorRigRef.current
+
+        if (!scene || !projectorRig) {
+            return
+        }
+
+        projectionScreenRef.current?.dispose()
+        projectionScreenRef.current = null
+
+        if (!validScreenTextureUrl) {
+            return
+        }
+
+        projectionScreenRef.current = buildProjectionScreen(scene, validScreenTextureUrl, {
+            onTextureAnalyzed: (analysis) => {
+                projectorRig.applyAdaptiveTargets(analysis)
+            }
+        })
+
+        return () => {
+            projectionScreenRef.current?.dispose()
+            projectionScreenRef.current = null
+        }
+    }, [validScreenTextureUrl])
 
     // user input handling for camera movement
     useEffect(() => {
