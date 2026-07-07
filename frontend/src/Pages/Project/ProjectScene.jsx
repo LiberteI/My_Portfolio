@@ -1,7 +1,8 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import createBeamMaterial from "./shaders/createBeamMaterial"
+import createBeamMaterial from "./shaders/beamShaders/createBeamMaterial"
+import createProjectionMaterial from "./shaders/projectionShaders/createProjectionMaterial"
 import museumWallTextureUrl from "../../assets/Museum/wall-texture.jpg"
 import museumFloorTextureUrl from "../../assets/Museum/floor-texture.jpg"
 import projectorModelUrl from "../../assets/Projector/generic_white_digital_projector.glb"
@@ -67,6 +68,332 @@ const getResponsiveResizeConfig = () => {
             threshold: 770,
             ramp: 220,
             lookAtYOffset: 2.5
+        }
+    }
+}
+
+const getProjectionRenderConfig = () => {
+    return {
+        projectionStrength: 100,
+        exposure: 0.5,
+        blackPoint: 0.005,
+        whitePoint: 0.88,
+        edgeSoftness: 0.08,
+        opacityMultiplier: 1,
+        shadowBoost: 1000,
+        highlightBoost: 0.18
+    }
+}
+
+const getAdaptiveProjectionLightingConfig = () => {
+    return {
+        brightPixelThreshold: 0.25,
+        projectorIntensityMultiplier: 1.15,
+        bounceIntensityMultiplier: 0.55,
+        colorSaturation: 0.72,
+        transitionSpeed: 0.08,
+        minimumIntensity: 0.2,
+        maximumIntensity: 1.35,
+        bounceWarmBlend: "#f4ddc0"
+    }
+}
+
+const analyzeProjectionTexture = (texture, config) => {
+    const sourceImage = texture?.image
+
+    if (!sourceImage) {
+        return null
+    }
+
+    const sourceWidth = sourceImage.naturalWidth || sourceImage.videoWidth || sourceImage.width
+    const sourceHeight = sourceImage.naturalHeight || sourceImage.videoHeight || sourceImage.height
+
+    if (!sourceWidth || !sourceHeight) {
+        return null
+    }
+
+    const targetMaxSize = 256
+    const scale = Math.min(1, targetMaxSize / Math.max(sourceWidth, sourceHeight))
+    const width = Math.max(2, Math.round(sourceWidth * scale))
+    const height = Math.max(2, Math.round(sourceHeight * scale))
+    const canvas = document.createElement("canvas")
+    canvas.width = width
+    canvas.height = height
+    const context = canvas.getContext("2d")
+    context.drawImage(sourceImage, 0, 0, width, height)
+
+    const { data } = context.getImageData(0, 0, width, height)
+    let colorWeightTotal = 0
+    let brightPixelCount = 0
+    let weightedRed = 0
+    let weightedGreen = 0
+    let weightedBlue = 0
+    let brightnessTotal = 0
+
+    for (let index = 0; index < data.length; index += 4) {
+        const red = data[index] / 255
+        const green = data[index + 1] / 255
+        const blue = data[index + 2] / 255
+        const luminance = 0.299 * red + 0.587 * green + 0.114 * blue
+
+        if (luminance < config.brightPixelThreshold) {
+            continue
+        }
+
+        brightPixelCount += 1
+        colorWeightTotal += luminance
+        brightnessTotal += luminance
+        weightedRed += red * luminance
+        weightedGreen += green * luminance
+        weightedBlue += blue * luminance
+    }
+
+    if (colorWeightTotal <= 0 || brightPixelCount <= 0) {
+        return {
+            averageColor: new THREE.Color("#ffffff"),
+            brightness: config.minimumIntensity
+        }
+    }
+
+    const averageColor = new THREE.Color(
+        weightedRed / colorWeightTotal,
+        weightedGreen / colorWeightTotal,
+        weightedBlue / colorWeightTotal
+    )
+    const averageBrightness = brightnessTotal / brightPixelCount
+
+    return {
+        averageColor,
+        brightness: THREE.MathUtils.clamp(
+            averageBrightness,
+            config.minimumIntensity,
+            config.maximumIntensity
+        )
+    }
+}
+
+const buildAdaptiveLightingState = (analysis, featuredProjectLightColor) => {
+    const config = getAdaptiveProjectionLightingConfig()
+    const baseColor = new THREE.Color(featuredProjectLightColor)
+    const beamColor = baseColor.clone().lerp(analysis.averageColor, config.colorSaturation)
+    const bounceColor = new THREE.Color(config.bounceWarmBlend).lerp(beamColor, 0.45)
+
+    return {
+        beamColor,
+        beamIntensityScale: THREE.MathUtils.clamp(
+            analysis.brightness * config.projectorIntensityMultiplier,
+            config.minimumIntensity,
+            config.maximumIntensity
+        ),
+        bounceColor,
+        bounceIntensityScale: THREE.MathUtils.clamp(
+            analysis.brightness * config.bounceIntensityMultiplier,
+            config.minimumIntensity,
+            config.maximumIntensity
+        )
+    }
+}
+
+const initializeAdaptiveProjectorLighting = (projectorBeam, featuredProjectLightColor) => {
+    const baseColor = new THREE.Color(featuredProjectLightColor)
+    projectorBeam.adaptiveLightingState = {
+        current: {
+            beamColor: baseColor.clone(),
+            beamIntensityScale: 1,
+            bounceColor: baseColor.clone(),
+            bounceIntensityScale: 1
+        },
+        target: {
+            beamColor: baseColor.clone(),
+            beamIntensityScale: 1,
+            bounceColor: baseColor.clone(),
+            bounceIntensityScale: 1
+        }
+    }
+}
+
+const applyAdaptiveLightingTargets = (projectorBeam, analysis, featuredProjectLightColor) => {
+    if (!projectorBeam?.adaptiveLightingState || !analysis) {
+        return
+    }
+
+    projectorBeam.adaptiveLightingState.target = buildAdaptiveLightingState(analysis, featuredProjectLightColor)
+}
+
+const updateAdaptiveProjectorLighting = (projectorBeam) => {
+    if (!projectorBeam?.adaptiveLightingState) {
+        return
+    }
+
+    const config = getAdaptiveProjectionLightingConfig()
+    const lighting = lightParam()
+    const { current, target } = projectorBeam.adaptiveLightingState
+
+    current.beamColor.lerp(target.beamColor, config.transitionSpeed)
+    current.bounceColor.lerp(target.bounceColor, config.transitionSpeed)
+    current.beamIntensityScale = THREE.MathUtils.lerp(current.beamIntensityScale, target.beamIntensityScale, config.transitionSpeed)
+    current.bounceIntensityScale = THREE.MathUtils.lerp(current.bounceIntensityScale, target.bounceIntensityScale, config.transitionSpeed)
+
+    if (projectorBeam.projectorSpotLightToWall) {
+        projectorBeam.projectorSpotLightToWall.color.copy(current.beamColor)
+        projectorBeam.projectorSpotLightToWall.intensity = lighting.projectorSpotLightToWall.intensity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.projectorOriginPointLight) {
+        projectorBeam.projectorOriginPointLight.color.copy(current.beamColor)
+        projectorBeam.projectorOriginPointLight.intensity = lighting.projectorOriginPointLight.intensity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.beamPyramidMaterial) {
+        projectorBeam.beamPyramidMaterial.color.copy(current.beamColor)
+        projectorBeam.beamPyramidMaterial.opacity = lighting.beamPyramid.opacity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.beamPyramidFillMaterial?.uniforms) {
+        projectorBeam.beamPyramidFillMaterial.uniforms.beamColor.value.copy(current.beamColor)
+        projectorBeam.beamPyramidFillMaterial.uniforms.beamOpacity.value = lighting.beamPyramidFill.opacity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.emissionLight) {
+        projectorBeam.emissionLight.color.copy(current.bounceColor)
+        projectorBeam.emissionLight.intensity = lighting.emissionLight.intensity * current.bounceIntensityScale
+    }
+
+    if (projectorBeam.projectorBackRectAreaLight) {
+        projectorBeam.projectorBackRectAreaLight.color.copy(current.bounceColor)
+        projectorBeam.projectorBackRectAreaLight.intensity = lighting.projectorBackRectAreaLight.intensity * current.bounceIntensityScale
+    }
+
+    if (projectorBeam.wallGlowMaterial) {
+        projectorBeam.wallGlowMaterial.color.copy(current.beamColor)
+        projectorBeam.wallGlowMaterial.opacity = lighting.wallGlowPlane.opacity * current.bounceIntensityScale
+    }
+}
+
+const lightParam = () => {
+    return {
+        ambientLight: {
+            name: "ambientLight",
+            role: "Base fill light for the whole room so unlit surfaces do not fall completely into black.",
+            enabled: true,
+            color: "#ffffff",
+            intensity: 0.25
+        },
+        projectorSpotLightToWall: {
+            name: "projectorSpotLightToWall",
+            role: "Primary projector spotlight aimed at the projection wall. This is the main direct light source.",
+            enabled: true,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 15,
+            distance: 25,
+            angle: 0.55,
+            penumbra: 0.35,
+            decay: 1
+        },
+        projectorSpotLightToFloor: {
+            name: "projectorSpotLightToFloor",
+            role: "Secondary projector spotlight aimed at the floor area near the wall.",
+            enabled: false,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 15,
+            distance: 20,
+            angle: 0.6,
+            penumbra: 0.35,
+            decay: 0.5,
+            targetYOffset: -2,
+            targetZOffset: 0.1
+        },
+        projectorOriginPointLight: {
+            name: "projectorOriginPointLight",
+            role: "Small point light at the projector lens to brighten the projector head and nearby space.",
+            enabled: true,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 10,
+            distance: 20,
+            decay: 2
+        },
+        projectorBackRectAreaLight: {
+            name: "projectorBackRectAreaLight",
+            role: "Rect area light placed above the projector rear side to softly lift the projector body and pedestal.",
+            enabled: true,
+            color: "#fff1dc",
+            intensity: 4,
+            width: 2,
+            height: 1.4,
+            positionYOffset: 1.8,
+            positionZOffset: 1.6,
+            lookAtYOffset: 0.3,
+            lookAtZOffset: -2.4
+        },
+        emissionLight: {
+            name: "emissionLight",
+            role: "Point light placed just in front of the screen to lift the nearby ceiling and floor.",
+            enabled: true,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 1,
+            distance: 24,
+            decay: 0.1,
+            positionZOffset: 0.9
+        },
+        wallGlowPlane: {
+            name: "wallGlowPlane",
+            role: "Additive glow card placed in front of the wall to fake projector bloom and soft center falloff.",
+            enabled: true,
+            colorSource: "lightColor",
+            widthScale: 2.2,
+            heightScale: 2.2,
+            opacity: 0.05,
+            gradientStops: [
+                { offset: 0, alpha: 0.9 },
+                { offset: 0.35, alpha: 0.38 },
+                { offset: 0.72, alpha: 0.12 },
+                { offset: 1, alpha: 0 }
+            ],
+            zOffset: 0.03
+        },
+        beamPyramid: {
+            name: "beamPyramid",
+            role: "Wireframe outline of the projector frustum. Useful for debugging beam shape.",
+            enabled: false,
+            colorSource: "lightColor",
+            opacity: 0.7,
+            visible: false
+        },
+        beamPyramidFill: {
+            name: "beamPyramidFill",
+            role: "Visible volumetric beam mesh between projector and wall, rendered with the custom beam shader.",
+            enabled: true,
+            colorSource: "lightColor",
+            opacity: 0.28
+        },
+        spotLightDebug: {
+            name: "spotLightDebug",
+            role: "Reusable spotlight debugger showing the light center and a pyramid-like frustum.",
+            color: "#22d3ee",
+            markerRadius: 0.2,
+            markerOpacity: 0.95,
+            targetColor: "#ff4d4f",
+            targetMarkerRadius: 0.16,
+            targetMarkerOpacity: 0.98,
+            sphereWidthSegments: 24,
+            sphereHeightSegments: 16,
+            sphereOpacity: 0.22,
+            fallbackDistance: 12
+        },
+        pointLightDebug: {
+            name: "pointLightDebug",
+            role: "Reusable point light debugger showing the light center and a spherical range skeleton.",
+            color: "#22d3ee",
+            markerRadius: 0.2,
+            markerOpacity: 0.95,
+            sphereWidthSegments: 24,
+            sphereHeightSegments: 16,
+            sphereOpacity: 0.22,
+            fallbackDistance: 12
         }
     }
 }
@@ -438,7 +765,7 @@ const buildRoom = (scene) => {
     }
 }
 
-const buildProjectionScreen = (scene, screenTextureUrl) => {
+const buildProjectionScreen = (scene, screenTextureUrl, options = {}) => {
     const roomZStart = -7
     const projectionFrame = getProjectionFrameConfig()
     const screenWidth = projectionFrame.xEnd - projectionFrame.xStart
@@ -447,12 +774,21 @@ const buildProjectionScreen = (scene, screenTextureUrl) => {
     const screenCenterY = (projectionFrame.yStart + projectionFrame.yEnd) / 2
     const textureLoader = new THREE.TextureLoader()
     const screenTexture = textureLoader.load(screenTextureUrl)
+    const projectionRenderConfig = getProjectionRenderConfig()
+
+    screenTexture.onUpdate = () => {
+        const analysis = analyzeProjectionTexture(screenTexture, getAdaptiveProjectionLightingConfig())
+
+        if (analysis && options.onTextureAnalyzed) {
+            options.onTextureAnalyzed(analysis)
+        }
+    }
 
     screenTexture.colorSpace = THREE.SRGBColorSpace
 
-    const screenMaterial = new THREE.MeshBasicMaterial({
-        map: screenTexture,
-        toneMapped: false
+    const screenMaterial = createProjectionMaterial({
+        projectionTexture: screenTexture,
+        ...projectionRenderConfig
     })
     const screen = new THREE.Mesh(
         new THREE.PlaneGeometry(screenWidth, screenHeight),
@@ -605,133 +941,7 @@ const createPointLightDebugger = (scene, light, debugConfig) => {
     return { marker, markerMaterial, range, rangeGeometry, rangeMaterial }
 }
 
-const lightParam = () => {
-    return {
-        ambientLight: {
-            name: "ambientLight",
-            role: "Base fill light for the whole room so unlit surfaces do not fall completely into black.",
-            enabled: true,
-            color: "#ffffff",
-            intensity: 0.25
-        },
-        projectorSpotLightToWall: {
-            name: "projectorSpotLightToWall",
-            role: "Primary projector spotlight aimed at the projection wall. This is the main direct light source.",
-            enabled: true,
-            debugEnabled: false,
-            colorSource: "lightColor",
-            intensity: 15,
-            distance: 25,
-            angle: 0.55,
-            penumbra: 0.35,
-            decay: 1
-        },
-        projectorSpotLightToFloor: {
-            name: "projectorSpotLightToFloor",
-            role: "Secondary projector spotlight aimed at the floor area near the wall.",
-            enabled: false,
-            debugEnabled: false,
-            colorSource: "lightColor",
-            intensity: 15,
-            distance: 20,
-            angle: 0.6,
-            penumbra: 0.35,
-            decay: 0.5,
-            targetYOffset: -2,
-            targetZOffset: 0.1
-        },
-        projectorOriginPointLight: {
-            name: "projectorOriginPointLight",
-            role: "Small point light at the projector lens to brighten the projector head and nearby space.",
-            enabled: true,
-            debugEnabled: false,
-            colorSource: "lightColor",
-            intensity: 10,
-            distance: 20,
-            decay: 2
-        },
-        projectorBackRectAreaLight: {
-            name: "projectorBackRectAreaLight",
-            role: "Rect area light placed above the projector rear side to softly lift the projector body and pedestal.",
-            enabled: true,
-            color: "#fff1dc",
-            intensity: 4,
-            width: 2,
-            height: 1.4,
-            positionYOffset: 1.8,
-            positionZOffset: 1.6,
-            lookAtYOffset: 0.3,
-            lookAtZOffset: -2.4
-        },
-        emissionLight: {
-            name: "emissionLight",
-            role: "Point light placed just in front of the screen to lift the nearby ceiling and floor.",
-            enabled: true,
-            debugEnabled: false,
-            colorSource: "lightColor",
-            intensity: 1,
-            distance: 24,
-            decay: 0.1,
-            positionZOffset: 0.9
-        },
-        wallGlowPlane: {
-            name: "wallGlowPlane",
-            role: "Additive glow card placed in front of the wall to fake projector bloom and soft center falloff.",
-            enabled: true,
-            colorSource: "lightColor",
-            widthScale: 2.2,
-            heightScale: 2.2,
-            opacity: 0.55,
-            gradientStops: [
-                { offset: 0, alpha: 0.9 },
-                { offset: 0.35, alpha: 0.38 },
-                { offset: 0.72, alpha: 0.12 },
-                { offset: 1, alpha: 0 }
-            ],
-            zOffset: 0.03
-        },
-        beamPyramid: {
-            name: "beamPyramid",
-            role: "Wireframe outline of the projector frustum. Useful for debugging beam shape.",
-            enabled: false,
-            colorSource: "lightColor",
-            opacity: 0.7,
-            visible: false
-        },
-        beamPyramidFill: {
-            name: "beamPyramidFill",
-            role: "Visible volumetric beam mesh between projector and wall, rendered with the custom beam shader.",
-            enabled: true,
-            colorSource: "lightColor",
-            opacity: 0.28
-        },
-        spotLightDebug: {
-            name: "spotLightDebug",
-            role: "Reusable spotlight debugger showing the light center and a pyramid-like frustum.",
-            color: "#22d3ee",
-            markerRadius: 0.2,
-            markerOpacity: 0.95,
-            targetColor: "#ff4d4f",
-            targetMarkerRadius: 0.16,
-            targetMarkerOpacity: 0.98,
-            sphereWidthSegments: 24,
-            sphereHeightSegments: 16,
-            sphereOpacity: 0.22,
-            fallbackDistance: 12
-        },
-        pointLightDebug: {
-            name: "pointLightDebug",
-            role: "Reusable point light debugger showing the light center and a spherical range skeleton.",
-            color: "#22d3ee",
-            markerRadius: 0.2,
-            markerOpacity: 0.95,
-            sphereWidthSegments: 24,
-            sphereHeightSegments: 16,
-            sphereOpacity: 0.22,
-            fallbackDistance: 12
-        }
-    }
-}
+
 
 const buildAmbientLight = (scene) => {
     const lighting = lightParam()
@@ -1043,7 +1253,7 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         scene.add(beamPyramidFill)
     }
 
-    return {
+    const projectorBeam = {
         projectorSpotLightToWall,
         projectorOriginPointLight,
         projectorSpotLightToWallDebug,
@@ -1065,6 +1275,10 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         beamPyramidFillGeometry,
         beamPyramidFillMaterial
     }
+
+    initializeAdaptiveProjectorLighting(projectorBeam, lightColor)
+
+    return projectorBeam
 }
 
 const buildBox = (scene) => {
@@ -1276,12 +1490,12 @@ const updateCameraDebugVisuals = (camera, debugVisuals) => {
     debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
-const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScreenClick, lightColor = "#e4d5c4" }) => {
+const ProjectScene = ({ className = "", featuredProject = null, screenTextureUrl, onScreenClick }) => {
     const canvasRef = useRef(null)
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
     const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
-    void projects
+    const lightColor = featuredProject?.lightColor ?? "#e4d5c4"
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
     const enableCameraMovement = false
 
@@ -1310,11 +1524,15 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
         container.appendChild(renderer.domElement)
 
         const room = buildRoom(scene)
-        const projectionScreen = validScreenTextureUrl
-            ? buildProjectionScreen(scene, validScreenTextureUrl)
-            : null
         const ambientLight = buildAmbientLight(scene)
         const projectorBeam = buildProjectorBeam(scene, lightColor)
+        const projectionScreen = validScreenTextureUrl
+            ? buildProjectionScreen(scene, validScreenTextureUrl, {
+                onTextureAnalyzed: (analysis) => {
+                    applyAdaptiveLightingTargets(projectorBeam, analysis, lightColor)
+                }
+            })
+            : null
         const box = buildBox(scene)
         const debugAxes = enableAxesDebug ? buildDebugAxes(scene) : null
         const debugVisuals = buildCameraDebugVisuals(scene)
@@ -1443,6 +1661,7 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
 
         const animate = () => {
             updateCameraDebugVisuals(camera, debugVisuals)
+            updateAdaptiveProjectorLighting(projectorBeam)
             renderer.render(scene, camera)
             animationFrameId = window.requestAnimationFrame(animate)
         }
