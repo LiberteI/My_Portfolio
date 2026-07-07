@@ -89,11 +89,6 @@ export const updateAdaptiveProjectorLighting = (projectorRig) => {
         projectorRig.emissionLight.intensity = lighting.emissionLight.intensity * current.bounceIntensityScale
     }
 
-    if (projectorRig.projectorBackRectAreaLight) {
-        projectorRig.projectorBackRectAreaLight.color.copy(current.bounceColor)
-        projectorRig.projectorBackRectAreaLight.intensity = lighting.projectorBackRectAreaLight.intensity * current.bounceIntensityScale
-    }
-
     if (projectorRig.wallGlowMaterial) {
         projectorRig.wallGlowMaterial.color.copy(current.beamColor)
         projectorRig.wallGlowMaterial.opacity = lighting.wallGlowPlane.opacity * current.bounceIntensityScale
