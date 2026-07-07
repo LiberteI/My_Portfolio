@@ -7,6 +7,8 @@ import museumWallTextureUrl from "../../assets/Museum/wall-texture.jpg"
 import museumFloorTextureUrl from "../../assets/Museum/floor-texture.jpg"
 import projectorModelUrl from "../../assets/Projector/generic_white_digital_projector.glb"
 
+const DEFAULT_PROJECTOR_LIGHT_COLOR = "#e4d5c4"
+
 const getProjectionFrameConfig = () => {
     return {
         xStart: -16,
@@ -941,8 +943,6 @@ const createPointLightDebugger = (scene, light, debugConfig) => {
     return { marker, markerMaterial, range, rangeGeometry, rangeMaterial }
 }
 
-
-
 const buildAmbientLight = (scene) => {
     const lighting = lightParam()
     const ambientConfig = lighting.ambientLight
@@ -955,7 +955,7 @@ const buildAmbientLight = (scene) => {
     return ambientLight
 }
 
-const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
+const buildProjectBeamOrigin = (scene, lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR) => {
     const lighting = lightParam()
     const projectorSpotLightToWallConfig = lighting.projectorSpotLightToWall
     const projectorSpotLightToFloorConfig = lighting.projectorSpotLightToFloor
@@ -1032,7 +1032,7 @@ const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
     }
 }
 
-const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
+const buildProjectorBeam = (scene, lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR) => {
     const lighting = lightParam()
     const projectorBackRectAreaLightConfig = lighting.projectorBackRectAreaLight
     const emissionLightConfig = lighting.emissionLight
@@ -1490,12 +1490,12 @@ const updateCameraDebugVisuals = (camera, debugVisuals) => {
     debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
-const ProjectScene = ({ className = "", featuredProject = null, screenTextureUrl, onScreenClick }) => {
+const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
     const canvasRef = useRef(null)
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
     const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
-    const lightColor = featuredProject?.lightColor ?? "#e4d5c4"
+    const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
     const enableCameraMovement = false
 
