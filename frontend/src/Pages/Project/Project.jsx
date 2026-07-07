@@ -265,7 +265,7 @@ const Project = () => {
 
                             <div className="h-px w-full bg-gradient-to-r from-stone-300/40 via-stone-300/10 to-transparent" />
 
-                            <div className="grid gap-2 md:grid-cols-2">
+                            <div className="hidden gap-2 min-[770px]:grid md:grid-cols-2">
                                 <ProjectMetadata label="Role" value={featuredMeta.role} />
                                 <ProjectMetadata label="Duration" value={featuredMeta.duration} />
                                 <ProjectMetadata label="Stack" value={featuredMeta.stack} />

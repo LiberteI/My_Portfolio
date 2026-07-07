@@ -37,6 +37,28 @@ const getCameraConfig = () => {
     }
 }
 
+const getResponsiveResizeConfig = () => {
+    return {
+        widthResponse: {
+            threshold: 1280,
+            ramp: 480,
+            maxFov: 78,
+            backwardOffset: 6
+        },
+        ultraNarrow: {
+            threshold: 570,
+            ramp: 180,
+            positionRightOffset: 1.2,
+            lookAtRightOffset: 1.8
+        },
+        compactPitch: {
+            threshold: 770,
+            ramp: 220,
+            lookAtYOffset: 2.5
+        }
+    }
+}
+
 const clamp01 = (value) => {
     return THREE.MathUtils.clamp(value, 0, 1)
 }
@@ -1327,29 +1349,40 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
 
             const aspect = clientWidth / clientHeight
             const cameraConfig = getCameraConfig()
-            const responsiveWidthThreshold = 1280
-            const narrowViewportFactor = clamp01((responsiveWidthThreshold - clientWidth) / 480)
-            const ultraNarrowWidthThreshold = 570
-            const ultraNarrowViewportFactor = clamp01((ultraNarrowWidthThreshold - clientWidth) / 180)
-            const responsiveFov = THREE.MathUtils.lerp(cameraConfig.fov, 78, narrowViewportFactor)
+            const resizeConfig = getResponsiveResizeConfig()
+            const widthResponseFactor = clamp01(
+                (resizeConfig.widthResponse.threshold - clientWidth) / resizeConfig.widthResponse.ramp
+            )
+            const ultraNarrowViewportFactor = clamp01(
+                (resizeConfig.ultraNarrow.threshold - clientWidth) / resizeConfig.ultraNarrow.ramp
+            )
+            const compactPitchFactor = clamp01(
+                (resizeConfig.compactPitch.threshold - clientWidth) / resizeConfig.compactPitch.ramp
+            )
+            const responsiveFov = THREE.MathUtils.lerp(
+                cameraConfig.fov,
+                resizeConfig.widthResponse.maxFov,
+                widthResponseFactor
+            )
             const backwardDirection = new THREE.Vector3()
                 .subVectors(cameraConfig.position, cameraConfig.lookAt)
                 .normalize()
             const responsivePosition = cameraConfig.position.clone().addScaledVector(
                 backwardDirection,
-                6 * narrowViewportFactor
+                resizeConfig.widthResponse.backwardOffset * widthResponseFactor
             )
             const cameraRight = new THREE.Vector3()
                 .crossVectors(new THREE.Vector3(0, 1, 0), backwardDirection)
                 .normalize()
             const shiftedPosition = responsivePosition.clone().addScaledVector(
                 cameraRight,
-                1.2 * ultraNarrowViewportFactor
+                resizeConfig.ultraNarrow.positionRightOffset * ultraNarrowViewportFactor
             )
             const shiftedLookAt = cameraConfig.lookAt.clone().addScaledVector(
                 cameraRight,
-                1.8 * ultraNarrowViewportFactor
+                resizeConfig.ultraNarrow.lookAtRightOffset * ultraNarrowViewportFactor
             )
+            shiftedLookAt.y += resizeConfig.compactPitch.lookAtYOffset * compactPitchFactor
 
             camera.fov = responsiveFov
             camera.position.copy(shiftedPosition)
