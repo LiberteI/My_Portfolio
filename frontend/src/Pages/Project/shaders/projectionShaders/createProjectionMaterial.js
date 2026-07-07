@@ -9,7 +9,9 @@ const createProjectionMaterial = ({
     blackPoint = 0.12,
     whitePoint = 0.88,
     edgeSoftness = 0.08,
-    opacityMultiplier = 0.82
+    opacityMultiplier = 0.82,
+    shadowBoost = 1.8,
+    highlightBoost = 1
 }) => {
     return new THREE.ShaderMaterial({
         uniforms: {
@@ -19,7 +21,9 @@ const createProjectionMaterial = ({
             blackPoint: { value: blackPoint },
             whitePoint: { value: whitePoint },
             edgeSoftness: { value: edgeSoftness },
-            opacityMultiplier: { value: opacityMultiplier }
+            opacityMultiplier: { value: opacityMultiplier },
+            shadowBoost: { value: shadowBoost },
+            highlightBoost: { value: highlightBoost }
         },
         vertexShader: projectionVertexShader,
         fragmentShader: projectionFragmentShader,
