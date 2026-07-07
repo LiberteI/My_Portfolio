@@ -2,13 +2,16 @@ import * as THREE from "three"
 
 export const getAdaptiveProjectionLightingConfig = () => {
     return {
-        brightPixelThreshold: 0.25,
-        projectorIntensityMultiplier: 1.15,
-        bounceIntensityMultiplier: 0.55,
-        colorSaturation: 0.72,
-        transitionSpeed: 0.08,
+        brightPixelThreshold: 0.001,
+        projectorIntensityMultiplier: 5,
+        bounceIntensityMultiplier: 1,
+        adaptiveProjectorSpotLightBaseIntensity: 4,
+        adaptiveProjectorOriginPointLightBaseIntensity: 15,
+        adaptiveEmissionLightBaseIntensity: 1,
+        colorSaturation: 0.9,
+        transitionSpeed: 0.2,
         minimumIntensity: 0.2,
-        maximumIntensity: 1.35,
+        maximumIntensity: 1.3,
         bounceWarmBlend: "#f4ddc0"
     }
 }

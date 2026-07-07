@@ -4,13 +4,16 @@ export const createPointerInteractionController = ({
     container,
     renderer,
     camera,
-    projectionScreen,
-    onScreenClick
+    getProjectionScreen,
+    getOnScreenClick
 }) => {
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
 
     const handleCanvasClick = (event) => {
+        const projectionScreen = getProjectionScreen()
+        const onScreenClick = getOnScreenClick()
+
         if (!projectionScreen || !onScreenClick) {
             return
         }

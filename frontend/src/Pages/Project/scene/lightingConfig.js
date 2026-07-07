@@ -5,7 +5,7 @@ export const lightParam = () => {
             role: "Base fill light for the whole room so unlit surfaces do not fall completely into black.",
             enabled: true,
             color: "#ffffff",
-            intensity: 0.25
+            intensity: 0.35
         },
         projectorSpotLightToWall: {
             name: "projectorSpotLightToWall",
@@ -13,7 +13,7 @@ export const lightParam = () => {
             enabled: true,
             debugEnabled: false,
             colorSource: "lightColor",
-            intensity: 15,
+            baseIntensity: 0.1,
             distance: 25,
             angle: 0.55,
             penumbra: 0.35,
@@ -25,7 +25,7 @@ export const lightParam = () => {
             enabled: false,
             debugEnabled: false,
             colorSource: "lightColor",
-            intensity: 15,
+            baseIntensity: 0.1,
             distance: 20,
             angle: 0.6,
             penumbra: 0.35,
@@ -39,7 +39,7 @@ export const lightParam = () => {
             enabled: true,
             debugEnabled: false,
             colorSource: "lightColor",
-            intensity: 10,
+            baseIntensity: 0.08,
             distance: 20,
             decay: 2
         },
@@ -62,7 +62,7 @@ export const lightParam = () => {
             enabled: true,
             debugEnabled: false,
             colorSource: "lightColor",
-            intensity: 1,
+            baseIntensity: 0.03,
             distance: 24,
             decay: 0.1,
             positionZOffset: 0.9
@@ -74,7 +74,7 @@ export const lightParam = () => {
             colorSource: "lightColor",
             widthScale: 2.2,
             heightScale: 2.2,
-            opacity: 0.05,
+            opacity: 0,
             gradientStops: [
                 { offset: 0, alpha: 0.9 },
                 { offset: 0.35, alpha: 0.38 },

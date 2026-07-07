@@ -21,7 +21,7 @@ const buildProjectBeamOrigin = (scene, lightColor = DEFAULT_PROJECTOR_LIGHT_COLO
     const projectorSpotLightToWall = projectorSpotLightToWallConfig.enabled
         ? new THREE.SpotLight(
             lightColor,
-            projectorSpotLightToWallConfig.intensity,
+            projectorSpotLightToWallConfig.baseIntensity,
             projectorSpotLightToWallConfig.distance,
             projectorSpotLightToWallConfig.angle,
             projectorSpotLightToWallConfig.penumbra,
@@ -36,7 +36,7 @@ const buildProjectBeamOrigin = (scene, lightColor = DEFAULT_PROJECTOR_LIGHT_COLO
     const projectorSpotLightToFloor = projectorSpotLightToFloorConfig.enabled
         ? new THREE.SpotLight(
             lightColor,
-            projectorSpotLightToFloorConfig.intensity,
+            projectorSpotLightToFloorConfig.baseIntensity,
             projectorSpotLightToFloorConfig.distance,
             projectorSpotLightToFloorConfig.angle,
             projectorSpotLightToFloorConfig.penumbra,
@@ -51,7 +51,7 @@ const buildProjectBeamOrigin = (scene, lightColor = DEFAULT_PROJECTOR_LIGHT_COLO
     const projectorOriginPointLight = projectorOriginPointLightConfig.enabled
         ? new THREE.PointLight(
             lightColor,
-            projectorOriginPointLightConfig.intensity,
+            projectorOriginPointLightConfig.baseIntensity,
             projectorOriginPointLightConfig.distance,
             projectorOriginPointLightConfig.decay
         )
@@ -152,7 +152,7 @@ export const buildProjectorRig = (scene, lightColor = DEFAULT_PROJECTOR_LIGHT_CO
     const emissionLight = emissionLightConfig.enabled
         ? new THREE.PointLight(
             lightColor,
-            emissionLightConfig.intensity,
+            emissionLightConfig.baseIntensity,
             emissionLightConfig.distance,
             emissionLightConfig.decay
         )
