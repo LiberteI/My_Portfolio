@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import createBeamMaterial from "./shaders/createBeamMaterial"
+import createBeamMaterial from "./shaders/beamShaders/createBeamMaterial"
 import museumWallTextureUrl from "../../assets/Museum/wall-texture.jpg"
 import museumFloorTextureUrl from "../../assets/Museum/floor-texture.jpg"
 import projectorModelUrl from "../../assets/Projector/generic_white_digital_projector.glb"
