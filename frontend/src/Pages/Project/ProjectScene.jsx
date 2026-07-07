@@ -45,6 +45,18 @@ const getResponsiveResizeConfig = () => {
             maxFov: 78,
             backwardOffset: 6
         },
+        mediumYaw: {
+            maxWidth: 1280,
+            minWidth: 770,
+            lookAtRightOffset: -1.4,
+            positionRightOffset: 1.4
+        },
+        compactYaw: {
+            threshold: 770,
+            ramp: 220,
+            lookAtRightOffset: 6,
+            positionRightOffset: 6
+        },
         ultraNarrow: {
             threshold: 570,
             ramp: 180,
@@ -1353,6 +1365,13 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
             const widthResponseFactor = clamp01(
                 (resizeConfig.widthResponse.threshold - clientWidth) / resizeConfig.widthResponse.ramp
             )
+            const mediumYawFactor = clamp01(
+                (resizeConfig.mediumYaw.maxWidth - clientWidth)
+                / (resizeConfig.mediumYaw.maxWidth - resizeConfig.mediumYaw.minWidth)
+            )
+            const compactYawFactor = clamp01(
+                (resizeConfig.compactYaw.threshold - clientWidth) / resizeConfig.compactYaw.ramp
+            )
             const ultraNarrowViewportFactor = clamp01(
                 (resizeConfig.ultraNarrow.threshold - clientWidth) / resizeConfig.ultraNarrow.ramp
             )
@@ -1376,9 +1395,21 @@ const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScree
                 .normalize()
             const shiftedPosition = responsivePosition.clone().addScaledVector(
                 cameraRight,
+                resizeConfig.mediumYaw.positionRightOffset * mediumYawFactor
+            ).addScaledVector(
+                cameraRight,
+                resizeConfig.compactYaw.positionRightOffset * compactYawFactor
+            ).addScaledVector(
+                cameraRight,
                 resizeConfig.ultraNarrow.positionRightOffset * ultraNarrowViewportFactor
             )
             const shiftedLookAt = cameraConfig.lookAt.clone().addScaledVector(
+                cameraRight,
+                resizeConfig.mediumYaw.lookAtRightOffset * mediumYawFactor
+            ).addScaledVector(
+                cameraRight,
+                resizeConfig.compactYaw.lookAtRightOffset * compactYawFactor
+            ).addScaledVector(
                 cameraRight,
                 resizeConfig.ultraNarrow.lookAtRightOffset * ultraNarrowViewportFactor
             )

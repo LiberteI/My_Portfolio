@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import shapeMorphingGif from "../../assets/ProjectThumbnail/ShapeMorphing.gif"
 import astronomyGif from "../../assets/ProjectThumbnail/astronomy.gif"
 import oceanGif from "../../assets/ProjectThumbnail/ocean.gif"
@@ -135,7 +136,12 @@ const projects = [
     }
 ]
 
-const navItems = ["Projects", "Experience", "Music", "About"]
+const navItems = [
+    { label: "Projects", type: "route", to: "/projects" },
+    { label: "Experience", type: "route", to: "/experience" },
+    { label: "Music", type: "route", to: "/music" },
+    { label: "About", type: "scroll", target: "about" }
+]
 
 const getProjectMeta = (project) => {
     const primarySkill = project.skills
@@ -203,10 +209,22 @@ const Project = () => {
     const [activeProjectIndex, setActiveProjectIndex] = useState(0)
     const featuredProject = projects[activeProjectIndex] ?? projects[0]
     const featuredMeta = useMemo(() => getProjectMeta(featuredProject), [featuredProject])
+    const navigate = useNavigate()
 
     const handleSelectProject = (nextIndex) => {
         const boundedIndex = (nextIndex + projects.length) % projects.length
         setActiveProjectIndex(boundedIndex)
+    }
+
+    const handleNavItemClick = (event, item) => {
+        event.preventDefault()
+
+        if (item.type === "scroll") {
+            navigate("/", { state: { scrollTo: item.target } })
+            return
+        }
+
+        navigate(item.to)
     }
 
     return (
@@ -222,28 +240,38 @@ const Project = () => {
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
 
             <nav className="absolute inset-x-0 top-0 z-20 flex items-center justify-between px-6 py-8 md:px-12 lg:px-16">
-                <button
-                    type="button"
-                    className="pointer-events-auto text-sm uppercase tracking-[0.34em] text-stone-200 transition hover:text-white"
+                <a
+                    href="/"
+                    onClick={(event) => {
+                        event.preventDefault()
+                        navigate("/")
+                    }}
+                    className="pointer-events-auto inline-flex items-center rounded-full px-3 py-2 text-sm uppercase tracking-[0.34em] text-stone-200 transition hover:text-white"
+                    aria-label="Go to home"
                 >
                     Home
-                </button>
+                </a>
                 <div className="pointer-events-auto flex items-center gap-4 text-[11px] uppercase tracking-[0.28em] text-stone-400 md:gap-6">
                     {navItems.map((item) => (
-                        <button
-                            key={item}
-                            type="button"
-                            className={item === "Projects" ? "text-stone-100" : "transition hover:text-stone-200"}
+                        <a
+                            key={item.label}
+                            href={item.type === "scroll" ? `/#${item.target}` : item.to}
+                            onClick={(event) => handleNavItemClick(event, item)}
+                            className={[
+                                "pointer-events-auto inline-flex items-center rounded-full px-3 py-2",
+                                item.label === "Projects" ? "text-stone-100" : "transition hover:text-stone-200"
+                            ].join(" ")}
+                            aria-label={`Go to ${item.label.toLowerCase()}`}
                         >
-                            {item}
-                        </button>
+                            {item.label}
+                        </a>
                     ))}
                 </div>
             </nav>
 
-            <div className="absolute inset-x-0 top-20 z-20 h-[70vh] px-6 md:top-10 md:px-12 lg:px-16">
-                <div className="flex h-full w-full max-w-[30rem] items-start">
-                    <div className="pointer-events-auto max-h-full overflow-y-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
+            <div className="pointer-events-none absolute inset-x-0 top-20 z-20 h-[70vh] px-6 md:top-10 md:px-12 lg:px-16">
+                <div className="flex h-full w-full max-w-[35rem] items-start">
+                    <div className="max-h-full overflow-y-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
                         <div className="space-y-4">
                             <div className="space-y-1">
                                 <p className="text-[11px] uppercase tracking-[0.36em] text-stone-400">
@@ -276,7 +304,7 @@ const Project = () => {
                                 href={featuredProject.githubLink}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-3 rounded-full border border-stone-200/40 bg-stone-100/10 px-5 py-3 text-sm uppercase tracking-[0.24em] text-stone-100 transition hover:border-stone-100 hover:bg-stone-100 hover:text-black"
+                                className="pointer-events-auto inline-flex items-center gap-3 rounded-full border border-stone-200/40 bg-stone-100/10 px-5 py-3 text-sm uppercase tracking-[0.24em] text-stone-100 transition hover:border-stone-100 hover:bg-stone-100 hover:text-black"
                             >
                                 View Project
                                 <span aria-hidden="true" className="transition-transform duration-300 group-hover:translate-x-1">
