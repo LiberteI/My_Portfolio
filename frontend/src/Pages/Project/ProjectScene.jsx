@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import createBeamMaterial from "./shaders/beamShaders/createBeamMaterial"
+import createProjectionMaterial from "./shaders/projectionShaders/createProjectionMaterial"
 import museumWallTextureUrl from "../../assets/Museum/wall-texture.jpg"
 import museumFloorTextureUrl from "../../assets/Museum/floor-texture.jpg"
 import projectorModelUrl from "../../assets/Projector/generic_white_digital_projector.glb"
@@ -68,6 +69,17 @@ const getResponsiveResizeConfig = () => {
             ramp: 220,
             lookAtYOffset: 2.5
         }
+    }
+}
+
+const getProjectionRenderConfig = () => {
+    return {
+        projectionStrength: 1.35,
+        exposure: 1.1,
+        blackPoint: 0.12,
+        whitePoint: 0.88,
+        edgeSoftness: 0.08,
+        opacityMultiplier: 0.82
     }
 }
 
@@ -447,12 +459,13 @@ const buildProjectionScreen = (scene, screenTextureUrl) => {
     const screenCenterY = (projectionFrame.yStart + projectionFrame.yEnd) / 2
     const textureLoader = new THREE.TextureLoader()
     const screenTexture = textureLoader.load(screenTextureUrl)
+    const projectionRenderConfig = getProjectionRenderConfig()
 
     screenTexture.colorSpace = THREE.SRGBColorSpace
 
-    const screenMaterial = new THREE.MeshBasicMaterial({
-        map: screenTexture,
-        toneMapped: false
+    const screenMaterial = createProjectionMaterial({
+        projectionTexture: screenTexture,
+        ...projectionRenderConfig
     })
     const screen = new THREE.Mesh(
         new THREE.PlaneGeometry(screenWidth, screenHeight),
@@ -1276,12 +1289,12 @@ const updateCameraDebugVisuals = (camera, debugVisuals) => {
     debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
-const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScreenClick, lightColor = "#e4d5c4" }) => {
+const ProjectScene = ({ className = "", featuredProject = null, screenTextureUrl, onScreenClick }) => {
     const canvasRef = useRef(null)
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
     const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
-    void projects
+    const lightColor = featuredProject?.lightColor ?? "#e4d5c4"
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
     const enableCameraMovement = false
 
