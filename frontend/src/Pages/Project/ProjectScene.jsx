@@ -85,6 +85,191 @@ const getProjectionRenderConfig = () => {
     }
 }
 
+const getAdaptiveProjectionLightingConfig = () => {
+    return {
+        brightPixelThreshold: 0.25,
+        projectorIntensityMultiplier: 1.15,
+        bounceIntensityMultiplier: 0.55,
+        colorSaturation: 0.72,
+        transitionSpeed: 0.08,
+        minimumIntensity: 0.2,
+        maximumIntensity: 1.35,
+        bounceWarmBlend: "#f4ddc0"
+    }
+}
+
+const analyzeProjectionTexture = (texture, config) => {
+    const sourceImage = texture?.image
+
+    if (!sourceImage) {
+        return null
+    }
+
+    const sourceWidth = sourceImage.naturalWidth || sourceImage.videoWidth || sourceImage.width
+    const sourceHeight = sourceImage.naturalHeight || sourceImage.videoHeight || sourceImage.height
+
+    if (!sourceWidth || !sourceHeight) {
+        return null
+    }
+
+    const targetMaxSize = 256
+    const scale = Math.min(1, targetMaxSize / Math.max(sourceWidth, sourceHeight))
+    const width = Math.max(2, Math.round(sourceWidth * scale))
+    const height = Math.max(2, Math.round(sourceHeight * scale))
+    const canvas = document.createElement("canvas")
+    canvas.width = width
+    canvas.height = height
+    const context = canvas.getContext("2d")
+    context.drawImage(sourceImage, 0, 0, width, height)
+
+    const { data } = context.getImageData(0, 0, width, height)
+    let colorWeightTotal = 0
+    let brightPixelCount = 0
+    let weightedRed = 0
+    let weightedGreen = 0
+    let weightedBlue = 0
+    let brightnessTotal = 0
+
+    for (let index = 0; index < data.length; index += 4) {
+        const red = data[index] / 255
+        const green = data[index + 1] / 255
+        const blue = data[index + 2] / 255
+        const luminance = 0.299 * red + 0.587 * green + 0.114 * blue
+
+        if (luminance < config.brightPixelThreshold) {
+            continue
+        }
+
+        brightPixelCount += 1
+        colorWeightTotal += luminance
+        brightnessTotal += luminance
+        weightedRed += red * luminance
+        weightedGreen += green * luminance
+        weightedBlue += blue * luminance
+    }
+
+    if (colorWeightTotal <= 0 || brightPixelCount <= 0) {
+        return {
+            averageColor: new THREE.Color("#ffffff"),
+            brightness: config.minimumIntensity
+        }
+    }
+
+    const averageColor = new THREE.Color(
+        weightedRed / colorWeightTotal,
+        weightedGreen / colorWeightTotal,
+        weightedBlue / colorWeightTotal
+    )
+    const averageBrightness = brightnessTotal / brightPixelCount
+
+    return {
+        averageColor,
+        brightness: THREE.MathUtils.clamp(
+            averageBrightness,
+            config.minimumIntensity,
+            config.maximumIntensity
+        )
+    }
+}
+
+const buildAdaptiveLightingState = (analysis, featuredProjectLightColor) => {
+    const config = getAdaptiveProjectionLightingConfig()
+    const baseColor = new THREE.Color(featuredProjectLightColor)
+    const beamColor = baseColor.clone().lerp(analysis.averageColor, config.colorSaturation)
+    const bounceColor = new THREE.Color(config.bounceWarmBlend).lerp(beamColor, 0.45)
+
+    return {
+        beamColor,
+        beamIntensityScale: THREE.MathUtils.clamp(
+            analysis.brightness * config.projectorIntensityMultiplier,
+            config.minimumIntensity,
+            config.maximumIntensity
+        ),
+        bounceColor,
+        bounceIntensityScale: THREE.MathUtils.clamp(
+            analysis.brightness * config.bounceIntensityMultiplier,
+            config.minimumIntensity,
+            config.maximumIntensity
+        )
+    }
+}
+
+const initializeAdaptiveProjectorLighting = (projectorBeam, featuredProjectLightColor) => {
+    const baseColor = new THREE.Color(featuredProjectLightColor)
+    projectorBeam.adaptiveLightingState = {
+        current: {
+            beamColor: baseColor.clone(),
+            beamIntensityScale: 1,
+            bounceColor: baseColor.clone(),
+            bounceIntensityScale: 1
+        },
+        target: {
+            beamColor: baseColor.clone(),
+            beamIntensityScale: 1,
+            bounceColor: baseColor.clone(),
+            bounceIntensityScale: 1
+        }
+    }
+}
+
+const applyAdaptiveLightingTargets = (projectorBeam, analysis, featuredProjectLightColor) => {
+    if (!projectorBeam?.adaptiveLightingState || !analysis) {
+        return
+    }
+
+    projectorBeam.adaptiveLightingState.target = buildAdaptiveLightingState(analysis, featuredProjectLightColor)
+}
+
+const updateAdaptiveProjectorLighting = (projectorBeam) => {
+    if (!projectorBeam?.adaptiveLightingState) {
+        return
+    }
+
+    const config = getAdaptiveProjectionLightingConfig()
+    const lighting = lightParam()
+    const { current, target } = projectorBeam.adaptiveLightingState
+
+    current.beamColor.lerp(target.beamColor, config.transitionSpeed)
+    current.bounceColor.lerp(target.bounceColor, config.transitionSpeed)
+    current.beamIntensityScale = THREE.MathUtils.lerp(current.beamIntensityScale, target.beamIntensityScale, config.transitionSpeed)
+    current.bounceIntensityScale = THREE.MathUtils.lerp(current.bounceIntensityScale, target.bounceIntensityScale, config.transitionSpeed)
+
+    if (projectorBeam.projectorSpotLightToWall) {
+        projectorBeam.projectorSpotLightToWall.color.copy(current.beamColor)
+        projectorBeam.projectorSpotLightToWall.intensity = lighting.projectorSpotLightToWall.intensity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.projectorOriginPointLight) {
+        projectorBeam.projectorOriginPointLight.color.copy(current.beamColor)
+        projectorBeam.projectorOriginPointLight.intensity = lighting.projectorOriginPointLight.intensity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.beamPyramidMaterial) {
+        projectorBeam.beamPyramidMaterial.color.copy(current.beamColor)
+        projectorBeam.beamPyramidMaterial.opacity = lighting.beamPyramid.opacity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.beamPyramidFillMaterial?.uniforms) {
+        projectorBeam.beamPyramidFillMaterial.uniforms.beamColor.value.copy(current.beamColor)
+        projectorBeam.beamPyramidFillMaterial.uniforms.beamOpacity.value = lighting.beamPyramidFill.opacity * current.beamIntensityScale
+    }
+
+    if (projectorBeam.emissionLight) {
+        projectorBeam.emissionLight.color.copy(current.bounceColor)
+        projectorBeam.emissionLight.intensity = lighting.emissionLight.intensity * current.bounceIntensityScale
+    }
+
+    if (projectorBeam.projectorBackRectAreaLight) {
+        projectorBeam.projectorBackRectAreaLight.color.copy(current.bounceColor)
+        projectorBeam.projectorBackRectAreaLight.intensity = lighting.projectorBackRectAreaLight.intensity * current.bounceIntensityScale
+    }
+
+    if (projectorBeam.wallGlowMaterial) {
+        projectorBeam.wallGlowMaterial.color.copy(current.beamColor)
+        projectorBeam.wallGlowMaterial.opacity = lighting.wallGlowPlane.opacity * current.bounceIntensityScale
+    }
+}
+
 const lightParam = () => {
     return {
         ambientLight: {
@@ -580,7 +765,7 @@ const buildRoom = (scene) => {
     }
 }
 
-const buildProjectionScreen = (scene, screenTextureUrl) => {
+const buildProjectionScreen = (scene, screenTextureUrl, options = {}) => {
     const roomZStart = -7
     const projectionFrame = getProjectionFrameConfig()
     const screenWidth = projectionFrame.xEnd - projectionFrame.xStart
@@ -590,6 +775,14 @@ const buildProjectionScreen = (scene, screenTextureUrl) => {
     const textureLoader = new THREE.TextureLoader()
     const screenTexture = textureLoader.load(screenTextureUrl)
     const projectionRenderConfig = getProjectionRenderConfig()
+
+    screenTexture.onUpdate = () => {
+        const analysis = analyzeProjectionTexture(screenTexture, getAdaptiveProjectionLightingConfig())
+
+        if (analysis && options.onTextureAnalyzed) {
+            options.onTextureAnalyzed(analysis)
+        }
+    }
 
     screenTexture.colorSpace = THREE.SRGBColorSpace
 
@@ -1060,7 +1253,7 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         scene.add(beamPyramidFill)
     }
 
-    return {
+    const projectorBeam = {
         projectorSpotLightToWall,
         projectorOriginPointLight,
         projectorSpotLightToWallDebug,
@@ -1082,6 +1275,10 @@ const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
         beamPyramidFillGeometry,
         beamPyramidFillMaterial
     }
+
+    initializeAdaptiveProjectorLighting(projectorBeam, lightColor)
+
+    return projectorBeam
 }
 
 const buildBox = (scene) => {
@@ -1327,11 +1524,15 @@ const ProjectScene = ({ className = "", featuredProject = null, screenTextureUrl
         container.appendChild(renderer.domElement)
 
         const room = buildRoom(scene)
-        const projectionScreen = validScreenTextureUrl
-            ? buildProjectionScreen(scene, validScreenTextureUrl)
-            : null
         const ambientLight = buildAmbientLight(scene)
         const projectorBeam = buildProjectorBeam(scene, lightColor)
+        const projectionScreen = validScreenTextureUrl
+            ? buildProjectionScreen(scene, validScreenTextureUrl, {
+                onTextureAnalyzed: (analysis) => {
+                    applyAdaptiveLightingTargets(projectorBeam, analysis, lightColor)
+                }
+            })
+            : null
         const box = buildBox(scene)
         const debugAxes = enableAxesDebug ? buildDebugAxes(scene) : null
         const debugVisuals = buildCameraDebugVisuals(scene)
@@ -1460,6 +1661,7 @@ const ProjectScene = ({ className = "", featuredProject = null, screenTextureUrl
 
         const animate = () => {
             updateCameraDebugVisuals(camera, debugVisuals)
+            updateAdaptiveProjectorLighting(projectorBeam)
             renderer.render(scene, camera)
             animationFrameId = window.requestAnimationFrame(animate)
         }
