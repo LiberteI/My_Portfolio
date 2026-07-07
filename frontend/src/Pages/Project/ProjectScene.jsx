@@ -26,13 +26,255 @@ const getDisplayPositions = () => {
     }
 }
 
+const getCameraConfig = () => {
+    return {
+        fov: 60,
+        aspect: 1,
+        near: 0.1,
+        far: 500,
+        position: new THREE.Vector3(-16.24, -4.8, 14.27),
+        lookAt: new THREE.Vector3(-14.81, -4.9, 9.48)
+    }
+}
+
+const getResponsiveResizeConfig = () => {
+    return {
+        widthResponse: {
+            threshold: 1280,
+            ramp: 480,
+            maxFov: 78,
+            backwardOffset: 6
+        },
+        mediumYaw: {
+            maxWidth: 1280,
+            minWidth: 770,
+            lookAtRightOffset: -1.4,
+            positionRightOffset: 1.4
+        },
+        compactYaw: {
+            threshold: 770,
+            ramp: 220,
+            lookAtRightOffset: 6,
+            positionRightOffset: 6
+        },
+        ultraNarrow: {
+            threshold: 570,
+            ramp: 180,
+            positionRightOffset: 1.2,
+            lookAtRightOffset: 1.8
+        },
+        compactPitch: {
+            threshold: 770,
+            ramp: 220,
+            lookAtYOffset: 2.5
+        }
+    }
+}
+
+const clamp01 = (value) => {
+    return THREE.MathUtils.clamp(value, 0, 1)
+}
+
+const cloneUvAttribute = (geometry) => {
+    const uvAttribute = geometry.getAttribute("uv")
+
+    if (!uvAttribute) {
+        return
+    }
+
+    const uvClone = uvAttribute.array.slice()
+    geometry.setAttribute("uv1", new THREE.BufferAttribute(uvClone, 2))
+    geometry.setAttribute("uv2", new THREE.BufferAttribute(uvClone.slice(), 2))
+}
+
+const configureRepeatingTexture = (texture, repeatX, repeatY, colorSpace = null) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(repeatX, repeatY)
+
+    if (colorSpace) {
+        texture.colorSpace = colorSpace
+    }
+}
+
+const inheritTextureTransform = (texture, sourceTexture) => {
+    texture.wrapS = sourceTexture.wrapS
+    texture.wrapT = sourceTexture.wrapT
+    texture.repeat.copy(sourceTexture.repeat)
+    texture.offset.copy(sourceTexture.offset)
+    texture.center.copy(sourceTexture.center)
+    texture.rotation = sourceTexture.rotation
+}
+
+const createCanvasTexture = (canvas, sourceTexture) => {
+    const texture = new THREE.CanvasTexture(canvas)
+    inheritTextureTransform(texture, sourceTexture)
+    return texture
+}
+
+const createMaterialResponseMaps = (
+    sourceTexture,
+    {
+        normalStrength = 1,
+        roughnessMin = 0.45,
+        roughnessMax = 0.95,
+        aoStrength = 0.45
+    } = {}
+) => {
+    const sourceImage = sourceTexture.image
+
+    if (!sourceImage) {
+        return null
+    }
+
+    const sourceWidth = sourceImage.naturalWidth || sourceImage.videoWidth || sourceImage.width
+    const sourceHeight = sourceImage.naturalHeight || sourceImage.videoHeight || sourceImage.height
+
+    if (!sourceWidth || !sourceHeight) {
+        return null
+    }
+
+    const targetMaxSize = 512
+    const scale = Math.min(1, targetMaxSize / Math.max(sourceWidth, sourceHeight))
+    const width = Math.max(2, Math.round(sourceWidth * scale))
+    const height = Math.max(2, Math.round(sourceHeight * scale))
+    const sourceCanvas = document.createElement("canvas")
+    sourceCanvas.width = width
+    sourceCanvas.height = height
+    const sourceContext = sourceCanvas.getContext("2d")
+    sourceContext.drawImage(sourceImage, 0, 0, width, height)
+
+    const { data: sourceData } = sourceContext.getImageData(0, 0, width, height)
+    const luminance = new Float32Array(width * height)
+
+    for (let index = 0; index < luminance.length; index += 1) {
+        const colorIndex = index * 4
+        const red = sourceData[colorIndex] / 255
+        const green = sourceData[colorIndex + 1] / 255
+        const blue = sourceData[colorIndex + 2] / 255
+        luminance[index] = 0.2126 * red + 0.7152 * green + 0.0722 * blue
+    }
+
+    const roughnessCanvas = document.createElement("canvas")
+    roughnessCanvas.width = width
+    roughnessCanvas.height = height
+    const roughnessContext = roughnessCanvas.getContext("2d")
+    const roughnessImage = roughnessContext.createImageData(width, height)
+
+    const aoCanvas = document.createElement("canvas")
+    aoCanvas.width = width
+    aoCanvas.height = height
+    const aoContext = aoCanvas.getContext("2d")
+    const aoImage = aoContext.createImageData(width, height)
+
+    const normalCanvas = document.createElement("canvas")
+    normalCanvas.width = width
+    normalCanvas.height = height
+    const normalContext = normalCanvas.getContext("2d")
+    const normalImage = normalContext.createImageData(width, height)
+
+    const getLuminance = (x, y) => {
+        const clampedX = THREE.MathUtils.clamp(x, 0, width - 1)
+        const clampedY = THREE.MathUtils.clamp(y, 0, height - 1)
+        return luminance[clampedY * width + clampedX]
+    }
+
+    for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+            const current = getLuminance(x, y)
+            const left = getLuminance(x - 1, y)
+            const right = getLuminance(x + 1, y)
+            const up = getLuminance(x, y - 1)
+            const down = getLuminance(x, y + 1)
+            const neighborhoodAverage = (left + right + up + down) * 0.25
+            const localContrast = Math.abs(current - neighborhoodAverage)
+            const roughnessValue = clamp01(
+                roughnessMin
+                + (1 - current) * (roughnessMax - roughnessMin) * 0.65
+                + localContrast * 0.9
+            )
+            const cavity = clamp01(
+                (neighborhoodAverage - current) * aoStrength * 1.6
+                + (1 - current) * aoStrength * 0.3
+            )
+            const aoValue = 1 - cavity
+            const dx = (right - left) * normalStrength
+            const dy = (down - up) * normalStrength
+            const normal = new THREE.Vector3(-dx, -dy, 1).normalize()
+            const pixelIndex = (y * width + x) * 4
+            const roughnessChannel = Math.round(roughnessValue * 255)
+            const aoChannel = Math.round(aoValue * 255)
+
+            roughnessImage.data[pixelIndex] = roughnessChannel
+            roughnessImage.data[pixelIndex + 1] = roughnessChannel
+            roughnessImage.data[pixelIndex + 2] = roughnessChannel
+            roughnessImage.data[pixelIndex + 3] = 255
+
+            aoImage.data[pixelIndex] = aoChannel
+            aoImage.data[pixelIndex + 1] = aoChannel
+            aoImage.data[pixelIndex + 2] = aoChannel
+            aoImage.data[pixelIndex + 3] = 255
+
+            normalImage.data[pixelIndex] = Math.round((normal.x * 0.5 + 0.5) * 255)
+            normalImage.data[pixelIndex + 1] = Math.round((normal.y * 0.5 + 0.5) * 255)
+            normalImage.data[pixelIndex + 2] = Math.round((normal.z * 0.5 + 0.5) * 255)
+            normalImage.data[pixelIndex + 3] = 255
+        }
+    }
+
+    roughnessContext.putImageData(roughnessImage, 0, 0)
+    aoContext.putImageData(aoImage, 0, 0)
+    normalContext.putImageData(normalImage, 0, 0)
+
+    return {
+        roughnessMap: createCanvasTexture(roughnessCanvas, sourceTexture),
+        aoMap: createCanvasTexture(aoCanvas, sourceTexture),
+        normalMap: createCanvasTexture(normalCanvas, sourceTexture)
+    }
+}
+
+const applyMaterialResponse = (
+    material,
+    maps,
+    {
+        roughness,
+        metalness,
+        normalScale = 1,
+        aoMapIntensity = 1,
+        clearcoat,
+        clearcoatRoughness
+    }
+) => {
+    if (!maps) {
+        return
+    }
+
+    material.roughnessMap = maps.roughnessMap
+    material.normalMap = maps.normalMap
+    material.aoMap = maps.aoMap
+    material.roughness = roughness
+    material.metalness = metalness
+    material.aoMapIntensity = aoMapIntensity
+    material.normalScale = new THREE.Vector2(normalScale, normalScale)
+
+    if ("clearcoat" in material && typeof clearcoat === "number") {
+        material.clearcoat = clearcoat
+    }
+
+    if ("clearcoatRoughness" in material && typeof clearcoatRoughness === "number") {
+        material.clearcoatRoughness = clearcoatRoughness
+    }
+
+    material.needsUpdate = true
+}
+
 const buildRoom = (scene) => {
     const roomXStart = -30
     const roomXEnd = 30
     const roomYStart = -7.5
     const roomYEnd = 7.5
     const roomZStart = -7
-    const roomZEnd = 15
+    const roomZEnd = 30
     const projectionFrame = getProjectionFrameConfig()
     const projectionFrameZ = roomZStart + 0.02
 
@@ -43,73 +285,136 @@ const buildRoom = (scene) => {
     const roomYCenter = (roomYStart + roomYEnd) / 2
     const roomZCenter = (roomZStart + roomZEnd) / 2
     const textureLoader = new THREE.TextureLoader()
-    const wallTexture = textureLoader.load(museumWallTextureUrl)
-    const floorTexture = textureLoader.load(museumFloorTextureUrl)
+    const materialResponseTextures = []
+    let wallMaterial
+    let floorMaterial
+    let ceilingMaterial
+    let backWallMaterial
+
+    const wallTexture = textureLoader.load(museumWallTextureUrl, (loadedTexture) => {
+        const wallMaps = createMaterialResponseMaps(loadedTexture, {
+            normalStrength: 2.1,
+            roughnessMin: 0.58,
+            roughnessMax: 0.96,
+            aoStrength: 0.7
+        })
+
+        if (!wallMaps) {
+            return
+        }
+
+        materialResponseTextures.push(wallMaps.roughnessMap, wallMaps.aoMap, wallMaps.normalMap)
+
+        applyMaterialResponse(wallMaterial, wallMaps, {
+            roughness: 0.86,
+            metalness: 0.04,
+            normalScale: 0.95,
+            aoMapIntensity: 0.95
+        })
+        applyMaterialResponse(backWallMaterial, wallMaps, {
+            roughness: 0.84,
+            metalness: 0.04,
+            normalScale: 1,
+            aoMapIntensity: 1
+        })
+        applyMaterialResponse(ceilingMaterial, wallMaps, {
+            roughness: 0.9,
+            metalness: 0.02,
+            normalScale: 0.55,
+            aoMapIntensity: 0.55
+        })
+    })
+    const floorTexture = textureLoader.load(museumFloorTextureUrl, (loadedTexture) => {
+        const floorMaps = createMaterialResponseMaps(loadedTexture, {
+            normalStrength: 1.7,
+            roughnessMin: 0.28,
+            roughnessMax: 0.8,
+            aoStrength: 0.5
+        })
+
+        if (!floorMaps) {
+            return
+        }
+
+        materialResponseTextures.push(floorMaps.roughnessMap, floorMaps.aoMap, floorMaps.normalMap)
+
+        applyMaterialResponse(floorMaterial, floorMaps, {
+            roughness: 1,
+            metalness: 0,
+            normalScale: 0.1,
+            aoMapIntensity: 0.7
+        })
+    })
     const ceilingTexture = textureLoader.load(museumWallTextureUrl)
 
-    wallTexture.wrapS = THREE.RepeatWrapping
-    wallTexture.wrapT = THREE.RepeatWrapping
-    wallTexture.repeat.set(6, 2)
+    configureRepeatingTexture(wallTexture, 6, 2, THREE.SRGBColorSpace)
+    configureRepeatingTexture(floorTexture, 6, 4, THREE.SRGBColorSpace)
+    configureRepeatingTexture(ceilingTexture, 6, 4, THREE.SRGBColorSpace)
 
-    floorTexture.wrapS = THREE.RepeatWrapping
-    floorTexture.wrapT = THREE.RepeatWrapping
-    floorTexture.repeat.set(6, 4)
+    wallMaterial = new THREE.MeshStandardMaterial({
+        map: wallTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.88,
+        metalness: 0
+    })
+    floorMaterial = new THREE.MeshStandardMaterial({
+        map: floorTexture,
+        side: THREE.DoubleSide,
+        roughness: 1,
+        metalness: 0
+    })
+    ceilingMaterial = new THREE.MeshStandardMaterial({
+        map: ceilingTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.92,
+        metalness: 0.01
+    })
+    const backWallTexture = wallTexture.clone()
+    configureRepeatingTexture(backWallTexture, 6, 2, THREE.SRGBColorSpace)
+    backWallMaterial = new THREE.MeshStandardMaterial({
+        map: backWallTexture,
+        side: THREE.DoubleSide,
+        roughness: 0.86,
+        metalness: 0.03
+    })
 
-    ceilingTexture.wrapS = THREE.RepeatWrapping
-    ceilingTexture.wrapT = THREE.RepeatWrapping
-    ceilingTexture.repeat.set(6, 4)
-
-    const wallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture, side: THREE.DoubleSide })
-    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture, side: THREE.DoubleSide })
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilingTexture, side: THREE.DoubleSide })
-    const backWallMaterial = new THREE.MeshStandardMaterial({ map: wallTexture.clone(), side: THREE.DoubleSide })
-    backWallMaterial.map.wrapS = THREE.RepeatWrapping
-    backWallMaterial.map.wrapT = THREE.RepeatWrapping
-    backWallMaterial.map.repeat.set(6, 2)
-
-    const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomDepth),
-        floorMaterial
-    )
+    const floorGeometry = new THREE.PlaneGeometry(roomWidth, roomDepth)
+    cloneUvAttribute(floorGeometry)
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial)
     floor.rotation.x = -Math.PI / 2
     floor.position.set(roomXCenter, roomYStart, roomZCenter)
     scene.add(floor)
 
-    const ceiling = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomDepth),
-        ceilingMaterial
-    )
+    const ceilingGeometry = new THREE.PlaneGeometry(roomWidth, roomDepth)
+    cloneUvAttribute(ceilingGeometry)
+    const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial)
     ceiling.rotation.x = Math.PI / 2
     ceiling.position.set(roomXCenter, roomYEnd, roomZCenter)
     scene.add(ceiling)
 
-    const backWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomHeight),
-        backWallMaterial
-    )
+    const backWallGeometry = new THREE.PlaneGeometry(roomWidth, roomHeight)
+    cloneUvAttribute(backWallGeometry)
+    const backWall = new THREE.Mesh(backWallGeometry, backWallMaterial)
     backWall.position.set(roomXCenter, roomYCenter, roomZStart)
     scene.add(backWall)
 
-    const leftWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomDepth, roomHeight),
-        wallMaterial
-    )
+    const leftWallGeometry = new THREE.PlaneGeometry(roomDepth, roomHeight)
+    cloneUvAttribute(leftWallGeometry)
+    const leftWall = new THREE.Mesh(leftWallGeometry, wallMaterial)
     leftWall.rotation.y = Math.PI / 2
     leftWall.position.set(roomXStart, roomYCenter, roomZCenter)
     scene.add(leftWall)
 
-    const rightWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomDepth, roomHeight),
-        wallMaterial
-    )
+    const rightWallGeometry = new THREE.PlaneGeometry(roomDepth, roomHeight)
+    cloneUvAttribute(rightWallGeometry)
+    const rightWall = new THREE.Mesh(rightWallGeometry, wallMaterial)
     rightWall.rotation.y = -Math.PI / 2
     rightWall.position.set(roomXEnd, roomYCenter, roomZCenter)
     scene.add(rightWall)
 
-    const frontWall = new THREE.Mesh(
-        new THREE.PlaneGeometry(roomWidth, roomHeight),
-        wallMaterial
-    )
+    const frontWallGeometry = new THREE.PlaneGeometry(roomWidth, roomHeight)
+    cloneUvAttribute(frontWallGeometry)
+    const frontWall = new THREE.Mesh(frontWallGeometry, wallMaterial)
     frontWall.rotation.y = Math.PI
     frontWall.position.set(roomXCenter, roomYCenter, roomZEnd)
     scene.add(frontWall)
@@ -127,7 +432,7 @@ const buildRoom = (scene) => {
     return {
         meshes: [floor, ceiling, backWall, leftWall, rightWall, frontWall],
         materials: [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial],
-        textures: [wallTexture, floorTexture, ceilingTexture, backWallMaterial.map],
+        textures: [wallTexture, floorTexture, ceilingTexture, backWallMaterial.map, ...materialResponseTextures],
         lineGeometries: [projectionFrameGeometry],
         lineMaterials: [projectionFrameMaterial]
     }
@@ -160,61 +465,387 @@ const buildProjectionScreen = (scene, screenTextureUrl) => {
     return { mesh: screen, material: screenMaterial, texture: screenTexture }
 }
 
+const getValidScreenTextureUrl = (screenTextureUrl) => {
+    if (typeof screenTextureUrl !== "string") {
+        return null
+    }
+
+    const normalizedTextureUrl = screenTextureUrl.trim()
+
+    return normalizedTextureUrl ? normalizedTextureUrl : null
+}
+
+const getRgbaColor = (hexColor, alpha) => {
+    const color = new THREE.Color(hexColor)
+    const red = Math.round(color.r * 255)
+    const green = Math.round(color.g * 255)
+    const blue = Math.round(color.b * 255)
+
+    return `rgba(${red}, ${green}, ${blue}, ${alpha})`
+}
+
+const createSpotLightDebugger = (scene, light, debugConfig) => {
+    if (!debugConfig?.enabled || !light) {
+        return null
+    }
+
+    const markerMaterial = new THREE.MeshBasicMaterial({
+        color: debugConfig.color,
+        transparent: true,
+        opacity: debugConfig.markerOpacity,
+        depthWrite: false
+    })
+    const marker = new THREE.Mesh(
+        new THREE.SphereGeometry(
+            debugConfig.markerRadius,
+            debugConfig.sphereWidthSegments,
+            debugConfig.sphereHeightSegments
+        ),
+        markerMaterial
+    )
+    marker.position.copy(light.position)
+    scene.add(marker)
+
+    const targetMarkerMaterial = new THREE.MeshBasicMaterial({
+        color: debugConfig.targetColor,
+        transparent: true,
+        opacity: debugConfig.targetMarkerOpacity,
+        depthWrite: false
+    })
+    const targetMarker = new THREE.Mesh(
+        new THREE.SphereGeometry(
+            debugConfig.targetMarkerRadius,
+            debugConfig.sphereWidthSegments,
+            debugConfig.sphereHeightSegments
+        ),
+        targetMarkerMaterial
+    )
+    const targetPosition = new THREE.Vector3()
+    light.target?.getWorldPosition(targetPosition)
+    targetMarker.position.copy(targetPosition)
+    scene.add(targetMarker)
+
+    const rangeDistance = light.distance > 0 ? light.distance : debugConfig.fallbackDistance
+    const coneRadius = Math.tan(light.angle) * rangeDistance
+    const tip = new THREE.Vector3(0, 0, 0)
+    const frontTopLeft = new THREE.Vector3(-coneRadius, coneRadius, -rangeDistance)
+    const frontTopRight = new THREE.Vector3(coneRadius, coneRadius, -rangeDistance)
+    const frontBottomRight = new THREE.Vector3(coneRadius, -coneRadius, -rangeDistance)
+    const frontBottomLeft = new THREE.Vector3(-coneRadius, -coneRadius, -rangeDistance)
+    const rangeGeometry = new THREE.BufferGeometry().setFromPoints([
+        tip, frontTopLeft,
+        tip, frontTopRight,
+        tip, frontBottomRight,
+        tip, frontBottomLeft,
+        frontTopLeft, frontTopRight,
+        frontTopRight, frontBottomRight,
+        frontBottomRight, frontBottomLeft,
+        frontBottomLeft, frontTopLeft
+    ])
+    const rangeMaterial = new THREE.LineBasicMaterial({
+        color: debugConfig.color,
+        transparent: true,
+        opacity: debugConfig.sphereOpacity
+    })
+    const range = new THREE.LineSegments(rangeGeometry, rangeMaterial)
+    range.position.copy(light.position)
+    range.quaternion.copy(light.quaternion)
+    scene.add(range)
+
+    return {
+        marker,
+        markerMaterial,
+        targetMarker,
+        targetMarkerMaterial,
+        range,
+        rangeGeometry,
+        rangeMaterial
+    }
+}
+
+const createPointLightDebugger = (scene, light, debugConfig) => {
+    if (!debugConfig?.enabled || !light) {
+        return null
+    }
+
+    const markerMaterial = new THREE.MeshBasicMaterial({
+        color: debugConfig.color,
+        transparent: true,
+        opacity: debugConfig.markerOpacity,
+        depthWrite: false
+    })
+    const marker = new THREE.Mesh(
+        new THREE.SphereGeometry(
+            debugConfig.markerRadius,
+            debugConfig.sphereWidthSegments,
+            debugConfig.sphereHeightSegments
+        ),
+        markerMaterial
+    )
+    marker.position.copy(light.position)
+    scene.add(marker)
+
+    const rangeRadius = light.distance > 0 ? light.distance : debugConfig.fallbackDistance
+    const rangeGeometry = new THREE.WireframeGeometry(
+        new THREE.SphereGeometry(
+            rangeRadius,
+            debugConfig.sphereWidthSegments,
+            debugConfig.sphereHeightSegments
+        )
+    )
+    const rangeMaterial = new THREE.LineBasicMaterial({
+        color: debugConfig.color,
+        transparent: true,
+        opacity: debugConfig.sphereOpacity
+    })
+    const range = new THREE.LineSegments(rangeGeometry, rangeMaterial)
+    range.position.copy(light.position)
+    scene.add(range)
+
+    return { marker, markerMaterial, range, rangeGeometry, rangeMaterial }
+}
+
+const lightParam = () => {
+    return {
+        ambientLight: {
+            name: "ambientLight",
+            role: "Base fill light for the whole room so unlit surfaces do not fall completely into black.",
+            enabled: true,
+            color: "#ffffff",
+            intensity: 0.25
+        },
+        projectorSpotLightToWall: {
+            name: "projectorSpotLightToWall",
+            role: "Primary projector spotlight aimed at the projection wall. This is the main direct light source.",
+            enabled: true,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 15,
+            distance: 25,
+            angle: 0.55,
+            penumbra: 0.35,
+            decay: 1
+        },
+        projectorSpotLightToFloor: {
+            name: "projectorSpotLightToFloor",
+            role: "Secondary projector spotlight aimed at the floor area near the wall.",
+            enabled: false,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 15,
+            distance: 20,
+            angle: 0.6,
+            penumbra: 0.35,
+            decay: 0.5,
+            targetYOffset: -2,
+            targetZOffset: 0.1
+        },
+        projectorOriginPointLight: {
+            name: "projectorOriginPointLight",
+            role: "Small point light at the projector lens to brighten the projector head and nearby space.",
+            enabled: true,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 10,
+            distance: 20,
+            decay: 2
+        },
+        projectorBackRectAreaLight: {
+            name: "projectorBackRectAreaLight",
+            role: "Rect area light placed above the projector rear side to softly lift the projector body and pedestal.",
+            enabled: true,
+            color: "#fff1dc",
+            intensity: 4,
+            width: 2,
+            height: 1.4,
+            positionYOffset: 1.8,
+            positionZOffset: 1.6,
+            lookAtYOffset: 0.3,
+            lookAtZOffset: -2.4
+        },
+        emissionLight: {
+            name: "emissionLight",
+            role: "Point light placed just in front of the screen to lift the nearby ceiling and floor.",
+            enabled: true,
+            debugEnabled: false,
+            colorSource: "lightColor",
+            intensity: 1,
+            distance: 24,
+            decay: 0.1,
+            positionZOffset: 0.9
+        },
+        wallGlowPlane: {
+            name: "wallGlowPlane",
+            role: "Additive glow card placed in front of the wall to fake projector bloom and soft center falloff.",
+            enabled: true,
+            colorSource: "lightColor",
+            widthScale: 2.2,
+            heightScale: 2.2,
+            opacity: 0.55,
+            gradientStops: [
+                { offset: 0, alpha: 0.9 },
+                { offset: 0.35, alpha: 0.38 },
+                { offset: 0.72, alpha: 0.12 },
+                { offset: 1, alpha: 0 }
+            ],
+            zOffset: 0.03
+        },
+        beamPyramid: {
+            name: "beamPyramid",
+            role: "Wireframe outline of the projector frustum. Useful for debugging beam shape.",
+            enabled: false,
+            colorSource: "lightColor",
+            opacity: 0.7,
+            visible: false
+        },
+        beamPyramidFill: {
+            name: "beamPyramidFill",
+            role: "Visible volumetric beam mesh between projector and wall, rendered with the custom beam shader.",
+            enabled: true,
+            colorSource: "lightColor",
+            opacity: 0.28
+        },
+        spotLightDebug: {
+            name: "spotLightDebug",
+            role: "Reusable spotlight debugger showing the light center and a pyramid-like frustum.",
+            color: "#22d3ee",
+            markerRadius: 0.2,
+            markerOpacity: 0.95,
+            targetColor: "#ff4d4f",
+            targetMarkerRadius: 0.16,
+            targetMarkerOpacity: 0.98,
+            sphereWidthSegments: 24,
+            sphereHeightSegments: 16,
+            sphereOpacity: 0.22,
+            fallbackDistance: 12
+        },
+        pointLightDebug: {
+            name: "pointLightDebug",
+            role: "Reusable point light debugger showing the light center and a spherical range skeleton.",
+            color: "#22d3ee",
+            markerRadius: 0.2,
+            markerOpacity: 0.95,
+            sphereWidthSegments: 24,
+            sphereHeightSegments: 16,
+            sphereOpacity: 0.22,
+            fallbackDistance: 12
+        }
+    }
+}
+
 const buildAmbientLight = (scene) => {
-    // AmbientLight takes (color, intensity)
-    const ambientLight = new THREE.AmbientLight("#ffffff", 0.1)
+    const lighting = lightParam()
+    const ambientConfig = lighting.ambientLight
+    if (!ambientConfig.enabled) {
+        return null
+    }
+    const ambientLight = new THREE.AmbientLight(ambientConfig.color, ambientConfig.intensity)
     scene.add(ambientLight)
 
     return ambientLight
 }
 
-const buildProjectBeamOrigin = (scene) => {
+const buildProjectBeamOrigin = (scene, lightColor = "#e4d5c4") => {
+    const lighting = lightParam()
+    const projectorSpotLightToWallConfig = lighting.projectorSpotLightToWall
+    const projectorSpotLightToFloorConfig = lighting.projectorSpotLightToFloor
+    const projectorOriginPointLightConfig = lighting.projectorOriginPointLight
+    const pointLightDebugConfig = lighting.pointLightDebug
     const { projectorBeamOrigin } = getDisplayPositions()
 
-    // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
-    const beamLight = new THREE.SpotLight("#e4d5c4", 8, 40, 0.55, 0.35, 1)
-    beamLight.position.set(
-        projectorBeamOrigin.x,
-        projectorBeamOrigin.y,
-        projectorBeamOrigin.z
-    )
-    scene.add(beamLight)
+    const projectorSpotLightToWall = projectorSpotLightToWallConfig.enabled
+        ? new THREE.SpotLight(
+            lightColor,
+            projectorSpotLightToWallConfig.intensity,
+            projectorSpotLightToWallConfig.distance,
+            projectorSpotLightToWallConfig.angle,
+            projectorSpotLightToWallConfig.penumbra,
+            projectorSpotLightToWallConfig.decay
+        )
+        : null
+    if (projectorSpotLightToWall) {
+        projectorSpotLightToWall.position.set(
+            projectorBeamOrigin.x,
+            projectorBeamOrigin.y,
+            projectorBeamOrigin.z
+        )
+        scene.add(projectorSpotLightToWall)
+    }
 
-    // PointLight takes (color, intensity, distance, decay)
-    const beamPointLight = new THREE.PointLight("#e4d5c4", 10, 20, 2)
-    beamPointLight.position.set(
-        projectorBeamOrigin.x,
-        projectorBeamOrigin.y,
-        projectorBeamOrigin.z
-    )
-    scene.add(beamPointLight)
+    const projectorSpotLightToFloor = projectorSpotLightToFloorConfig.enabled
+        ? new THREE.SpotLight(
+            lightColor,
+            projectorSpotLightToFloorConfig.intensity,
+            projectorSpotLightToFloorConfig.distance,
+            projectorSpotLightToFloorConfig.angle,
+            projectorSpotLightToFloorConfig.penumbra,
+            projectorSpotLightToFloorConfig.decay
+        )
+        : null
+    if (projectorSpotLightToFloor) {
+        projectorSpotLightToFloor.position.set(
+            projectorBeamOrigin.x,
+            projectorBeamOrigin.y,
+            projectorBeamOrigin.z
+        )
+        scene.add(projectorSpotLightToFloor)
+    }
 
-    const beamPointLightMarkerMaterial = new THREE.MeshBasicMaterial({
-        color: "#e4d5c4",
-        transparent: true,
-        opacity: 0.55,
-        depthWrite: false
+    const projectorOriginPointLight = projectorOriginPointLightConfig.enabled
+        ? new THREE.PointLight(
+            lightColor,
+            projectorOriginPointLightConfig.intensity,
+            projectorOriginPointLightConfig.distance,
+            projectorOriginPointLightConfig.decay
+        )
+        : null
+    if (projectorOriginPointLight) {
+        projectorOriginPointLight.position.set(
+            projectorBeamOrigin.x,
+            projectorBeamOrigin.y,
+            projectorBeamOrigin.z
+        )
+        scene.add(projectorOriginPointLight)
+    }
+
+    const projectorOriginPointLightDebug = createPointLightDebugger(scene, projectorOriginPointLight, {
+        ...pointLightDebugConfig,
+        enabled: projectorOriginPointLightConfig.debugEnabled
     })
-    const beamPointLightMarker = new THREE.Mesh(
-        new THREE.SphereGeometry(0.14, 16, 16),
-        beamPointLightMarkerMaterial
-    )
-    beamPointLightMarker.position.copy(beamPointLight.position)
-    scene.add(beamPointLightMarker)
 
-    return { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin }
+    return {
+        projectorSpotLightToWall,
+        projectorSpotLightToFloor,
+        projectorOriginPointLight,
+        projectorOriginPointLightDebug,
+        projectorBeamOrigin
+    }
 }
 
-const buildProjectorBeam = (scene) => {
+const buildProjectorBeam = (scene, lightColor = "#e4d5c4") => {
+    const lighting = lightParam()
+    const projectorBackRectAreaLightConfig = lighting.projectorBackRectAreaLight
+    const emissionLightConfig = lighting.emissionLight
+    const wallGlowPlaneConfig = lighting.wallGlowPlane
+    const beamPyramidConfig = lighting.beamPyramid
+    const beamPyramidFillConfig = lighting.beamPyramidFill
+    const spotLightDebugConfig = lighting.spotLightDebug
     const roomZStart = -7
     const projectionFrame = getProjectionFrameConfig()
+    const { projectorPosition } = getDisplayPositions()
     const projectionFrameCenter = {
         x: (projectionFrame.xStart + projectionFrame.xEnd) / 2,
         y: (projectionFrame.yStart + projectionFrame.yEnd) / 2,
         z: roomZStart
     }
-    const beamOriginAssets = buildProjectBeamOrigin(scene)
-    const { beamLight, beamPointLight, beamPointLightMarker, beamPointLightMarkerMaterial, projectorBeamOrigin } = beamOriginAssets
+    const beamOriginAssets = buildProjectBeamOrigin(scene, lightColor)
+    const {
+        projectorSpotLightToWall,
+        projectorSpotLightToFloor,
+        projectorOriginPointLight,
+        projectorOriginPointLightDebug,
+        projectorBeamOrigin
+    } = beamOriginAssets
 
     const beamTarget = new THREE.Object3D()
     beamTarget.position.set(
@@ -223,52 +854,112 @@ const buildProjectorBeam = (scene) => {
         projectionFrameCenter.z
     )
     scene.add(beamTarget)
-    beamLight.target = beamTarget
+    if (projectorSpotLightToWall) {
+        projectorSpotLightToWall.target = beamTarget
+    }
 
-    // SpotLight takes (color, intensity, distance, angle, penumbra, decay)
-    const wallSpillLight = new THREE.SpotLight("#e2d0ba", 3.5, 42, 0.95, 0.8, 1)
-    wallSpillLight.position.set(
-        projectorBeamOrigin.x,
-        projectorBeamOrigin.y,
-        projectorBeamOrigin.z
-    )
-    wallSpillLight.target = beamTarget
-    scene.add(wallSpillLight)
-
-    const wallGlowCanvas = document.createElement("canvas")
-    wallGlowCanvas.width = 1024
-    wallGlowCanvas.height = 1024
-    const wallGlowContext = wallGlowCanvas.getContext("2d")
-    const wallGlowGradient = wallGlowContext.createRadialGradient(512, 512, 90, 512, 512, 512)
-    wallGlowGradient.addColorStop(0, "rgba(228, 213, 196, 0.9)")
-    wallGlowGradient.addColorStop(0.35, "rgba(226, 208, 186, 0.38)")
-    wallGlowGradient.addColorStop(0.72, "rgba(222, 205, 187, 0.12)")
-    wallGlowGradient.addColorStop(1, "rgba(222, 205, 187, 0)")
-    wallGlowContext.fillStyle = wallGlowGradient
-    wallGlowContext.fillRect(0, 0, 1024, 1024)
-
-    const wallGlowTexture = new THREE.CanvasTexture(wallGlowCanvas)
-    const wallGlowMaterial = new THREE.MeshBasicMaterial({
-        map: wallGlowTexture,
-        transparent: true,
-        opacity: 0.55,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        side: THREE.DoubleSide
-    })
-    const wallGlowPlane = new THREE.Mesh(
-        new THREE.PlaneGeometry(
-            (projectionFrame.xEnd - projectionFrame.xStart) * 2.2,
-            (projectionFrame.yEnd - projectionFrame.yStart) * 2.2
-        ),
-        wallGlowMaterial
-    )
-    wallGlowPlane.position.set(
+    const floorTarget = new THREE.Object3D()
+    floorTarget.position.set(
         projectionFrameCenter.x,
-        projectionFrameCenter.y,
-        roomZStart + 0.03
+        projectionFrameCenter.y + lighting.projectorSpotLightToFloor.targetYOffset,
+        roomZStart + lighting.projectorSpotLightToFloor.targetZOffset
     )
-    scene.add(wallGlowPlane)
+    scene.add(floorTarget)
+    if (projectorSpotLightToFloor) {
+        projectorSpotLightToFloor.target = floorTarget
+    }
+
+    const projectorSpotLightToWallDebug = createSpotLightDebugger(scene, projectorSpotLightToWall, {
+        ...spotLightDebugConfig,
+        enabled: lighting.projectorSpotLightToWall.debugEnabled
+    })
+    const projectorSpotLightToFloorDebug = createSpotLightDebugger(scene, projectorSpotLightToFloor, {
+        ...spotLightDebugConfig,
+        enabled: lighting.projectorSpotLightToFloor.debugEnabled
+    })
+
+    const projectorBackRectAreaLight = projectorBackRectAreaLightConfig.enabled
+        ? new THREE.RectAreaLight(
+            projectorBackRectAreaLightConfig.color,
+            projectorBackRectAreaLightConfig.intensity,
+            projectorBackRectAreaLightConfig.width,
+            projectorBackRectAreaLightConfig.height
+        )
+        : null
+    if (projectorBackRectAreaLight) {
+        projectorBackRectAreaLight.position.set(
+            projectorPosition.x,
+            projectorPosition.y + projectorBackRectAreaLightConfig.positionYOffset,
+            projectorPosition.z + projectorBackRectAreaLightConfig.positionZOffset
+        )
+        projectorBackRectAreaLight.lookAt(
+            projectorPosition.x,
+            projectorPosition.y + projectorBackRectAreaLightConfig.lookAtYOffset,
+            projectorPosition.z + projectorBackRectAreaLightConfig.lookAtZOffset
+        )
+        scene.add(projectorBackRectAreaLight)
+    }
+
+    const emissionLight = emissionLightConfig.enabled
+        ? new THREE.PointLight(
+            lightColor,
+            emissionLightConfig.intensity,
+            emissionLightConfig.distance,
+            emissionLightConfig.decay
+        )
+        : null
+    if (emissionLight) {
+        emissionLight.position.set(
+            projectionFrameCenter.x,
+            projectionFrameCenter.y,
+            roomZStart + emissionLightConfig.positionZOffset
+        )
+        scene.add(emissionLight)
+    }
+    const emissionLightDebug = createPointLightDebugger(scene, emissionLight, {
+        ...lighting.pointLightDebug,
+        enabled: emissionLightConfig.debugEnabled
+    })
+
+    const wallGlowCanvas = wallGlowPlaneConfig.enabled ? document.createElement("canvas") : null
+    let wallGlowTexture = null
+    let wallGlowMaterial = null
+    let wallGlowPlane = null
+
+    if (wallGlowCanvas) {
+        wallGlowCanvas.width = 1024
+        wallGlowCanvas.height = 1024
+        const wallGlowContext = wallGlowCanvas.getContext("2d")
+        const wallGlowGradient = wallGlowContext.createRadialGradient(512, 512, 90, 512, 512, 512)
+        wallGlowPlaneConfig.gradientStops.forEach(({ offset, alpha }) => {
+            wallGlowGradient.addColorStop(offset, getRgbaColor(lightColor, alpha))
+        })
+        wallGlowContext.fillStyle = wallGlowGradient
+        wallGlowContext.fillRect(0, 0, 1024, 1024)
+
+        wallGlowTexture = new THREE.CanvasTexture(wallGlowCanvas)
+        wallGlowMaterial = new THREE.MeshBasicMaterial({
+            map: wallGlowTexture,
+            transparent: true,
+            opacity: wallGlowPlaneConfig.opacity,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide
+        })
+        wallGlowPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(
+                (projectionFrame.xEnd - projectionFrame.xStart) * wallGlowPlaneConfig.widthScale,
+                (projectionFrame.yEnd - projectionFrame.yStart) * wallGlowPlaneConfig.heightScale
+            ),
+            wallGlowMaterial
+        )
+        wallGlowPlane.position.set(
+            projectionFrameCenter.x,
+            projectionFrameCenter.y,
+            roomZStart + wallGlowPlaneConfig.zOffset
+        )
+        scene.add(wallGlowPlane)
+    }
 
     const beamOrigin = new THREE.Vector3(
         projectorBeamOrigin.x,
@@ -286,61 +977,84 @@ const buildProjectorBeam = (scene) => {
     const projectionBottomRight = new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yStart, roomZStart)
     const projectionBottomLeft = new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, roomZStart)
 
-    const beamPyramidMaterial = new THREE.LineBasicMaterial({
-        color: "#decdbb",
-        transparent: true,
-        opacity: 0.7
-    })
-    const beamPyramidGeometry = new THREE.BufferGeometry().setFromPoints([
-        beamOrigin, projectionTopLeft,
-        beamOrigin, projectionTopRight,
-        beamOrigin, projectionBottomRight,
-        beamOrigin, projectionBottomLeft,
-        projectionTopLeft, projectionTopRight,
-        projectionTopRight, projectionBottomRight,
-        projectionBottomRight, projectionBottomLeft,
-        projectionBottomLeft, projectionTopLeft
-    ])
-    const beamPyramid = new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
-    beamPyramid.visible = false
-    scene.add(beamPyramid)
+    const beamPyramidMaterial = beamPyramidConfig.enabled
+        ? new THREE.LineBasicMaterial({
+            color: lightColor,
+            transparent: true,
+            opacity: beamPyramidConfig.opacity
+        })
+        : null
+    const beamPyramidGeometry = beamPyramidConfig.enabled
+        ? new THREE.BufferGeometry().setFromPoints([
+            beamOrigin, projectionTopLeft,
+            beamOrigin, projectionTopRight,
+            beamOrigin, projectionBottomRight,
+            beamOrigin, projectionBottomLeft,
+            projectionTopLeft, projectionTopRight,
+            projectionTopRight, projectionBottomRight,
+            projectionBottomRight, projectionBottomLeft,
+            projectionBottomLeft, projectionTopLeft
+        ])
+        : null
+    const beamPyramid = beamPyramidGeometry && beamPyramidMaterial
+        ? new THREE.LineSegments(beamPyramidGeometry, beamPyramidMaterial)
+        : null
+    if (beamPyramid) {
+        beamPyramid.visible = beamPyramidConfig.visible
+        scene.add(beamPyramid)
+    }
 
-    const beamPyramidFillGeometry = new THREE.BufferGeometry()
-    const beamPyramidFillVertices = new Float32Array([
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z,
-        projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
+    const beamPyramidFillGeometry = beamPyramidFillConfig.enabled ? new THREE.BufferGeometry() : null
+    const beamPyramidFillVertices = beamPyramidFillConfig.enabled
+        ? new Float32Array([
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z,
+            projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
 
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
-        projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionTopRight.x, projectionTopRight.y, projectionTopRight.z,
+            projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
 
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
-        projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionBottomRight.x, projectionBottomRight.y, projectionBottomRight.z,
+            projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
 
-        beamOrigin.x, beamOrigin.y, beamOrigin.z,
-        projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
-        projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z
-    ])
-    beamPyramidFillGeometry.setAttribute("position", new THREE.BufferAttribute(beamPyramidFillVertices, 3))
-    const beamPyramidFillMaterial = createBeamMaterial({
-        beamColor: "#e2d0ba",
-        beamOrigin,
-        beamAxis,
-        beamLength,
-        beamOpacity: 0.28
-    })
-    const beamPyramidFill = new THREE.Mesh(beamPyramidFillGeometry, beamPyramidFillMaterial)
-    scene.add(beamPyramidFill)
+            beamOrigin.x, beamOrigin.y, beamOrigin.z,
+            projectionBottomLeft.x, projectionBottomLeft.y, projectionBottomLeft.z,
+            projectionTopLeft.x, projectionTopLeft.y, projectionTopLeft.z
+        ])
+        : null
+    if (beamPyramidFillGeometry && beamPyramidFillVertices) {
+        beamPyramidFillGeometry.setAttribute("position", new THREE.BufferAttribute(beamPyramidFillVertices, 3))
+    }
+    const beamPyramidFillMaterial = beamPyramidFillConfig.enabled
+        ? createBeamMaterial({
+            beamColor: lightColor,
+            beamOrigin,
+            beamAxis,
+            beamLength,
+            beamOpacity: beamPyramidFillConfig.opacity
+        })
+        : null
+    const beamPyramidFill = beamPyramidFillGeometry && beamPyramidFillMaterial
+        ? new THREE.Mesh(beamPyramidFillGeometry, beamPyramidFillMaterial)
+        : null
+    if (beamPyramidFill) {
+        scene.add(beamPyramidFill)
+    }
 
     return {
-        beamLight,
-        beamPointLight,
-        beamPointLightMarker,
-        beamPointLightMarkerMaterial,
+        projectorSpotLightToWall,
+        projectorOriginPointLight,
+        projectorSpotLightToWallDebug,
+        projectorSpotLightToFloor,
+        projectorSpotLightToFloorDebug,
+        projectorOriginPointLightDebug,
+        projectorBackRectAreaLight,
         beamTarget,
-        wallSpillLight,
+        floorTarget,
+        emissionLight,
+        emissionLightDebug,
         wallGlowPlane,
         wallGlowMaterial,
         wallGlowTexture,
@@ -359,22 +1073,47 @@ const buildBox = (scene) => {
     const boxDepth = 1
     const { boxPosition } = getDisplayPositions()
     const textureLoader = new THREE.TextureLoader()
-    const boxWallTexture = textureLoader.load(museumWallTextureUrl)
+    const materialResponseTextures = []
+    const boxWallTexture = textureLoader.load(museumWallTextureUrl, (loadedTexture) => {
+        const boxMaps = createMaterialResponseMaps(loadedTexture, {
+            normalStrength: 2.1,
+            roughnessMin: 0.58,
+            roughnessMax: 0.96,
+            aoStrength: 0.7
+        })
 
-    boxWallTexture.wrapS = THREE.RepeatWrapping
-    boxWallTexture.wrapT = THREE.RepeatWrapping
-    boxWallTexture.repeat.set(1, 1)
+        if (!boxMaps) {
+            return
+        }
 
-    const boxMaterial = new THREE.MeshStandardMaterial({ map: boxWallTexture })
+        materialResponseTextures.push(boxMaps.roughnessMap, boxMaps.aoMap, boxMaps.normalMap)
+
+        applyMaterialResponse(boxMaterial, boxMaps, {
+            roughness: 0.86,
+            metalness: 0.04,
+            normalScale: 0.95,
+            aoMapIntensity: 0.95
+        })
+    })
+
+    configureRepeatingTexture(boxWallTexture, 1, 1, THREE.SRGBColorSpace)
+
+    const boxMaterial = new THREE.MeshStandardMaterial({
+        map: boxWallTexture,
+        roughness: 0.86,
+        metalness: 0.04
+    })
+    const boxGeometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth)
+    cloneUvAttribute(boxGeometry)
     const box = new THREE.Mesh(
-        new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth),
+        boxGeometry,
         boxMaterial
     )
 
     box.position.set(boxPosition.x, boxPosition.y, boxPosition.z)
     scene.add(box)
 
-    return { mesh: box, material: boxMaterial, texture: boxWallTexture }
+    return { mesh: box, material: boxMaterial, texture: boxWallTexture, responseTextures: materialResponseTextures }
 }
 
 const buildDebugAxes = (scene) => {
@@ -393,6 +1132,47 @@ const loadProjector = async (scene) => {
     const gltf = await loader.loadAsync(projectorModelUrl)
     const projector = gltf.scene
 
+    projector.traverse((child) => {
+        if (!child.isMesh) {
+            return
+        }
+
+        child.castShadow = true
+        child.receiveShadow = true
+
+        const originalMaterials = Array.isArray(child.material) ? child.material : [child.material]
+        const upgradedMaterials = originalMaterials.map((sourceMaterial) => {
+            if (!sourceMaterial) {
+                return sourceMaterial
+            }
+
+            return new THREE.MeshPhysicalMaterial({
+                name: sourceMaterial.name,
+                color: sourceMaterial.color?.clone() ?? new THREE.Color("#d9d9d9"),
+                map: sourceMaterial.map ?? null,
+                normalMap: sourceMaterial.normalMap ?? null,
+                roughnessMap: sourceMaterial.roughnessMap ?? null,
+                metalnessMap: sourceMaterial.metalnessMap ?? null,
+                aoMap: sourceMaterial.aoMap ?? null,
+                emissiveMap: sourceMaterial.emissiveMap ?? null,
+                emissive: sourceMaterial.emissive?.clone() ?? new THREE.Color("#000000"),
+                emissiveIntensity: sourceMaterial.emissiveIntensity ?? 1,
+                transparent: sourceMaterial.transparent ?? false,
+                opacity: sourceMaterial.opacity ?? 1,
+                alphaTest: sourceMaterial.alphaTest ?? 0,
+                side: sourceMaterial.side ?? THREE.FrontSide,
+                roughness: Math.min(sourceMaterial.roughness ?? 0.55, 0.42),
+                metalness: Math.max(sourceMaterial.metalness ?? 0.1, 0.68),
+                envMapIntensity: 0.8,
+                clearcoat: 0.22,
+                clearcoatRoughness: 0.35
+            })
+        })
+
+        child.material = Array.isArray(child.material) ? upgradedMaterials : upgradedMaterials[0]
+        originalMaterials.forEach((material) => material?.dispose())
+    })
+
     projector.position.set(projectorPosition.x, projectorPosition.y, projectorPosition.z)
     projector.scale.setScalar(projectorScale)
     projector.rotation.y = projectorRotationY
@@ -402,17 +1182,16 @@ const loadProjector = async (scene) => {
 }
 
 const buildCamera = () => {
-    const cameraFov = 60
-    const cameraAspect = 1
-    const cameraNear = 0.1
-    const cameraFar = 500
-    const cameraPosition = { x: -16.24, y: -4.8, z: 14.27 }
-    const cameraLookAt = { x: -14.81, y: -4.9, z: 9.48 }
-
-    const camera = new THREE.PerspectiveCamera(cameraFov, cameraAspect, cameraNear, cameraFar)
+    const cameraConfig = getCameraConfig()
+    const camera = new THREE.PerspectiveCamera(
+        cameraConfig.fov,
+        cameraConfig.aspect,
+        cameraConfig.near,
+        cameraConfig.far
+    )
     camera.rotation.order = "YXZ"
-    camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z)
-    camera.lookAt(cameraLookAt.x, cameraLookAt.y, cameraLookAt.z)
+    camera.position.copy(cameraConfig.position)
+    camera.lookAt(cameraConfig.lookAt)
     camera.rotation.z = 0
 
     return camera
@@ -497,11 +1276,17 @@ const updateCameraDebugVisuals = (camera, debugVisuals) => {
     debugVisuals.lineGeometry.attributes.position.needsUpdate = true
 }
 
-const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
+const ProjectScene = ({ className = "", projects = [], screenTextureUrl, onScreenClick, lightColor = "#e4d5c4" }) => {
     const canvasRef = useRef(null)
+    const cameraRef = useRef(null)
+    const pressedKeysRef = useRef(new Set())
+    const cameraRotationRef = useRef({ yaw: 0, pitch: 0 })
+    void projects
+    const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
+    const enableCameraMovement = false
 
+    // initialize and render the 3D scene
     useEffect(() => {
-        const enableCameraMovement = false
         const enableAxesDebug = false
 
         const container = canvasRef.current
@@ -514,6 +1299,7 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         scene.background = new THREE.Color("#000000")
 
         const camera = buildCamera()
+        cameraRef.current = camera
         const raycaster = new THREE.Raycaster()
         const pointer = new THREE.Vector2()
 
@@ -524,22 +1310,21 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         container.appendChild(renderer.domElement)
 
         const room = buildRoom(scene)
-        const projectionScreen = screenTextureUrl
-            ? buildProjectionScreen(scene, screenTextureUrl)
+        const projectionScreen = validScreenTextureUrl
+            ? buildProjectionScreen(scene, validScreenTextureUrl)
             : null
         const ambientLight = buildAmbientLight(scene)
-        const projectorBeam = buildProjectorBeam(scene)
+        const projectorBeam = buildProjectorBeam(scene, lightColor)
         const box = buildBox(scene)
         const debugAxes = enableAxesDebug ? buildDebugAxes(scene) : null
         const debugVisuals = buildCameraDebugVisuals(scene)
-        const pressedKeys = new Set()
-        const clock = new THREE.Clock()
-        const moveSpeed = 6
-        const lookSensitivity = 0.0025
+        const pressedKeys = pressedKeysRef.current
         const initialForward = new THREE.Vector3()
         camera.getWorldDirection(initialForward)
-        let cameraYaw = Math.atan2(-initialForward.x, -initialForward.z)
-        let cameraPitch = Math.asin(THREE.MathUtils.clamp(initialForward.y, -1, 1))
+        cameraRotationRef.current = {
+            yaw: Math.atan2(-initialForward.x, -initialForward.z),
+            pitch: Math.asin(THREE.MathUtils.clamp(initialForward.y, -1, 1))
+        }
         let animationFrameId = 0
         let projector = null
         let disposed = false
@@ -574,29 +1359,281 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
                 return
             }
 
-            camera.aspect = clientWidth / clientHeight
+            const aspect = clientWidth / clientHeight
+            const cameraConfig = getCameraConfig()
+            const resizeConfig = getResponsiveResizeConfig()
+            const widthResponseFactor = clamp01(
+                (resizeConfig.widthResponse.threshold - clientWidth) / resizeConfig.widthResponse.ramp
+            )
+            const mediumYawFactor = clamp01(
+                (resizeConfig.mediumYaw.maxWidth - clientWidth)
+                / (resizeConfig.mediumYaw.maxWidth - resizeConfig.mediumYaw.minWidth)
+            )
+            const compactYawFactor = clamp01(
+                (resizeConfig.compactYaw.threshold - clientWidth) / resizeConfig.compactYaw.ramp
+            )
+            const ultraNarrowViewportFactor = clamp01(
+                (resizeConfig.ultraNarrow.threshold - clientWidth) / resizeConfig.ultraNarrow.ramp
+            )
+            const compactPitchFactor = clamp01(
+                (resizeConfig.compactPitch.threshold - clientWidth) / resizeConfig.compactPitch.ramp
+            )
+            const responsiveFov = THREE.MathUtils.lerp(
+                cameraConfig.fov,
+                resizeConfig.widthResponse.maxFov,
+                widthResponseFactor
+            )
+            const backwardDirection = new THREE.Vector3()
+                .subVectors(cameraConfig.position, cameraConfig.lookAt)
+                .normalize()
+            const responsivePosition = cameraConfig.position.clone().addScaledVector(
+                backwardDirection,
+                resizeConfig.widthResponse.backwardOffset * widthResponseFactor
+            )
+            const cameraRight = new THREE.Vector3()
+                .crossVectors(new THREE.Vector3(0, 1, 0), backwardDirection)
+                .normalize()
+            const shiftedPosition = responsivePosition.clone().addScaledVector(
+                cameraRight,
+                resizeConfig.mediumYaw.positionRightOffset * mediumYawFactor
+            ).addScaledVector(
+                cameraRight,
+                resizeConfig.compactYaw.positionRightOffset * compactYawFactor
+            ).addScaledVector(
+                cameraRight,
+                resizeConfig.ultraNarrow.positionRightOffset * ultraNarrowViewportFactor
+            )
+            const shiftedLookAt = cameraConfig.lookAt.clone().addScaledVector(
+                cameraRight,
+                resizeConfig.mediumYaw.lookAtRightOffset * mediumYawFactor
+            ).addScaledVector(
+                cameraRight,
+                resizeConfig.compactYaw.lookAtRightOffset * compactYawFactor
+            ).addScaledVector(
+                cameraRight,
+                resizeConfig.ultraNarrow.lookAtRightOffset * ultraNarrowViewportFactor
+            )
+            shiftedLookAt.y += resizeConfig.compactPitch.lookAtYOffset * compactPitchFactor
+
+            camera.fov = responsiveFov
+            camera.position.copy(shiftedPosition)
+            camera.lookAt(shiftedLookAt)
+            camera.aspect = aspect
             camera.updateProjectionMatrix()
             renderer.setSize(clientWidth, clientHeight)
         }
 
-        const handleKeyDown = (event) => {
-            if (!enableCameraMovement) {
+        const handleCanvasClick = (event) => {
+            if (!projectionScreen || !onScreenClick) {
                 return
             }
 
-            pressedKeys.add(event.code)
+            const rect = renderer.domElement.getBoundingClientRect()
+            pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+            pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+            raycaster.setFromCamera(pointer, camera)
+
+            const intersections = raycaster.intersectObject(projectionScreen.mesh)
+
+            if (intersections.length > 0) {
+                onScreenClick()
+            }
+        }
+
+        const animate = () => {
+            updateCameraDebugVisuals(camera, debugVisuals)
+            renderer.render(scene, camera)
+            animationFrameId = window.requestAnimationFrame(animate)
+        }
+
+        resize()
+        updateCameraDebugVisuals(camera, debugVisuals)
+        window.addEventListener("resize", resize)
+        container.addEventListener("click", handleCanvasClick)
+        animationFrameId = window.requestAnimationFrame(animate)
+
+        return () => {
+            disposed = true
+            cameraRef.current = null
+            pressedKeys.clear()
+            window.removeEventListener("resize", resize)
+            container.removeEventListener("click", handleCanvasClick)
+            window.cancelAnimationFrame(animationFrameId)
+            if (ambientLight) {
+                scene.remove(ambientLight)
+            }
+            if (projectorBeam.projectorSpotLightToWall) {
+                scene.remove(projectorBeam.projectorSpotLightToWall)
+            }
+            if (projectorBeam.projectorSpotLightToFloor) {
+                scene.remove(projectorBeam.projectorSpotLightToFloor)
+            }
+            if (projectorBeam.projectorOriginPointLight) {
+                scene.remove(projectorBeam.projectorOriginPointLight)
+            }
+            if (projectorBeam.projectorBackRectAreaLight) {
+                scene.remove(projectorBeam.projectorBackRectAreaLight)
+            }
+            if (projectorBeam.projectorSpotLightToWallDebug) {
+                scene.remove(projectorBeam.projectorSpotLightToWallDebug.marker)
+                scene.remove(projectorBeam.projectorSpotLightToWallDebug.targetMarker)
+                scene.remove(projectorBeam.projectorSpotLightToWallDebug.range)
+            }
+            if (projectorBeam.projectorSpotLightToFloorDebug) {
+                scene.remove(projectorBeam.projectorSpotLightToFloorDebug.marker)
+                scene.remove(projectorBeam.projectorSpotLightToFloorDebug.targetMarker)
+                scene.remove(projectorBeam.projectorSpotLightToFloorDebug.range)
+            }
+            if (projectorBeam.projectorOriginPointLightDebug) {
+                scene.remove(projectorBeam.projectorOriginPointLightDebug.marker)
+                scene.remove(projectorBeam.projectorOriginPointLightDebug.range)
+            }
+            if (projectorBeam.beamPyramid) {
+                scene.remove(projectorBeam.beamPyramid)
+            }
+            if (projectorBeam.beamPyramidFill) {
+                scene.remove(projectorBeam.beamPyramidFill)
+            }
+            scene.remove(projectorBeam.beamTarget)
+            scene.remove(projectorBeam.floorTarget)
+            if (projectorBeam.emissionLight) {
+                scene.remove(projectorBeam.emissionLight)
+            }
+            if (projectorBeam.emissionLightDebug) {
+                scene.remove(projectorBeam.emissionLightDebug.marker)
+                scene.remove(projectorBeam.emissionLightDebug.range)
+            }
+            if (projectorBeam.wallGlowPlane) {
+                scene.remove(projectorBeam.wallGlowPlane)
+            }
+            if (debugAxes) {
+                scene.remove(debugAxes)
+            }
+            if (projectionScreen) {
+                scene.remove(projectionScreen.mesh)
+            }
+            scene.remove(debugVisuals.marker)
+            scene.remove(debugVisuals.lineSegments)
+            if (projector) {
+                scene.remove(projector)
+                projector.traverse((child) => {
+                    if (child.isMesh) {
+                        child.geometry?.dispose()
+
+                        if (Array.isArray(child.material)) {
+                            child.material.forEach((material) => material.dispose())
+                        } else {
+                            child.material?.dispose()
+                        }
+                    }
+                })
+            }
+            box.mesh.geometry.dispose()
+            box.material.dispose()
+            box.texture.dispose()
+            box.responseTextures.forEach((texture) => texture.dispose())
+            if (projectionScreen) {
+                projectionScreen.mesh.geometry.dispose()
+                projectionScreen.material.dispose()
+                projectionScreen.texture.dispose()
+            }
+            if (projectorBeam.projectorSpotLightToWallDebug) {
+                projectorBeam.projectorSpotLightToWallDebug.marker.geometry.dispose()
+                projectorBeam.projectorSpotLightToWallDebug.markerMaterial.dispose()
+                projectorBeam.projectorSpotLightToWallDebug.targetMarker.geometry.dispose()
+                projectorBeam.projectorSpotLightToWallDebug.targetMarkerMaterial.dispose()
+                projectorBeam.projectorSpotLightToWallDebug.rangeGeometry.dispose()
+                projectorBeam.projectorSpotLightToWallDebug.rangeMaterial.dispose()
+            }
+            if (projectorBeam.projectorSpotLightToFloorDebug) {
+                projectorBeam.projectorSpotLightToFloorDebug.marker.geometry.dispose()
+                projectorBeam.projectorSpotLightToFloorDebug.markerMaterial.dispose()
+                projectorBeam.projectorSpotLightToFloorDebug.targetMarker.geometry.dispose()
+                projectorBeam.projectorSpotLightToFloorDebug.targetMarkerMaterial.dispose()
+                projectorBeam.projectorSpotLightToFloorDebug.rangeGeometry.dispose()
+                projectorBeam.projectorSpotLightToFloorDebug.rangeMaterial.dispose()
+            }
+            if (projectorBeam.projectorOriginPointLightDebug) {
+                projectorBeam.projectorOriginPointLightDebug.marker.geometry.dispose()
+                projectorBeam.projectorOriginPointLightDebug.markerMaterial.dispose()
+                projectorBeam.projectorOriginPointLightDebug.rangeGeometry.dispose()
+                projectorBeam.projectorOriginPointLightDebug.rangeMaterial.dispose()
+            }
+            if (projectorBeam.emissionLightDebug) {
+                projectorBeam.emissionLightDebug.marker.geometry.dispose()
+                projectorBeam.emissionLightDebug.markerMaterial.dispose()
+                projectorBeam.emissionLightDebug.rangeGeometry.dispose()
+                projectorBeam.emissionLightDebug.rangeMaterial.dispose()
+            }
+            if (projectorBeam.beamPyramidGeometry) {
+                projectorBeam.beamPyramidGeometry.dispose()
+            }
+            if (projectorBeam.beamPyramidMaterial) {
+                projectorBeam.beamPyramidMaterial.dispose()
+            }
+            if (projectorBeam.beamPyramidFillGeometry) {
+                projectorBeam.beamPyramidFillGeometry.dispose()
+            }
+            if (projectorBeam.beamPyramidFillMaterial) {
+                projectorBeam.beamPyramidFillMaterial.dispose()
+            }
+            if (projectorBeam.wallGlowPlane) {
+                projectorBeam.wallGlowPlane.geometry.dispose()
+            }
+            if (projectorBeam.wallGlowMaterial) {
+                projectorBeam.wallGlowMaterial.dispose()
+            }
+            if (projectorBeam.wallGlowTexture) {
+                projectorBeam.wallGlowTexture.dispose()
+            }
+            debugVisuals.marker.geometry.dispose()
+            debugVisuals.markerMaterial.dispose()
+            debugVisuals.lineGeometry.dispose()
+            debugVisuals.lineMaterial.dispose()
+            room.meshes.forEach((mesh) => mesh.geometry.dispose())
+            room.materials.forEach((material) => material.dispose())
+            room.textures.forEach((texture) => texture.dispose())
+            room.lineGeometries.forEach((geometry) => geometry.dispose())
+            room.lineMaterials.forEach((material) => material.dispose())
+            renderer.dispose()
+
+            if (container.contains(renderer.domElement)) {
+                container.removeChild(renderer.domElement)
+            }
+        }
+    }, [enableCameraMovement, lightColor, onScreenClick, validScreenTextureUrl])
+
+    // user input handling for camera movement
+    useEffect(() => {
+        const container = canvasRef.current
+        const pressedKeys = pressedKeysRef.current
+        const moveSpeed = 6
+        const lookSensitivity = 0.0025
+
+        if (!enableCameraMovement || !container) {
+            return
+        }
+
+        const clock = new THREE.Clock()
+        let animationFrameId = 0
+
+        const handleKeyDown = (event) => {
+            pressedKeysRef.current.add(event.code)
         }
 
         const handleKeyUp = (event) => {
-            if (!enableCameraMovement) {
-                return
-            }
-
-            pressedKeys.delete(event.code)
+            pressedKeysRef.current.delete(event.code)
         }
 
         const handleCanvasMouseDown = (event) => {
             if (event.button !== 0) {
+                return
+            }
+
+            const camera = cameraRef.current
+
+            if (!camera) {
                 return
             }
 
@@ -625,51 +1662,30 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
                 }
             })
 
-            if (!enableCameraMovement) {
-                return
-            }
-
             container.requestPointerLock?.()
         }
 
-        const handleCanvasClick = (event) => {
-            if (!projectionScreen || !onScreenClick) {
-                return
-            }
-
-            const rect = renderer.domElement.getBoundingClientRect()
-            pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-            pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-            raycaster.setFromCamera(pointer, camera)
-
-            const intersections = raycaster.intersectObject(projectionScreen.mesh)
-
-            if (intersections.length > 0) {
-                onScreenClick()
-            }
-        }
-
         const handleMouseMove = (event) => {
-            if (!enableCameraMovement) {
+            const camera = cameraRef.current
+
+            if (!camera || document.pointerLockElement !== container) {
                 return
             }
 
-            if (document.pointerLockElement !== container) {
-                return
-            }
-
-            cameraYaw -= event.movementX * lookSensitivity
-            cameraPitch -= event.movementY * lookSensitivity
-            cameraPitch = THREE.MathUtils.clamp(cameraPitch, -1.45, 1.45)
-            camera.rotation.y = cameraYaw
-            camera.rotation.x = cameraPitch
+            const nextRotation = cameraRotationRef.current
+            nextRotation.yaw -= event.movementX * lookSensitivity
+            nextRotation.pitch -= event.movementY * lookSensitivity
+            nextRotation.pitch = THREE.MathUtils.clamp(nextRotation.pitch, -1.45, 1.45)
+            camera.rotation.y = nextRotation.yaw
+            camera.rotation.x = nextRotation.pitch
             camera.rotation.z = 0
         }
 
-        const animate = () => {
-            const delta = clock.getDelta()
-            if (enableCameraMovement) {
+        const animateMovement = () => {
+            const camera = cameraRef.current
+
+            if (camera) {
+                const delta = clock.getDelta()
                 const forward = new THREE.Vector3()
                 camera.getWorldDirection(forward)
                 const forwardFlat = new THREE.Vector3(forward.x, 0, forward.z)
@@ -684,22 +1700,22 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
                     right.normalize()
                 }
 
-                if (pressedKeys.has("KeyW")) {
+                if (pressedKeysRef.current.has("KeyW")) {
                     movement.add(forwardFlat)
                 }
-                if (pressedKeys.has("KeyS")) {
+                if (pressedKeysRef.current.has("KeyS")) {
                     movement.sub(forwardFlat)
                 }
-                if (pressedKeys.has("KeyA")) {
+                if (pressedKeysRef.current.has("KeyA")) {
                     movement.sub(right)
                 }
-                if (pressedKeys.has("KeyD")) {
+                if (pressedKeysRef.current.has("KeyD")) {
                     movement.add(right)
                 }
-                if (pressedKeys.has("ArrowUp")) {
+                if (pressedKeysRef.current.has("ArrowUp")) {
                     movement.y += 1
                 }
-                if (pressedKeys.has("ArrowDown")) {
+                if (pressedKeysRef.current.has("ArrowDown")) {
                     movement.y -= 1
                 }
 
@@ -709,94 +1725,24 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
                 }
             }
 
-            updateCameraDebugVisuals(camera, debugVisuals)
-            renderer.render(scene, camera)
-            animationFrameId = window.requestAnimationFrame(animate)
+            animationFrameId = window.requestAnimationFrame(animateMovement)
         }
 
-        resize()
-        updateCameraDebugVisuals(camera, debugVisuals)
-        window.addEventListener("resize", resize)
         window.addEventListener("keydown", handleKeyDown)
         window.addEventListener("keyup", handleKeyUp)
         window.addEventListener("mousemove", handleMouseMove)
         container.addEventListener("mousedown", handleCanvasMouseDown)
-        container.addEventListener("click", handleCanvasClick)
-        animationFrameId = window.requestAnimationFrame(animate)
+        animationFrameId = window.requestAnimationFrame(animateMovement)
 
         return () => {
-            disposed = true
-            window.removeEventListener("resize", resize)
+            pressedKeys.clear()
             window.removeEventListener("keydown", handleKeyDown)
             window.removeEventListener("keyup", handleKeyUp)
             window.removeEventListener("mousemove", handleMouseMove)
             container.removeEventListener("mousedown", handleCanvasMouseDown)
-            container.removeEventListener("click", handleCanvasClick)
             window.cancelAnimationFrame(animationFrameId)
-            scene.remove(ambientLight)
-            scene.remove(projectorBeam.beamLight)
-            scene.remove(projectorBeam.beamPointLight)
-            scene.remove(projectorBeam.beamPointLightMarker)
-            scene.remove(projectorBeam.beamPyramid)
-            scene.remove(projectorBeam.beamPyramidFill)
-            scene.remove(projectorBeam.beamTarget)
-            scene.remove(projectorBeam.wallSpillLight)
-            scene.remove(projectorBeam.wallGlowPlane)
-            if (debugAxes) {
-                scene.remove(debugAxes)
-            }
-            if (projectionScreen) {
-                scene.remove(projectionScreen.mesh)
-            }
-            scene.remove(debugVisuals.marker)
-            scene.remove(debugVisuals.lineSegments)
-            if (projector) {
-                scene.remove(projector)
-                projector.traverse((child) => {
-                    if (child.isMesh) {
-                        child.geometry?.dispose()
-
-                        if (Array.isArray(child.material)) {
-                            child.material.forEach((material) => material.dispose())
-                        } else {
-                            child.material?.dispose()
-                        }
-                    }
-                })
-            }
-            box.mesh.geometry.dispose()
-            box.material.dispose()
-            box.texture.dispose()
-            if (projectionScreen) {
-                projectionScreen.mesh.geometry.dispose()
-                projectionScreen.material.dispose()
-                projectionScreen.texture.dispose()
-            }
-            projectorBeam.beamPointLightMarker.geometry.dispose()
-            projectorBeam.beamPointLightMarkerMaterial.dispose()
-            projectorBeam.beamPyramidGeometry.dispose()
-            projectorBeam.beamPyramidMaterial.dispose()
-            projectorBeam.beamPyramidFillGeometry.dispose()
-            projectorBeam.beamPyramidFillMaterial.dispose()
-            projectorBeam.wallGlowPlane.geometry.dispose()
-            projectorBeam.wallGlowMaterial.dispose()
-            projectorBeam.wallGlowTexture.dispose()
-            debugVisuals.marker.geometry.dispose()
-            debugVisuals.markerMaterial.dispose()
-            debugVisuals.lineGeometry.dispose()
-            debugVisuals.lineMaterial.dispose()
-            room.meshes.forEach((mesh) => mesh.geometry.dispose())
-            room.materials.forEach((material) => material.dispose())
-            room.textures.forEach((texture) => texture.dispose())
-            room.lineGeometries.forEach((geometry) => geometry.dispose())
-            room.lineMaterials.forEach((material) => material.dispose())
-            renderer.dispose()
-
-            if (container.contains(renderer.domElement)) {
-                container.removeChild(renderer.domElement)
-            }
         }
-    }, [onScreenClick, screenTextureUrl])
+    }, [enableCameraMovement])
 
     return (
         <div
