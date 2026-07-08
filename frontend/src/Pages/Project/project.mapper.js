@@ -28,7 +28,8 @@ export const mapProjectToDisplayModel = (project, index) => {
         slug: project.slug,
         title: project.title,
         description: project.description,
-        image: project.image,
+        thumbnailImage: project.thumbnailImage,
+        projectionImage: project.projectionImage,
         githubLink: project.githubLink,
         scene: {
             lightColor: DEFAULT_PROJECT_SCENE_LIGHT_COLOR
