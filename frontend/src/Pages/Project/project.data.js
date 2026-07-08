@@ -1,17 +1,24 @@
 const projectThumb = "/images/project-thumbnails/KnightThumbnail.png"
 const projectThumbnailImage = "/images/project-thumbnails/compressed-img/KnightThumbnail.webp"
+const projectProjectionImage = "/images/project-thumbnails/projection-compressed/KnightThumbnail.webp"
 const bubbleThumb = "/images/project-thumbnails/Bubble.png"
 const bubbleThumbnailImage = "/images/project-thumbnails/compressed-img/Bubble.webp"
+const bubbleProjectionImage = "/images/project-thumbnails/projection-compressed/Bubble.webp"
 const agentThumb = "/images/project-thumbnails/agent.png"
 const agentThumbnailImage = "/images/project-thumbnails/compressed-img/agent.webp"
+const agentProjectionImage = "/images/project-thumbnails/projection-compressed/agent.webp"
 const supervisedLearningThumb = "/images/project-thumbnails/supervisedLearning.png"
 const supervisedLearningThumbnailImage = "/images/project-thumbnails/compressed-img/supervisedLearning.webp"
+const supervisedLearningProjectionImage = "/images/project-thumbnails/projection-compressed/supervisedLearning.webp"
 const dalTutorThumb = "/images/project-thumbnails/daltutor.png"
 const dalTutorThumbnailImage = "/images/project-thumbnails/compressed-img/daltutor.webp"
+const dalTutorProjectionImage = "/images/project-thumbnails/projection-compressed/daltutor.webp"
 const iceSpyThumb = "/images/project-thumbnails/iceSpy.png"
 const iceSpyThumbnailImage = "/images/project-thumbnails/compressed-img/iceSpy.webp"
+const iceSpyProjectionImage = "/images/project-thumbnails/projection-compressed/iceSpy.webp"
 const portfolioThumb = "/images/project-thumbnails/portfolio.png"
 const portfolioThumbnailImage = "/images/project-thumbnails/compressed-img/portfolio.webp"
+const portfolioProjectionImage = "/images/project-thumbnails/projection-compressed/portfolio.webp"
 const shapeMorphingGif = "/images/project-thumbnails/ShapeMorphing.gif"
 const astronomyGif = "/images/project-thumbnails/astronomy.gif"
 const oceanGif = "/images/project-thumbnails/ocean.gif"
@@ -21,7 +28,7 @@ export const projectRecords = [
         title: "My Portfolio",
         slug: "my-portfolio",
         thumbnailImage: portfolioThumbnailImage,
-        projectionImage: portfolioThumb,
+        projectionImage: portfolioProjectionImage,
         topic: "Full-Stack Development",
         skills: ["React", "Node.js", "MongoDB", "Javascript", "Full Stack"],
         description: "A full-stack portfolio site with interactive 3D scenes, responsive layouts, and dynamic content.",
@@ -34,7 +41,7 @@ export const projectRecords = [
         title: "Housing Price Predictor",
         slug: "housing-price-predictor",
         thumbnailImage: supervisedLearningThumbnailImage,
-        projectionImage: supervisedLearningThumb,
+        projectionImage: supervisedLearningProjectionImage,
         topic: "Supervised Learning",
         skills: ["Python", "Regression Modeling", "Data Preprocessing", "Model Evaluation", "Data Visualization"],
         description: "An end-to-end regression pipeline for predicting housing prices from real-world data.",
@@ -47,7 +54,7 @@ export const projectRecords = [
         title: "Dal Tutor",
         slug: "dal-tutor",
         thumbnailImage: dalTutorThumbnailImage,
-        projectionImage: dalTutorThumb,
+        projectionImage: dalTutorProjectionImage,
         topic: "Software Development",
         skills: ["Agile Development", "Extreme Programming (XP)", "Java", "Android Studio", "Team Collaboration"],
         description: "An Android tutoring platform built through Agile iterations and collaborative delivery.",
@@ -86,7 +93,7 @@ export const projectRecords = [
         title: "Ice Spy",
         slug: "ice-spy",
         thumbnailImage: iceSpyThumbnailImage,
-        projectionImage: iceSpyThumb,
+        projectionImage: iceSpyProjectionImage,
         topic: "Machine Learning",
         skills: ["Machine Learning", "Data Analysis", "Pathfinding", "Geospatial Mapping", "Algorithm Design"],
         description: "A hackathon project using ML and pathfinding to optimize Arctic shipping routes.",
@@ -112,7 +119,7 @@ export const projectRecords = [
         title: "Easy Shop",
         slug: "easy-shop",
         thumbnailImage: agentThumbnailImage,
-        projectionImage: agentThumb,
+        projectionImage: agentProjectionImage,
         topic: "Agentic AI",
         skills: ["AI Agents", "Large Language Models (LLM)", "Retrieval-Augmented Generation (RAG)", "MongoDB", "n8n Automation", "Conversational System Design"],
         description: "A WhatsApp AI shopping agent with memory, inventory awareness, and automated ordering.",
@@ -125,7 +132,7 @@ export const projectRecords = [
         title: "Knight of Cinders",
         slug: "knight-of-cinders",
         thumbnailImage: projectThumbnailImage,
-        projectionImage: projectThumb,
+        projectionImage: projectProjectionImage,
         topic: "Game Development",
         skills: ["Unity", "Tilemap", "Cinemachine", "Physics & Raycasting", "Singleton Architecture", "State-Driven Systems"],
         description: "A dark 2D action game with stamina-based combat, boss fights, and cinematic atmosphere.",
@@ -138,7 +145,7 @@ export const projectRecords = [
         title: "Bubble Biologist",
         slug: "bubble-biologist",
         thumbnailImage: bubbleThumbnailImage,
-        projectionImage: bubbleThumb,
+        projectionImage: bubbleProjectionImage,
         topic: "Game Development",
         skills: ["Unity", "Gameplay Programming", "Physics Systems", "Git Collaboration", "Rapid Iteration", "2D Game Development"],
         description: "A fast-paced Game Jam platformer built around bubble survival and physics-driven movement.",
