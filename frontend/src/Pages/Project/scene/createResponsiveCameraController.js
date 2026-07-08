@@ -29,6 +29,9 @@ export const createResponsiveCameraController = ({ camera, renderer, container }
         const compactPitchFactor = clamp01(
             (resizeConfig.compactPitch.threshold - clientWidth) / resizeConfig.compactPitch.ramp
         )
+        const compactViewportFactor = clamp01(
+            (resizeConfig.compactViewport.threshold - clientWidth) / resizeConfig.compactViewport.ramp
+        )
         const responsiveFov = THREE.MathUtils.lerp(
             cameraConfig.fov,
             resizeConfig.widthResponse.maxFov,
@@ -54,6 +57,7 @@ export const createResponsiveCameraController = ({ camera, renderer, container }
             cameraRight,
             resizeConfig.ultraNarrow.positionRightOffset * ultraNarrowViewportFactor
         )
+        shiftedPosition.y += resizeConfig.compactViewport.positionYOffset * compactViewportFactor
         const shiftedLookAt = cameraConfig.lookAt.clone().addScaledVector(
             cameraRight,
             resizeConfig.mediumYaw.lookAtRightOffset * mediumYawFactor
