@@ -28,8 +28,8 @@ export const getResponsiveResizeConfig = () => {
         compactYaw: {
             threshold: 770,
             ramp: 220,
-            lookAtRightOffset: 6,
-            positionRightOffset: 6
+            lookAtRightOffset: 7,
+            positionRightOffset: 8
         },
         ultraNarrow: {
             threshold: 570,
@@ -40,7 +40,12 @@ export const getResponsiveResizeConfig = () => {
         compactPitch: {
             threshold: 770,
             ramp: 220,
-            lookAtYOffset: 2.5
+            lookAtYOffset: 6
+        },
+        compactViewport: {
+            threshold: 770,
+            ramp: 220,
+            positionYOffset: 5.5
         }
     }
 }

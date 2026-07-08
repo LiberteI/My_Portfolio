@@ -27,7 +27,7 @@ const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 {isActive ? <span className="text-stone-100">Live</span> : null}
             </div>
-            <div className="overflow-hidden rounded-xl border border-white/10">
+            <div className="hidden overflow-hidden rounded-xl border border-white/10 min-[600px]:block">
                 <img
                     src={project.image}
                     alt={project.title}

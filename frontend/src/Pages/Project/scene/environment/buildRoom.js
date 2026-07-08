@@ -160,39 +160,37 @@ export const buildRoom = (scene) => {
     frontWall.position.set(roomXCenter, roomYCenter, roomZEnd)
     scene.add(frontWall)
 
-    const projectionFrameMaterial = new THREE.LineBasicMaterial({ color: "#decdbb" })
+
     const projectionFrameGeometry = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(projectionFrame.xStart, projectionFrame.yStart, projectionFrameZ),
         new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yStart, projectionFrameZ),
         new THREE.Vector3(projectionFrame.xEnd, projectionFrame.yEnd, projectionFrameZ),
         new THREE.Vector3(projectionFrame.xStart, projectionFrame.yEnd, projectionFrameZ)
     ])
-    const projectionFrameOutline = new THREE.LineLoop(projectionFrameGeometry, projectionFrameMaterial)
-    scene.add(projectionFrameOutline)
+    
 
     const meshes = [floor, ceiling, backWall, leftWall, rightWall, frontWall]
     const materials = [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial]
     const textures = [wallTexture, floorTexture, ceilingTexture, backWallMaterial.map, ...materialResponseTextures]
     const lineGeometries = [projectionFrameGeometry]
-    const lineMaterials = [projectionFrameMaterial]
-    const lineObjects = [projectionFrameOutline]
+  
 
     return {
         meshes,
         materials,
         textures,
         lineGeometries,
-        lineMaterials,
+        
         dispose() {
             meshes.forEach((mesh) => {
                 scene.remove(mesh)
                 mesh.geometry.dispose()
             })
-            lineObjects.forEach((lineObject) => scene.remove(lineObject))
+            
             materials.forEach((material) => material.dispose())
             textures.forEach((texture) => texture.dispose())
             lineGeometries.forEach((geometry) => geometry.dispose())
-            lineMaterials.forEach((material) => material.dispose())
+            
         }
     }
 }
