@@ -1,6 +1,6 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Navbar from './Components/Navbar/Navbar'
+import ProjectPageNav from './Components/ProjectPageNav'
 import Home from './Pages/Home/Home'
 import Contact from './Pages/Contact/Contact'
 import Comment from './Pages/Comment/Comment'
@@ -31,7 +31,7 @@ const App = () => {
 const ExperiencePage = () => {
   return (
     <div className='app-container'>
-      <Navbar/>
+      <ProjectPageNav activeLabel='Experience' />
       <Experience />
     </div>
   )
@@ -39,7 +39,7 @@ const ExperiencePage = () => {
 const ContactPage = () => {
   return (
     <div className='app-container'>
-      <Navbar/>
+      <ProjectPageNav activeLabel='Contact' />
       <Contact />
     </div>
   )
@@ -48,7 +48,7 @@ const ContactPage = () => {
 const HomePage = () => {
   return (
     <div className='app-container'>
-      <Navbar/>
+      <ProjectPageNav activeLabel='About' />
       <Home />
       <About />
       <Comment />
@@ -77,7 +77,7 @@ const MusicPathway = () => {
 const CommentFormPathWay = () => {
   return (
     <div className='app-container'>
-      <Navbar/>
+      <ProjectPageNav />
       <CommentForm />
     </div>
   )
@@ -86,7 +86,7 @@ const CommentFormPathWay = () => {
 const KnightGame = () => {
   return (
     <div className='app-container'>
-      <Navbar/>
+      <ProjectPageNav activeLabel='Projects' />
       <div className='knightGame-container'>
 
         <video src="/knightTrailer.mp4" controls playsInline poster="/images/project-thumbnails/KnightThumbnail.png"/>
