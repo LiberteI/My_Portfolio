@@ -1,8 +1,8 @@
 import * as THREE from "three"
-import museumWallTextureUrl from "../../../../assets/Museum/wall-texture.jpg"
-import wallAoMapUrl from "../../../../assets/Museum/prebaked-tex/wall-ao.png"
-import wallNormalMapUrl from "../../../../assets/Museum/prebaked-tex/wall-normal.png"
-import wallRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/wall-roughness.png"
+import museumWallTextureUrl from "../../../../assets/Museum/compressed-img/wall-texture.webp"
+import wallAoMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-ao.webp"
+import wallNormalMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-normal.webp"
+import wallRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-roughness.webp"
 import { getDisplayPositions } from "../sceneConfig"
 import {
     applyMaterialResponse,
