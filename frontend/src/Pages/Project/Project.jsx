@@ -22,7 +22,7 @@ const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
             </div>
             <div className="hidden overflow-hidden rounded-xl border border-white/10 min-[600px]:block">
                 <img
-                    src={project.image}
+                    src={project.thumbnailImage}
                     alt={project.title}
                     className="h-18 w-full object-cover transition duration-500 group-hover:scale-[1.04]"
                 />
@@ -164,7 +164,7 @@ const Project = () => {
         <section className="relative h-screen overflow-hidden bg-black text-stone-100" data-project-count={projects.length}>
             <ProjectScene
                 className="absolute inset-0 h-full w-full bg-black"
-                screenTextureUrl={featuredProject?.image}
+                screenTextureUrl={featuredProject?.projectionImage}
             />
 
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
