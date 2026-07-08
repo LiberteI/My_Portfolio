@@ -1,7 +1,9 @@
+import { Buffer } from "node:buffer"
 import { execFile } from "node:child_process"
 import { promises as fs } from "node:fs"
 import os from "node:os"
 import path from "node:path"
+import process from "node:process"
 import { promisify } from "node:util"
 
 const execFileAsync = promisify(execFile)

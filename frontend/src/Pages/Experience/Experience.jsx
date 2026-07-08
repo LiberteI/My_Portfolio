@@ -3,19 +3,6 @@ const magicianImg = "/images/magician/magician.png"
 const leftArmImg = "/images/magician/left-arm.png"
 const rightArmImg = "/images/magician/right-arm.png"
 
-const questLogo = "/images/icons/QuestLogo.svg"
-const experiences = [
-
-    {
-        key: "quest",
-        logo: questLogo,
-        logoBg: "#ffffffff",
-        name: "Quest Software",
-        position: "Software Developer Intern",
-        duration: "May 2026 - August 2026"
-    }
-]
-
 const Experience = () => {
 
     return(
