@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-07-08T13:29:48.903Z",
+  "targetMaxSize": 512,
+  "jobs": {
+    "wall": {
+      "source": "src/assets/Museum/wall-texture.jpg",
+      "width": 512,
+      "height": 512,
+      "params": {
+        "normalStrength": 2.1,
+        "roughnessMin": 0.58,
+        "roughnessMax": 0.96,
+        "aoStrength": 0.7
+      },
+      "outputs": {
+        "roughness": "src/assets/Museum/prebaked-tex/wall-roughness.png",
+        "ao": "src/assets/Museum/prebaked-tex/wall-ao.png",
+        "normal": "src/assets/Museum/prebaked-tex/wall-normal.png"
+      }
+    },
+    "floor": {
+      "source": "src/assets/Museum/floor-texture.jpg",
+      "width": 512,
+      "height": 512,
+      "params": {
+        "normalStrength": 1.7,
+        "roughnessMin": 0.28,
+        "roughnessMax": 0.8,
+        "aoStrength": 0.5
+      },
+      "outputs": {
+        "roughness": "src/assets/Museum/prebaked-tex/floor-roughness.png",
+        "ao": "src/assets/Museum/prebaked-tex/floor-ao.png",
+        "normal": "src/assets/Museum/prebaked-tex/floor-normal.png"
+      }
+    }
+  }
+}

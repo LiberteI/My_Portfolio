@@ -1,12 +1,17 @@
 import * as THREE from "three"
 import museumWallTextureUrl from "../../../../assets/Museum/wall-texture.jpg"
 import museumFloorTextureUrl from "../../../../assets/Museum/floor-texture.jpg"
+import wallAoMapUrl from "../../../../assets/Museum/prebaked-tex/wall-ao.png"
+import wallNormalMapUrl from "../../../../assets/Museum/prebaked-tex/wall-normal.png"
+import wallRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/wall-roughness.png"
+import floorAoMapUrl from "../../../../assets/Museum/prebaked-tex/floor-ao.png"
+import floorNormalMapUrl from "../../../../assets/Museum/prebaked-tex/floor-normal.png"
+import floorRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/floor-roughness.png"
 import { getProjectionFrameConfig } from "../sceneConfig"
 import {
     applyMaterialResponse,
     cloneUvAttribute,
-    configureRepeatingTexture,
-    createMaterialResponseMaps
+    configureRepeatingTexture
 } from "./materialResponse"
 
 export const buildRoom = (scene) => {
@@ -26,71 +31,34 @@ export const buildRoom = (scene) => {
     const roomYCenter = (roomYStart + roomYEnd) / 2
     const roomZCenter = (roomZStart + roomZEnd) / 2
     const textureLoader = new THREE.TextureLoader()
-    const materialResponseTextures = []
     let wallMaterial
     let floorMaterial
     let ceilingMaterial
     let backWallMaterial
 
-    const wallTexture = textureLoader.load(museumWallTextureUrl, (loadedTexture) => {
-        const wallMaps = createMaterialResponseMaps(loadedTexture, {
-            normalStrength: 2.1,
-            roughnessMin: 0.58,
-            roughnessMax: 0.96,
-            aoStrength: 0.7
-        })
-
-        if (!wallMaps) {
-            return
-        }
-
-        materialResponseTextures.push(wallMaps.roughnessMap, wallMaps.aoMap, wallMaps.normalMap)
-
-        applyMaterialResponse(wallMaterial, wallMaps, {
-            roughness: 0.86,
-            metalness: 0.04,
-            normalScale: 0.95,
-            aoMapIntensity: 0.95
-        })
-        applyMaterialResponse(backWallMaterial, wallMaps, {
-            roughness: 0.84,
-            metalness: 0.04,
-            normalScale: 1,
-            aoMapIntensity: 1
-        })
-        applyMaterialResponse(ceilingMaterial, wallMaps, {
-            roughness: 0.9,
-            metalness: 0.02,
-            normalScale: 0.55,
-            aoMapIntensity: 0.55
-        })
-    })
-    const floorTexture = textureLoader.load(museumFloorTextureUrl, (loadedTexture) => {
-        const floorMaps = createMaterialResponseMaps(loadedTexture, {
-            normalStrength: 1.7,
-            roughnessMin: 0.28,
-            roughnessMax: 0.8,
-            aoStrength: 0.5
-        })
-
-        if (!floorMaps) {
-            return
-        }
-
-        materialResponseTextures.push(floorMaps.roughnessMap, floorMaps.aoMap, floorMaps.normalMap)
-
-        applyMaterialResponse(floorMaterial, floorMaps, {
-            roughness: 1,
-            metalness: 0,
-            normalScale: 0.1,
-            aoMapIntensity: 0.7
-        })
-    })
+    const wallTexture = textureLoader.load(museumWallTextureUrl)
+    const wallMaps = {
+        roughnessMap: textureLoader.load(wallRoughnessMapUrl),
+        aoMap: textureLoader.load(wallAoMapUrl),
+        normalMap: textureLoader.load(wallNormalMapUrl)
+    }
+    const floorTexture = textureLoader.load(museumFloorTextureUrl)
+    const floorMaps = {
+        roughnessMap: textureLoader.load(floorRoughnessMapUrl),
+        aoMap: textureLoader.load(floorAoMapUrl),
+        normalMap: textureLoader.load(floorNormalMapUrl)
+    }
     const ceilingTexture = textureLoader.load(museumWallTextureUrl)
 
     configureRepeatingTexture(wallTexture, 6, 2, THREE.SRGBColorSpace)
     configureRepeatingTexture(floorTexture, 6, 4, THREE.SRGBColorSpace)
     configureRepeatingTexture(ceilingTexture, 6, 4, THREE.SRGBColorSpace)
+    configureRepeatingTexture(wallMaps.roughnessMap, 6, 2)
+    configureRepeatingTexture(wallMaps.aoMap, 6, 2)
+    configureRepeatingTexture(wallMaps.normalMap, 6, 2)
+    configureRepeatingTexture(floorMaps.roughnessMap, 6, 4)
+    configureRepeatingTexture(floorMaps.aoMap, 6, 4)
+    configureRepeatingTexture(floorMaps.normalMap, 6, 4)
 
     wallMaterial = new THREE.MeshStandardMaterial({
         map: wallTexture,
@@ -117,6 +85,31 @@ export const buildRoom = (scene) => {
         side: THREE.DoubleSide,
         roughness: 0.86,
         metalness: 0.03
+    })
+
+    applyMaterialResponse(wallMaterial, wallMaps, {
+        roughness: 0.86,
+        metalness: 0.04,
+        normalScale: 0.95,
+        aoMapIntensity: 0.95
+    })
+    applyMaterialResponse(backWallMaterial, wallMaps, {
+        roughness: 0.84,
+        metalness: 0.04,
+        normalScale: 1,
+        aoMapIntensity: 1
+    })
+    applyMaterialResponse(ceilingMaterial, wallMaps, {
+        roughness: 0.9,
+        metalness: 0.02,
+        normalScale: 0.55,
+        aoMapIntensity: 0.55
+    })
+    applyMaterialResponse(floorMaterial, floorMaps, {
+        roughness: 1,
+        metalness: 0,
+        normalScale: 0.1,
+        aoMapIntensity: 0.7
     })
 
     const floorGeometry = new THREE.PlaneGeometry(roomWidth, roomDepth)
@@ -171,7 +164,18 @@ export const buildRoom = (scene) => {
 
     const meshes = [floor, ceiling, backWall, leftWall, rightWall, frontWall]
     const materials = [wallMaterial, floorMaterial, ceilingMaterial, backWallMaterial]
-    const textures = [wallTexture, floorTexture, ceilingTexture, backWallMaterial.map, ...materialResponseTextures]
+    const textures = [
+        wallTexture,
+        floorTexture,
+        ceilingTexture,
+        backWallMaterial.map,
+        wallMaps.roughnessMap,
+        wallMaps.aoMap,
+        wallMaps.normalMap,
+        floorMaps.roughnessMap,
+        floorMaps.aoMap,
+        floorMaps.normalMap
+    ]
     const lineGeometries = [projectionFrameGeometry]
   
 

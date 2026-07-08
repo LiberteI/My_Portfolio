@@ -9,7 +9,7 @@ import { buildProjectionScreen } from "./scene/projection/buildProjectionScreen"
 import { createResponsiveCameraController } from "./scene/createResponsiveCameraController"
 import { createPointerInteractionController } from "./scene/createPointerInteractionController"
 import { createMovementController } from "./scene/createMovementController"
-import { createCameraDebugVisuals } from "./scene/createCameraDebugVisuals"
+// import { createCameraDebugVisuals } from "./scene/createCameraDebugVisuals"
 import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./scene/sceneConfig"
 import { createProjectorModel } from "./scene/loadProjectorModel"
 
@@ -64,7 +64,7 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         if (debugAxes) {
             scene.add(debugAxes)
         }
-        const cameraDebugVisuals = createCameraDebugVisuals(scene)
+        // const cameraDebugVisuals = createCameraDebugVisuals(scene)
         const pressedKeys = pressedKeysRef.current
         const initialForward = new THREE.Vector3()
         camera.getWorldDirection(initialForward)
@@ -84,14 +84,14 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
         })
 
         const animate = () => {
-            cameraDebugVisuals.update(camera)
+            // cameraDebugVisuals.update(camera)
             projectorRig.update()
             renderer.render(scene, camera)
             animationFrameId = window.requestAnimationFrame(animate)
         }
 
         responsiveCameraController.resize()
-        cameraDebugVisuals.update(camera)
+        // cameraDebugVisuals.update(camera)
         animationFrameId = window.requestAnimationFrame(animate)
 
         return () => {
@@ -105,7 +105,7 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
             projectorModel.dispose()
             pedestal.dispose()
             room.dispose()
-            cameraDebugVisuals.dispose()
+            // cameraDebugVisuals.dispose()
             if (debugAxes) {
                 scene.remove(debugAxes)
                 debugAxes.geometry.dispose()
