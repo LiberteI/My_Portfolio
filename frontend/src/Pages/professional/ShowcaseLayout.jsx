@@ -34,6 +34,14 @@ const ShowcaseLayout = ({ routeValue }) => {
             return
         }
 
+        if (professionalState.routeValue === nextRouteValue) {
+            console.log("[ShowcaseLayout] onEnterProfessional no-op:", {
+                currentRouteValue: professionalState.routeValue,
+                nextRouteValue
+            })
+            return
+        }
+
         console.log("[ShowcaseLayout] onEnterProfessional:", {
             previousRouteValue: professionalState.routeValue,
             nextRouteValue
@@ -59,15 +67,7 @@ const ShowcaseLayout = ({ routeValue }) => {
             return
         }
 
-        if (professionalState.routeValue === routeValue) {
-            return
-        }
-
-        console.log("[ShowcaseLayout] professional route changed:", {
-            previousRouteValue: professionalState.routeValue,
-            nextRouteValue: routeValue
-        })
-        setProfessionalState(createProfessionalState(routeValue))
+        onEnterProfessional(routeValue)
     }, [routeValue, professionalState.routeValue, professionalState.status])
 
     useEffect(() => {

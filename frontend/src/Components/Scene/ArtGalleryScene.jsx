@@ -12,6 +12,9 @@ import { createMovementController } from "./scene/createMovementController"
 // import { createCameraDebugVisuals } from "./scene/createCameraDebugVisuals"
 import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./scene/sceneConfig"
 import { createProjectorModel } from "./scene/loadProjectorModel"
+import { getResponsiveCameraState, interpolateCameraPosition } from "./scene/cameraConfig"
+
+const CAMERA_TRANSITION_DURATION_MS = 700
 
 const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, routeValue }) => {
     const canvasRef = useRef(null)
@@ -23,19 +26,71 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const projectorRigRef = useRef(null)
     const projectionScreenRef = useRef(null)
     const responsiveCameraControllerRef = useRef(null)
+    const cameraTransitionFrameRef = useRef(0)
     const onScreenClickRef = useRef(onScreenClick)
     const routeValueRef = useRef(routeValue)
+    const previousRouteValueRef = useRef(routeValue)
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = true
+    const enableCameraMovement = false
 
     useEffect(() => {
         onScreenClickRef.current = onScreenClick
     }, [onScreenClick])
 
     useEffect(() => {
-        routeValueRef.current = routeValue
-        responsiveCameraControllerRef.current?.resize()
+        const camera = cameraRef.current
+        const responsiveCameraController = responsiveCameraControllerRef.current
+        const previousRouteValue = previousRouteValueRef.current
+
+        if (!camera || !responsiveCameraController) {
+            routeValueRef.current = routeValue
+            previousRouteValueRef.current = routeValue
+            return
+        }
+
+        if (!previousRouteValue || previousRouteValue === routeValue) {
+            routeValueRef.current = routeValue
+            previousRouteValueRef.current = routeValue
+            responsiveCameraController.resize()
+            return
+        }
+
+        const container = canvasRef.current
+        const viewport = {
+            width: container?.clientWidth,
+            height: container?.clientHeight
+        }
+        const fromCameraState = getResponsiveCameraState(previousRouteValue, viewport)
+        const toCameraState = getResponsiveCameraState(routeValue, viewport)
+        const startTime = performance.now()
+
+        window.cancelAnimationFrame(cameraTransitionFrameRef.current)
+
+        const animateCameraTransition = (now) => {
+            const elapsed = now - startTime
+            const progress = Math.min(elapsed / CAMERA_TRANSITION_DURATION_MS, 1)
+            const lookAt = fromCameraState.lookAt.clone().lerp(toCameraState.lookAt, progress)
+            const fov = THREE.MathUtils.lerp(fromCameraState.fov, toCameraState.fov, progress)
+
+            camera.position.copy(interpolateCameraPosition(previousRouteValue, routeValue, progress, viewport))
+            camera.lookAt(lookAt)
+            camera.fov = fov
+            camera.aspect = toCameraState.aspect
+            camera.rotation.z = 0
+            camera.updateProjectionMatrix()
+
+            if (progress < 1) {
+                cameraTransitionFrameRef.current = window.requestAnimationFrame(animateCameraTransition)
+                return
+            }
+
+            routeValueRef.current = routeValue
+            previousRouteValueRef.current = routeValue
+            responsiveCameraController.resize()
+        }
+
+        cameraTransitionFrameRef.current = window.requestAnimationFrame(animateCameraTransition)
     }, [routeValue])
 
     // initialize and render the 3D scene once
@@ -110,6 +165,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         return () => {
             pressedKeys.clear()
             window.cancelAnimationFrame(animationFrameId)
+            window.cancelAnimationFrame(cameraTransitionFrameRef.current)
             responsiveCameraController.dispose()
             pointerInteractionController.dispose()
             ambientLight?.dispose()
@@ -140,6 +196,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             projectorRigRef.current = null
             projectionScreenRef.current = null
             responsiveCameraControllerRef.current = null
+            cameraTransitionFrameRef.current = 0
         }
     }, [lightColor])
 
