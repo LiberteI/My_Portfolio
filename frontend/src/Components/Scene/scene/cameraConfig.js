@@ -28,8 +28,8 @@ export const getCameraConfig = (view = CAMERA_VIEW.projects) => {
     return cameraConfigs[view] ?? cameraConfigs[CAMERA_VIEW.projects]
 }
 
-export const getResponsiveResizeConfig = () => {
-    return {
+const responsiveResizeConfigs = {
+    [CAMERA_VIEW.projects]: {
         widthResponse: {
             threshold: 1280,
             ramp: 480,
@@ -64,5 +64,45 @@ export const getResponsiveResizeConfig = () => {
             ramp: 220,
             positionYOffset: 5.5
         }
+    },
+    [CAMERA_VIEW.experience]: {
+        // widthResponse: {
+        //     threshold: 1280,
+        //     ramp: 480,
+        //     maxFov: 78,
+        //     backwardOffset: 6
+        // },
+        // mediumYaw: {
+        //     maxWidth: 1280,
+        //     minWidth: 770,
+        //     lookAtRightOffset: 0,
+        //     positionRightOffset: 0
+        // },
+        // compactYaw: {
+        //     threshold: 770,
+        //     ramp: 220,
+        //     lookAtRightOffset: 0,
+        //     positionRightOffset: 0
+        // },
+        // ultraNarrow: {
+        //     threshold: 570,
+        //     ramp: 180,
+        //     positionRightOffset: 0,
+        //     lookAtRightOffset: 0
+        // },
+        // compactPitch: {
+        //     threshold: 770,
+        //     ramp: 220,
+        //     lookAtYOffset: 0
+        // },
+        // compactViewport: {
+        //     threshold: 770,
+        //     ramp: 220,
+        //     positionYOffset: 0
+        // }
     }
+}
+
+export const getResponsiveResizeConfig = (view = CAMERA_VIEW.projects) => {
+    return responsiveResizeConfigs[view] ?? responsiveResizeConfigs[CAMERA_VIEW.projects]
 }

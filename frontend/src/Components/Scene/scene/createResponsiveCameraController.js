@@ -12,7 +12,7 @@ export const createResponsiveCameraController = ({ camera, renderer, container, 
 
         const aspect = clientWidth / clientHeight
         const cameraConfig = getCameraConfig(getView?.())
-        const resizeConfig = getResponsiveResizeConfig()
+        const resizeConfig = getResponsiveResizeConfig(getView?.())
         const widthResponseFactor = clamp01(
             (resizeConfig.widthResponse.threshold - clientWidth) / resizeConfig.widthResponse.ramp
         )
