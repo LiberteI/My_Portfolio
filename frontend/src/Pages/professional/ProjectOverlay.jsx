@@ -44,7 +44,7 @@ const FeaturedProjectPanel = ({ featuredProject }) => {
     return (
         <div className="pointer-events-none absolute inset-x-0 top-20 z-20 h-[70vh] px-6 md:top-10 md:px-12 lg:px-16">
             <div className="flex h-full w-full max-w-[35rem] items-start">
-                <div className="max-h-full overflow-y-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
+                <div className="pointer-events-auto max-h-full overflow-y-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
                     <div className="space-y-4">
                         <div className="space-y-1">
                             <p className="text-[11px] uppercase tracking-[0.36em] text-stone-400">
@@ -144,9 +144,22 @@ const ProjectCarouselDock = ({ activeProjectIndex, projects, onSelectProject }) 
     )
 }
 
-const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelectProject }) => {
+const motionClassByState = {
+    idle: "translate-y-0 scale-100 opacity-100",
+    entering: "translate-y-4 scale-[1.06] opacity-0",
+    exiting: "-translate-y-4 scale-[1.08] opacity-0"
+}
+
+const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelectProject, motion = "idle" }) => {
+    const motionClassName = motionClassByState[motion] ?? motionClassByState.idle
+
     return (
-        <>
+        <div
+            className={[
+                "pointer-events-none absolute inset-0 z-20 origin-center transition-[opacity,transform] duration-450 ease-out will-change-transform",
+                motionClassName
+            ].join(" ")}
+        >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
 
             <FeaturedProjectPanel featuredProject={featuredProject} />
@@ -156,7 +169,7 @@ const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelec
                 projects={projects}
                 onSelectProject={onSelectProject}
             />
-        </>
+        </div>
     )
 }
 

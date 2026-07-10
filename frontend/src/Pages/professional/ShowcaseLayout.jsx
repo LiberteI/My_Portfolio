@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import ArtGalleryScene from "../../Components/Scene/ArtGalleryScene"
 import { projectRecords } from "../../data/projects/project.data"
 import { mapProjectsToDisplayModels } from "../../data/projects/project.mapper"
@@ -17,15 +17,86 @@ const createProfessionalState = (routeValue = null) => ({
     routeValue
 })
 
+const PROJECT_OVERLAY_TRANSITION_MS = 450
+
 const ShowcaseLayout = ({ routeValue }) => {
     const projects = useMemo(() => mapProjectsToDisplayModels(projectRecords), [])
     const [activeProjectIndex, setActiveProjectIndex] = useState(0)
     const [professionalState, setProfessionalState] = useState(() => createProfessionalState(null))
+    const [projectOverlayState, setProjectOverlayState] = useState(() => ({
+        isRendered: routeValue === PROFESSIONAL_ROUTE_VALUES.projects,
+        motion: "idle"
+    }))
+    const projectOverlayEnterFrameRef = useRef(0)
+    const projectOverlayExitTimeoutRef = useRef(0)
     const featuredProject = projects[activeProjectIndex] ?? projects[0]
 
     const handleSelectProject = (nextIndex) => {
         const boundedIndex = (nextIndex + projects.length) % projects.length
         setActiveProjectIndex(boundedIndex)
+    }
+
+    const clearProjectOverlayTransitionHandles = () => {
+        window.cancelAnimationFrame(projectOverlayEnterFrameRef.current)
+        window.clearTimeout(projectOverlayExitTimeoutRef.current)
+        projectOverlayEnterFrameRef.current = 0
+        projectOverlayExitTimeoutRef.current = 0
+    }
+
+    const beginProjectOverlayEnter = () => {
+        clearProjectOverlayTransitionHandles()
+        setProjectOverlayState({
+            isRendered: true,
+            motion: "entering"
+        })
+
+        projectOverlayEnterFrameRef.current = window.requestAnimationFrame(() => {
+            projectOverlayEnterFrameRef.current = window.requestAnimationFrame(() => {
+                setProjectOverlayState({
+                    isRendered: true,
+                    motion: "idle"
+                })
+            })
+        })
+    }
+
+    const beginProjectOverlayExit = () => {
+        clearProjectOverlayTransitionHandles()
+        setProjectOverlayState((currentState) => {
+            if (!currentState.isRendered) {
+                return currentState
+            }
+
+            return {
+                isRendered: true,
+                motion: "exiting"
+            }
+        })
+
+        projectOverlayExitTimeoutRef.current = window.setTimeout(() => {
+            setProjectOverlayState({
+                isRendered: false,
+                motion: "idle"
+            })
+        }, PROJECT_OVERLAY_TRANSITION_MS)
+    }
+
+    const syncProjectOverlayToRoute = (previousRouteValue, nextRouteValue) => {
+        if (previousRouteValue === PROFESSIONAL_ROUTE_VALUES.experience && nextRouteValue === PROFESSIONAL_ROUTE_VALUES.projects) {
+            beginProjectOverlayEnter()
+            return
+        }
+
+        if (previousRouteValue === PROFESSIONAL_ROUTE_VALUES.projects && nextRouteValue === PROFESSIONAL_ROUTE_VALUES.experience) {
+            beginProjectOverlayExit()
+            return
+        }
+
+        clearProjectOverlayTransitionHandles()
+        setProjectOverlayState({
+            isRendered: nextRouteValue === PROFESSIONAL_ROUTE_VALUES.projects,
+            motion: "idle"
+        })
     }
 
     const onEnterProfessional = (nextRouteValue) => {
@@ -46,12 +117,18 @@ const ShowcaseLayout = ({ routeValue }) => {
             previousRouteValue: professionalState.routeValue,
             nextRouteValue
         })
+        syncProjectOverlayToRoute(professionalState.routeValue, nextRouteValue)
         setProfessionalState(createProfessionalState(nextRouteValue))
     }
 
     const onExitProfessional = () => {
         console.log("[ShowcaseLayout] onExitProfessional:", {
             previousRouteValue: professionalState.routeValue
+        })
+        clearProjectOverlayTransitionHandles()
+        setProjectOverlayState({
+            isRendered: false,
+            motion: "idle"
         })
         setProfessionalState(createProfessionalState(null))
     }
@@ -72,6 +149,7 @@ const ShowcaseLayout = ({ routeValue }) => {
 
     useEffect(() => {
         return () => {
+            clearProjectOverlayTransitionHandles()
             onExitProfessional()
         }
     }, [])
@@ -86,12 +164,13 @@ const ShowcaseLayout = ({ routeValue }) => {
                 screenTextureUrl={featuredProject?.projectionImage}
             />
 
-            {activeProfessionalRoute === PROFESSIONAL_ROUTE_VALUES.projects ? (
+            {projectOverlayState.isRendered ? (
                 <ProjectOverlay
                     featuredProject={featuredProject}
                     activeProjectIndex={activeProjectIndex}
                     projects={projects}
                     onSelectProject={handleSelectProject}
+                    motion={projectOverlayState.motion}
                 />
             ) : null}
 
