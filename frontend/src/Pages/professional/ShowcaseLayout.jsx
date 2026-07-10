@@ -30,28 +30,22 @@ const ShowcaseLayout = ({ routeValue }) => {
 
     const onEnterProfessional = (nextRouteValue) => {
         if (!isProfessionalRouteValue(nextRouteValue)) {
+            console.warn("[ShowcaseLayout] onEnterProfessional ignored invalid route value:", nextRouteValue)
             return
         }
 
+        console.log("[ShowcaseLayout] onEnterProfessional:", {
+            previousRouteValue: professionalState.routeValue,
+            nextRouteValue
+        })
         setProfessionalState(createProfessionalState(nextRouteValue))
     }
 
     const onExitProfessional = () => {
-        setProfessionalState(createProfessionalState(null))
-    }
-
-    const onUpdateProfessional = (nextRouteValue) => {
-        if (!isProfessionalRouteValue(nextRouteValue)) {
-            return
-        }
-
-        setProfessionalState((currentState) => {
-            if (currentState.status === "active" && currentState.routeValue === nextRouteValue) {
-                return currentState
-            }
-
-            return createProfessionalState(nextRouteValue)
+        console.log("[ShowcaseLayout] onExitProfessional:", {
+            previousRouteValue: professionalState.routeValue
         })
+        setProfessionalState(createProfessionalState(null))
     }
 
     useEffect(() => {
@@ -65,8 +59,16 @@ const ShowcaseLayout = ({ routeValue }) => {
             return
         }
 
-        onUpdateProfessional(routeValue)
-    }, [routeValue, professionalState.status])
+        if (professionalState.routeValue === routeValue) {
+            return
+        }
+
+        console.log("[ShowcaseLayout] professional route changed:", {
+            previousRouteValue: professionalState.routeValue,
+            nextRouteValue: routeValue
+        })
+        setProfessionalState(createProfessionalState(routeValue))
+    }, [routeValue, professionalState.routeValue, professionalState.status])
 
     useEffect(() => {
         return () => {
