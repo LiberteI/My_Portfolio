@@ -67,7 +67,7 @@ const Navbar = ({ activeLabel, className = "" }) => {
     }, [location, navigate])
 
     return (
-        <nav className={`absolute inset-x-0 top-0 px-6 py-8 md:px-12 lg:px-16 ${isExpanded ? "z-40" : "z-20"} ${className}`}>
+        <nav className={`absolute inset-x-0 top-0 px-6 py-8 md:px-12 lg:px-16 ${isExpanded ? "z-50" : "z-30"} ${className}`}>
             <div className="flex items-center justify-between">
                 <a
                     href="/"
