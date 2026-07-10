@@ -22,7 +22,9 @@ const PROJECT_OVERLAY_TRANSITION_MS = 450
 const ShowcaseLayout = ({ routeValue }) => {
     const projects = useMemo(() => mapProjectsToDisplayModels(projectRecords), [])
     const [activeProjectIndex, setActiveProjectIndex] = useState(0)
-    const [professionalState, setProfessionalState] = useState(() => createProfessionalState(null))
+    const [professionalState, setProfessionalState] = useState(() => (
+        createProfessionalState(isProfessionalRouteValue(routeValue) ? routeValue : null)
+    ))
     const [projectOverlayState, setProjectOverlayState] = useState(() => ({
         isRendered: routeValue === PROFESSIONAL_ROUTE_VALUES.projects,
         motion: "idle"
@@ -99,68 +101,55 @@ const ShowcaseLayout = ({ routeValue }) => {
         })
     }
 
-    const onEnterProfessional = (nextRouteValue) => {
-        if (!isProfessionalRouteValue(nextRouteValue)) {
-            console.warn("[ShowcaseLayout] onEnterProfessional ignored invalid route value:", nextRouteValue)
+    useEffect(() => {
+        if (!isProfessionalRouteValue(routeValue)) {
+            console.log("[ShowcaseLayout] onExitProfessional:", {
+                previousRouteValue: professionalState.routeValue
+            })
+            clearProjectOverlayTransitionHandles()
+            setProjectOverlayState({
+                isRendered: false,
+                motion: "idle"
+            })
+            setProfessionalState(createProfessionalState(null))
             return
         }
 
-        if (professionalState.routeValue === nextRouteValue) {
+        if (professionalState.routeValue === routeValue) {
             console.log("[ShowcaseLayout] onEnterProfessional no-op:", {
                 currentRouteValue: professionalState.routeValue,
-                nextRouteValue
+                nextRouteValue: routeValue
             })
             return
         }
 
         console.log("[ShowcaseLayout] onEnterProfessional:", {
             previousRouteValue: professionalState.routeValue,
-            nextRouteValue
+            nextRouteValue: routeValue
         })
-        syncProjectOverlayToRoute(professionalState.routeValue, nextRouteValue)
-        setProfessionalState(createProfessionalState(nextRouteValue))
-    }
-
-    const onExitProfessional = () => {
-        console.log("[ShowcaseLayout] onExitProfessional:", {
-            previousRouteValue: professionalState.routeValue
-        })
-        clearProjectOverlayTransitionHandles()
-        setProjectOverlayState({
-            isRendered: false,
-            motion: "idle"
-        })
-        setProfessionalState(createProfessionalState(null))
-    }
-
-    useEffect(() => {
-        if (!isProfessionalRouteValue(routeValue)) {
-            onExitProfessional()
-            return
-        }
-
-        if (professionalState.status === "idle") {
-            onEnterProfessional(routeValue)
-            return
-        }
-
-        onEnterProfessional(routeValue)
+        syncProjectOverlayToRoute(professionalState.routeValue, routeValue)
+        setProfessionalState(createProfessionalState(routeValue))
     }, [routeValue, professionalState.routeValue, professionalState.status])
 
     useEffect(() => {
         return () => {
-            clearProjectOverlayTransitionHandles()
-            onExitProfessional()
+            window.cancelAnimationFrame(projectOverlayEnterFrameRef.current)
+            window.clearTimeout(projectOverlayExitTimeoutRef.current)
+            projectOverlayEnterFrameRef.current = 0
+            projectOverlayExitTimeoutRef.current = 0
         }
     }, [])
 
     const activeProfessionalRoute = professionalState.routeValue
+    const resolvedProfessionalRoute = isProfessionalRouteValue(routeValue)
+        ? routeValue
+        : activeProfessionalRoute
 
     return (
         <section className="relative h-screen overflow-hidden bg-black text-stone-100" data-project-count={projects.length}>
             <ArtGalleryScene
                 className="absolute inset-0 h-full w-full bg-black"
-                routeValue={activeProfessionalRoute}
+                routeValue={resolvedProfessionalRoute}
                 screenTextureUrl={featuredProject?.projectionImage}
             />
 

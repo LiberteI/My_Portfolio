@@ -1,13 +1,10 @@
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
-import leatherTextureUrl from "../../../../assets/Museum/leather.png"
+import leatherColorTextureUrl from "../../../../assets/Museum/Leather026_1K-JPG_Color.jpg"
+import leatherRoughnessTextureUrl from "../../../../assets/Museum/Leather026_1K-JPG_Roughness.jpg"
+import leatherNormalTextureUrl from "../../../../assets/Museum/Leather026_1K-JPG_NormalGL.jpg"
 import { getDisplayPositions, getTableConfig } from "../sceneConfig"
-import {
-    applyMaterialResponse,
-    cloneUvAttribute,
-    configureRepeatingTexture,
-    createMaterialResponseMaps
-} from "./materialResponse"
+import { cloneUvAttribute, configureRepeatingTexture } from "./materialResponse"
 
 const createContactShadowTexture = () => {
     const canvas = document.createElement("canvas")
@@ -54,67 +51,37 @@ export const buildLeatherDeskPad = (
         thickness = 0.05,
         cornerRadius = 0.08,
         xOffset = 0.2,
-        color = "#17100c",
-        roughness = 0.92,
-        metalness = 0.02
+        color = "#2b1f1a",
+        roughness = 0.82,
+        metalness = 0.01
     } = {}
 ) => {
     const { tablePosition } = getDisplayPositions()
     const tableConfig = getTableConfig()
     const textureLoader = new THREE.TextureLoader()
-    const leatherTexture = textureLoader.load(leatherTextureUrl)
-    const leatherMaps = {
-        roughnessMap: null,
-        aoMap: null,
-        normalMap: null
-    }
+    const leatherColorTexture = textureLoader.load(leatherColorTextureUrl)
+    const leatherRoughnessTexture = textureLoader.load(leatherRoughnessTextureUrl)
+    const leatherNormalTexture = textureLoader.load(leatherNormalTextureUrl)
 
-    configureRepeatingTexture(leatherTexture, 3.2, 5.6, THREE.SRGBColorSpace)
+    configureRepeatingTexture(leatherColorTexture, 3.2, 5.6, THREE.SRGBColorSpace)
+    configureRepeatingTexture(leatherRoughnessTexture, 3.2, 5.6)
+    configureRepeatingTexture(leatherNormalTexture, 3.2, 5.6)
 
     const padGeometry = new RoundedBoxGeometry(width, thickness, depth, 6, cornerRadius)
     cloneUvAttribute(padGeometry)
     const padMaterial = new THREE.MeshPhysicalMaterial({
         color,
-        map: leatherTexture,
+        map: leatherColorTexture,
+        roughnessMap: leatherRoughnessTexture,
+        normalMap: leatherNormalTexture,
         roughness,
         metalness,
-        clearcoat: 0.08,
-        clearcoatRoughness: 0.88
+        clearcoat: 0.14,
+        clearcoatRoughness: 0.9,
+        emissive: "#120c09",
+        emissiveIntensity: 0.08,
+        normalScale: new THREE.Vector2(0.2, 0.2)
     })
-
-    const updateMaterialResponse = () => {
-        const generatedMaps = createMaterialResponseMaps(leatherTexture, {
-            normalStrength: 0.7,
-            roughnessMin: 0.74,
-            roughnessMax: 0.97,
-            aoStrength: 0.18
-        })
-
-        if (!generatedMaps) {
-            return
-        }
-
-        leatherMaps.roughnessMap = generatedMaps.roughnessMap
-        leatherMaps.aoMap = generatedMaps.aoMap
-        leatherMaps.normalMap = generatedMaps.normalMap
-        configureRepeatingTexture(leatherMaps.roughnessMap, 3.2, 5.6)
-        configureRepeatingTexture(leatherMaps.aoMap, 3.2, 5.6)
-        configureRepeatingTexture(leatherMaps.normalMap, 3.2, 5.6)
-        applyMaterialResponse(padMaterial, leatherMaps, {
-            roughness,
-            metalness,
-            normalScale: 0.12,
-            aoMapIntensity: 0.2,
-            clearcoat: 0.08,
-            clearcoatRoughness: 0.88
-        })
-    }
-
-    if (leatherTexture.image) {
-        updateMaterialResponse()
-    } else {
-        leatherTexture.onUpdate = updateMaterialResponse
-    }
 
     const padMesh = new THREE.Mesh(padGeometry, padMaterial)
     const tableTopSurfaceY = tablePosition.y + tableConfig.height + tableConfig.topThickness * 0.5
@@ -155,10 +122,9 @@ export const buildLeatherDeskPad = (
             contactShadowGeometry.dispose()
             contactShadowMaterial.dispose()
             contactShadowTexture.dispose()
-            leatherTexture.dispose()
-            leatherMaps.roughnessMap?.dispose()
-            leatherMaps.aoMap?.dispose()
-            leatherMaps.normalMap?.dispose()
+            leatherColorTexture.dispose()
+            leatherRoughnessTexture.dispose()
+            leatherNormalTexture.dispose()
         }
     }
 }
