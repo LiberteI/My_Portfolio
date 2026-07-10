@@ -1,14 +1,31 @@
 import * as THREE from "three"
 
-export const getCameraConfig = () => {
-    return {
+export const CAMERA_VIEW = {
+    projects: "projects",
+    experience: "experience"
+}
+
+const cameraConfigs = {
+    [CAMERA_VIEW.projects]: {
         fov: 60,
         aspect: 1,
         near: 0.1,
         far: 500,
         position: new THREE.Vector3(-16.24, -4.8, 14.27),
         lookAt: new THREE.Vector3(-14.81, -4.9, 9.48)
+    },
+    [CAMERA_VIEW.experience]: {
+        fov: 60,
+        aspect: 1,
+        near: 0.1,
+        far: 500,
+        position: new THREE.Vector3(-16.24, -4.8, 14.27),
+        lookAt: new THREE.Vector3(-17.23, -4.7, 14.28)
     }
+}
+
+export const getCameraConfig = (view = CAMERA_VIEW.projects) => {
+    return cameraConfigs[view] ?? cameraConfigs[CAMERA_VIEW.projects]
 }
 
 export const getResponsiveResizeConfig = () => {

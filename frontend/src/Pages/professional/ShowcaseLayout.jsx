@@ -82,6 +82,7 @@ const ShowcaseLayout = ({ routeValue }) => {
         <section className="relative h-screen overflow-hidden bg-black text-stone-100" data-project-count={projects.length}>
             <ArtGalleryScene
                 className="absolute inset-0 h-full w-full bg-black"
+                routeValue={activeProfessionalRoute}
                 screenTextureUrl={featuredProject?.projectionImage}
             />
 

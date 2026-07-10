@@ -13,7 +13,7 @@ import { createMovementController } from "./scene/createMovementController"
 import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./scene/sceneConfig"
 import { createProjectorModel } from "./scene/loadProjectorModel"
 
-const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
+const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, routeValue }) => {
     const canvasRef = useRef(null)
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
@@ -22,14 +22,21 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick }) =>
     const rendererRef = useRef(null)
     const projectorRigRef = useRef(null)
     const projectionScreenRef = useRef(null)
+    const responsiveCameraControllerRef = useRef(null)
     const onScreenClickRef = useRef(onScreenClick)
+    const routeValueRef = useRef(routeValue)
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = false
+    const enableCameraMovement = true
 
     useEffect(() => {
         onScreenClickRef.current = onScreenClick
     }, [onScreenClick])
+
+    useEffect(() => {
+        routeValueRef.current = routeValue
+        responsiveCameraControllerRef.current?.resize()
+    }, [routeValue])
 
     // initialize and render the 3D scene once
     useEffect(() => {
@@ -45,7 +52,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick }) =>
         scene.background = new THREE.Color("#000000")
         sceneRef.current = scene
 
-        const camera = createCamera()
+        const camera = createCamera(routeValueRef.current)
         cameraRef.current = camera
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
@@ -74,7 +81,13 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick }) =>
         }
         let animationFrameId = 0
         const projectorModel = createProjectorModel(scene)
-        const responsiveCameraController = createResponsiveCameraController({ camera, renderer, container })
+        const responsiveCameraController = createResponsiveCameraController({
+            camera,
+            renderer,
+            container,
+            getView: () => routeValueRef.current
+        })
+        responsiveCameraControllerRef.current = responsiveCameraController
         const pointerInteractionController = createPointerInteractionController({
             container,
             renderer,
@@ -126,6 +139,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick }) =>
             rendererRef.current = null
             projectorRigRef.current = null
             projectionScreenRef.current = null
+            responsiveCameraControllerRef.current = null
         }
     }, [lightColor])
 

@@ -2,7 +2,7 @@ import * as THREE from "three"
 import { getCameraConfig, getResponsiveResizeConfig } from "./cameraConfig"
 import { clamp01 } from "./utils/math"
 
-export const createResponsiveCameraController = ({ camera, renderer, container }) => {
+export const createResponsiveCameraController = ({ camera, renderer, container, getView }) => {
     const resize = () => {
         const { clientWidth, clientHeight } = container
 
@@ -11,7 +11,7 @@ export const createResponsiveCameraController = ({ camera, renderer, container }
         }
 
         const aspect = clientWidth / clientHeight
-        const cameraConfig = getCameraConfig()
+        const cameraConfig = getCameraConfig(getView?.())
         const resizeConfig = getResponsiveResizeConfig()
         const widthResponseFactor = clamp01(
             (resizeConfig.widthResponse.threshold - clientWidth) / resizeConfig.widthResponse.ramp
