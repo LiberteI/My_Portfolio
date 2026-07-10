@@ -5,9 +5,9 @@ import Home from './Pages/Home/Home'
 import Contact from './Pages/Contact/Contact'
 import Comment from './Pages/Comment/Comment'
 import About from './Pages/About/About'
-import Project from './Pages/professional/Project'
+import ShowcaseLayout from './Pages/professional/ShowcaseLayout'
 import CommentForm from './Pages/Comment/CommentForm'
-import Experience from './Pages/professional/Experience'
+import ExperienceOverlay from './Pages/professional/ExperienceOverlay'
 import MusicPage from './Pages/Music/MusicPage'
 
 import invocation from './assets/Animations/invocation.gif'
@@ -32,7 +32,7 @@ const ExperiencePage = () => {
   return (
     <div className='app-container'>
       <Navbar activeLabel='Experience' />
-      <Experience />
+      <ExperienceOverlay />
     </div>
   )
 }
@@ -61,7 +61,7 @@ const Projects = () => {
   return (
     <div className='app-container'>
       <Navbar activeLabel='Projects' />
-      <Project />
+      <ShowcaseLayout />
     </div>
   )
 }

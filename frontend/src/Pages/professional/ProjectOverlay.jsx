@@ -1,8 +1,3 @@
-import { useMemo, useState } from "react"
-import ArtGalleryScene from "../../Components/Scene/ArtGalleryScene"
-import { projectRecords } from "../../data/projects/project.data"
-import { mapProjectsToDisplayModels } from "../../data/projects/project.mapper"
-
 const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
     return (
         <button
@@ -149,23 +144,9 @@ const ProjectCarouselDock = ({ activeProjectIndex, projects, onSelectProject }) 
     )
 }
 
-const Project = () => {
-    const projects = useMemo(() => mapProjectsToDisplayModels(projectRecords), [])
-    const [activeProjectIndex, setActiveProjectIndex] = useState(0)
-    const featuredProject = projects[activeProjectIndex] ?? projects[0]
-
-    const handleSelectProject = (nextIndex) => {
-        const boundedIndex = (nextIndex + projects.length) % projects.length
-        setActiveProjectIndex(boundedIndex)
-    }
-
+const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelectProject }) => {
     return (
-        <section className="relative h-screen overflow-hidden bg-black text-stone-100" data-project-count={projects.length}>
-            <ArtGalleryScene
-                className="absolute inset-0 h-full w-full bg-black"
-                screenTextureUrl={featuredProject?.projectionImage}
-            />
-
+        <>
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
 
             <FeaturedProjectPanel featuredProject={featuredProject} />
@@ -173,10 +154,10 @@ const Project = () => {
             <ProjectCarouselDock
                 activeProjectIndex={activeProjectIndex}
                 projects={projects}
-                onSelectProject={handleSelectProject}
+                onSelectProject={onSelectProject}
             />
-        </section>
+        </>
     )
 }
 
-export default Project
+export default ProjectOverlay

@@ -1,7 +1,5 @@
 
-
-
-const Experience = () => {
+const ExperienceOverlay = () => {
 
     return(
         <section className="relative min-h-[720px] overflow-hidden bg-black">
@@ -10,4 +8,4 @@ const Experience = () => {
     )
 }
 
-export default Experience
+export default ExperienceOverlay
