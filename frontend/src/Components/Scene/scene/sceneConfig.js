@@ -22,6 +22,16 @@ export const getDisplayPositions = () => {
     }
 }
 
+export const getTableConfig = () => {
+    return {
+        width: 3.6,
+        depth: 7.2,
+        height: 1.7,
+        topThickness: 0.18,
+        legWidth: 0.16
+    }
+}
+
 export const getProjectionRenderConfig = () => {
     return {
         projectionStrength: 100,

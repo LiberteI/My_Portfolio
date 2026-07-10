@@ -3,6 +3,8 @@ import * as THREE from "three"
 import { createCamera } from "./scene/createCamera"
 import { buildRoom } from "./scene/environment/buildRoom"
 import { buildPedestal } from "./scene/environment/buildPedestal"
+import { buildLeatherDeskPad } from "./scene/environment/buildLeatherDeskPad"
+import { buildResume } from "./scene/environment/buildResume"
 import { buildTable } from "./scene/environment/buildTable"
 import { buildAmbientLight } from "./scene/lighting/buildAmbientLight"
 import { buildProjectorRig } from "./scene/lighting/buildProjectorRig"
@@ -31,6 +33,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const cameraTransitionFrameRef = useRef(0)
     const pedestalRef = useRef(null)
     const tableRef = useRef(null)
+    const leatherDeskPadRef = useRef(null)
+    const resumeRef = useRef(null)
     const onScreenClickRef = useRef(onScreenClick)
     const routeValueRef = useRef(routeValue)
     const previousRouteValueRef = useRef(routeValue)
@@ -129,6 +133,10 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         pedestalRef.current = pedestal
         const table = buildTable(scene)
         tableRef.current = table
+        const leatherDeskPad = buildLeatherDeskPad(scene)
+        leatherDeskPadRef.current = leatherDeskPad
+        const resume = buildResume(scene)
+        resumeRef.current = resume
         const debugAxes = enableAxesDebug ? new THREE.AxesHelper(4) : null
         if (debugAxes) {
             scene.add(debugAxes)
@@ -182,6 +190,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             projectorModel.dispose()
             pedestal.dispose()
             table.dispose()
+            leatherDeskPad.dispose()
+            resume.dispose()
             room.dispose()
             // cameraDebugVisuals.dispose()
             if (debugAxes) {
@@ -208,6 +218,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             cameraTransitionFrameRef.current = 0
             pedestalRef.current = null
             tableRef.current = null
+            leatherDeskPadRef.current = null
+            resumeRef.current = null
         }
     }, [lightColor])
 

@@ -3,7 +3,7 @@ import tableTextureUrl from "../../../../assets/Museum/table-texture.jpg"
 import wallAoMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-ao.webp"
 import wallNormalMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-normal.webp"
 import wallRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-roughness.webp"
-import { getDisplayPositions } from "../sceneConfig"
+import { getDisplayPositions, getTableConfig } from "../sceneConfig"
 import {
     applyMaterialResponse,
     cloneUvAttribute,
@@ -12,6 +12,7 @@ import {
 
 export const buildTable = (scene) => {
     const { tablePosition } = getDisplayPositions()
+    const tableConfig = getTableConfig()
     const textureLoader = new THREE.TextureLoader()
     const tableTexture = textureLoader.load(tableTextureUrl)
     const wallMaps = {
@@ -48,11 +49,7 @@ export const buildTable = (scene) => {
         return mesh
     }
 
-    const topThickness = 0.18
-    const tableWidth = 3.6
-    const tableDepth = 7.2
-    const tableHeight = 1.7
-    const legWidth = 0.16
+    const { topThickness, width: tableWidth, depth: tableDepth, height: tableHeight, legWidth } = tableConfig
     const legInsetX = tableWidth * 0.5 - legWidth
     const legInsetZ = tableDepth * 0.5 - legWidth
 
