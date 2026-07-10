@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './Components/Navbar/Navbar'
 import Home from './Pages/Home/Home'
 import Contact from './Pages/Contact/Contact'
@@ -7,7 +7,6 @@ import Comment from './Pages/Comment/Comment'
 import About from './Pages/About/About'
 import ShowcaseLayout from './Pages/professional/ShowcaseLayout'
 import CommentForm from './Pages/Comment/CommentForm'
-import ExperienceOverlay from './Pages/professional/ExperienceOverlay'
 import MusicPage from './Pages/Music/MusicPage'
 
 import invocation from './assets/Animations/invocation.gif'
@@ -18,24 +17,18 @@ const App = () => {
     <Routes>
       <Route path='/' element={<HomePage />}/>
       <Route path='/projects/knight-of-cinders' element={<KnightGame/>}/>
-      
+
       <Route path='/comment-form' element={<CommentFormPathWay/>}/>
-      <Route path='/projects' element={<Projects />} />
+      <Route element={<ProfessionalPage />}>
+        <Route path='/projects' />
+        <Route path='/experience' />
+      </Route>
       <Route path='/music' element={<MusicPathway />} />
       <Route path='/contact' element={<ContactPage />}/>
-      <Route path='experience' element={<ExperiencePage />}/>
     </Routes>
   )
 }
 
-const ExperiencePage = () => {
-  return (
-    <div className='app-container'>
-      <Navbar activeLabel='Experience' />
-      <ExperienceOverlay />
-    </div>
-  )
-}
 const ContactPage = () => {
   return (
     <div className='app-container'>
@@ -57,11 +50,15 @@ const HomePage = () => {
   )
 }
 
-const Projects = () => {
+const ProfessionalPage = () => {
+  const location = useLocation()
+  const routeValue = location.pathname === '/experience' ? 'experience' : 'projects'
+  const activeLabel = routeValue === 'experience' ? 'Experience' : 'Projects'
+
   return (
     <div className='app-container'>
-      <Navbar activeLabel='Projects' />
-      <ShowcaseLayout />
+      <Navbar activeLabel={activeLabel} />
+      <ShowcaseLayout routeValue={routeValue} />
     </div>
   )
 }
