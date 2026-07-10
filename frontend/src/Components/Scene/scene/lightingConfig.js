@@ -7,6 +7,19 @@ export const lightParam = () => {
             color: "#ffffff",
             intensity: 0.35
         },
+        tableSpotLight: {
+            name: "tableSpotLight",
+            role: "Top-down spotlight dedicated to the table area to create a focused pool of light.",
+            enabled: true,
+            color: "#f5e6c8",
+            intensity: 14,
+            distance: 18,
+            angle: 1,
+            penumbra: 0.42,
+            decay: 1.2,
+            positionYOffset: 6.5,
+            targetYOffset: 1.36
+        },
         projectorSpotLightToWall: {
             name: "projectorSpotLightToWall",
             role: "Primary projector spotlight aimed at the projection wall. This is the main direct light source.",

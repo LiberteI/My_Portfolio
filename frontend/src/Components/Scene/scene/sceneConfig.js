@@ -11,10 +11,12 @@ export const getProjectionFrameConfig = () => {
 
 export const getDisplayPositions = () => {
     const position = { x: -10, y: -6.5, z: 10 }
+    const tablePosition = { x: -19, y: -7.5, z: 14.28 }
 
     return {
         position,
         boxPosition: { x: position.x, y: position.y, z: position.z },
+        tablePosition,
         projectorPosition: { x: position.x, y: position.y + 1.2, z: position.z },
         projectorBeamOrigin: { x: position.x - 0.2, y: position.y + 1.2, z: position.z - 0.5 }
     }

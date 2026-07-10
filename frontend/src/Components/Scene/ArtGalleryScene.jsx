@@ -3,8 +3,10 @@ import * as THREE from "three"
 import { createCamera } from "./scene/createCamera"
 import { buildRoom } from "./scene/environment/buildRoom"
 import { buildPedestal } from "./scene/environment/buildPedestal"
+import { buildTable } from "./scene/environment/buildTable"
 import { buildAmbientLight } from "./scene/lighting/buildAmbientLight"
 import { buildProjectorRig } from "./scene/lighting/buildProjectorRig"
+import { buildTableSpotLight } from "./scene/lighting/buildTableSpotLight"
 import { buildProjectionScreen } from "./scene/projection/buildProjectionScreen"
 import { createResponsiveCameraController } from "./scene/createResponsiveCameraController"
 import { createPointerInteractionController } from "./scene/createPointerInteractionController"
@@ -12,7 +14,7 @@ import { createMovementController } from "./scene/createMovementController"
 // import { createCameraDebugVisuals } from "./scene/createCameraDebugVisuals"
 import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./scene/sceneConfig"
 import { createProjectorModel } from "./scene/loadProjectorModel"
-import { getResponsiveCameraState, interpolateCameraPosition } from "./scene/cameraConfig"
+import { CAMERA_VIEW, getResponsiveCameraState, interpolateCameraPosition } from "./scene/cameraConfig"
 
 const CAMERA_TRANSITION_DURATION_MS = 700
 
@@ -27,12 +29,14 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const projectionScreenRef = useRef(null)
     const responsiveCameraControllerRef = useRef(null)
     const cameraTransitionFrameRef = useRef(0)
+    const pedestalRef = useRef(null)
+    const tableRef = useRef(null)
     const onScreenClickRef = useRef(onScreenClick)
     const routeValueRef = useRef(routeValue)
     const previousRouteValueRef = useRef(routeValue)
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = false
+    const enableCameraMovement = true
 
     useEffect(() => {
         onScreenClickRef.current = onScreenClick
@@ -42,7 +46,6 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         const camera = cameraRef.current
         const responsiveCameraController = responsiveCameraControllerRef.current
         const previousRouteValue = previousRouteValueRef.current
-
         if (!camera || !responsiveCameraController) {
             routeValueRef.current = routeValue
             previousRouteValueRef.current = routeValue
@@ -119,9 +122,13 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
 
         const room = buildRoom(scene)
         const ambientLight = buildAmbientLight(scene)
+        const tableSpotLight = buildTableSpotLight(scene)
         const projectorRig = buildProjectorRig(scene, lightColor)
         projectorRigRef.current = projectorRig
         const pedestal = buildPedestal(scene)
+        pedestalRef.current = pedestal
+        const table = buildTable(scene)
+        tableRef.current = table
         const debugAxes = enableAxesDebug ? new THREE.AxesHelper(4) : null
         if (debugAxes) {
             scene.add(debugAxes)
@@ -169,10 +176,12 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             responsiveCameraController.dispose()
             pointerInteractionController.dispose()
             ambientLight?.dispose()
+            tableSpotLight?.dispose()
             projectorRig.dispose()
             projectionScreenRef.current?.dispose()
             projectorModel.dispose()
             pedestal.dispose()
+            table.dispose()
             room.dispose()
             // cameraDebugVisuals.dispose()
             if (debugAxes) {
@@ -197,6 +206,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             projectionScreenRef.current = null
             responsiveCameraControllerRef.current = null
             cameraTransitionFrameRef.current = 0
+            pedestalRef.current = null
+            tableRef.current = null
         }
     }, [lightColor])
 
