@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react"
 import ArtGalleryScene from "../../Components/Scene/ArtGalleryScene"
-import Navbar from "../../Components/Navbar/Navbar"
 import { projectRecords } from "../../data/projects/project.data"
 import { mapProjectsToDisplayModels } from "../../data/projects/project.mapper"
 
@@ -168,8 +167,6 @@ const Project = () => {
             />
 
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
-
-            <Navbar activeLabel="Projects" />
 
             <FeaturedProjectPanel featuredProject={featuredProject} />
 
