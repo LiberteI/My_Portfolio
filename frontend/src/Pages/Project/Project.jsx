@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react"
-import ProjectScene from "./ProjectScene"
-import ProjectPageNav from "../../Components/ProjectPageNav"
-import { projectRecords } from "./project.data"
-import { mapProjectsToDisplayModels } from "./project.mapper"
+import ArtGalleryScene from "../../Components/Scene/ArtGalleryScene"
+import Navbar from "../../Components/Navbar/Navbar"
+import { projectRecords } from "../../data/projects/project.data"
+import { mapProjectsToDisplayModels } from "../../data/projects/project.mapper"
 
 const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
     return (
@@ -162,14 +162,14 @@ const Project = () => {
 
     return (
         <section className="relative h-screen overflow-hidden bg-black text-stone-100" data-project-count={projects.length}>
-            <ProjectScene
+            <ArtGalleryScene
                 className="absolute inset-0 h-full w-full bg-black"
                 screenTextureUrl={featuredProject?.projectionImage}
             />
 
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
 
-            <ProjectPageNav activeLabel="Projects" />
+            <Navbar activeLabel="Projects" />
 
             <FeaturedProjectPanel featuredProject={featuredProject} />
 

@@ -13,7 +13,7 @@ import { createMovementController } from "./scene/createMovementController"
 import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./scene/sceneConfig"
 import { createProjectorModel } from "./scene/loadProjectorModel"
 
-const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
+const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
     const canvasRef = useRef(null)
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
@@ -184,4 +184,4 @@ const ProjectScene = ({ className = "", screenTextureUrl, onScreenClick }) => {
     )
 }
 
-export default ProjectScene
+export default ArtGalleryScene
