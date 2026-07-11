@@ -1,12 +1,5 @@
 export const ExperienceRecords = [
-    {
-        orgLogo: null,
-        title: "Software Dev Intern",
-        subtitle: "",
-        shortDescription: "",
-        orgName: "",
-        period: "",
-    },
+    
     {
         orgLogo: null,
         title: "Full Stack Developer",
@@ -25,10 +18,18 @@ export const ExperienceRecords = [
     },
     {
         orgLogo: null,
-        title: "Bachelor of Computer Science",
+        title: "Software Dev Intern",
         subtitle: "",
         shortDescription: "",
-        orgName: "Dalhousie University",
+        orgName: "Quest Software",
         period: "",
+    },
+    {
+        orgLogo: null,
+        title: "Bachelor of Computer Science",
+        subtitle: "Education",
+        shortDescription: "Focus on CS and Music Composition",
+        orgName: "Dalhousie University",
+        period: "2023/09-2027/09",
     },
 ]

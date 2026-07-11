@@ -116,8 +116,38 @@ export default function Stack({
                   backgroundPosition: 'center',
                   opacity: 1
                 }}
+
+
               />
-              <div className="relative z-10 flex h-full flex-col text-black">
+              {/* Bottom-left ornament */}
+              <img
+                src={cornerOrnamentUrl}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute bottom-3 left-3 h-14 w-14 opacity-55"
+              />
+              {/* Bottom-right ornament */}
+              <img
+                src={cornerOrnamentUrl}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute bottom-3 right-3 h-14 w-14 -rotate-90 opacity-55"
+              />
+              {/* Top-left ornament */}
+              <img
+                src={cornerOrnamentUrl}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute left-3 top-3 h-14 w-14 rotate-90 opacity-55"
+              />
+              {/* Top-right ornament */}
+              <img
+                src={cornerOrnamentUrl}
+                alt=""
+                aria-hidden="true"
+                className="pointer-events-none absolute right-3 top-3 h-14 w-14 rotate-180 opacity-55"
+              />
+              <div className="relative z-10 flex h-full flex-col p-3 text-black">
                 <div className="flex-1 space-y-3">
                   <div className="flex items-start gap-3">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-black/10 bg-black/5 text-[10px] uppercase tracking-[0.2em] text-black/70">
@@ -138,17 +168,24 @@ export default function Stack({
                       {card.orgName ? (
                         <p className="text-sm leading-snug text-black/80">{card.orgName}</p>
                       ) : null}
+                      {card.period ? (
+                        <p className="text-[11px] uppercase tracking-[0.22em] text-black/60">{card.period}</p>
+                      ) : null}
                     </div>
                   </div>
 
-                  {card.period ? (
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-black/60">{card.period}</p>
-                  ) : null}
+                  
                 </div>
 
                 <div className="mx-auto h-px w-full max-w-md bg-gradient-to-r from-transparent via-black/70 to-transparent" />
 
-                <div className="flex-1" />
+                <div className="flex flex-1 items-start pl-[3.75rem] pt-4">
+                  {card.shortDescription ? (
+                    <p className="text-sm leading-6 text-black/80">
+                      {card.shortDescription}
+                    </p>
+                  ) : null}
+                </div>
               </div>
 
             </motion.div>
