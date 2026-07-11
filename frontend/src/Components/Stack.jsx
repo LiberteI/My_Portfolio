@@ -1,5 +1,7 @@
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import React, { useState, useEffect } from 'react';
+import cornerOrnamentUrl from '/images/cornor-ornament.svg';
+import paperTextureUrl from '/images/paper-texture.jpg';
 import { ExperienceRecords } from '../data/experience/experience.data';
 
 function DraggableWrapper({ children, onSendToBack, sensitivity }) {
@@ -86,10 +88,10 @@ export default function Stack({
         return (
           <DraggableWrapper key={card.id} onSendToBack={() => sendToBack(card.id)} sensitivity={sensitivity}>
             <motion.div
-              className="flex flex-col justify-between rounded-2xl border-4 border-white bg-[#171311] p-5 text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)]"
+              className="relative flex flex-col justify-between overflow-hidden rounded-2xl bg-[#171311] p-5 text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)]"
               onClick={() => sendToBackOnClick && sendToBack(card.id)}
               animate={{
-                x: index * 18,
+                x: index * 18 - 60,
                 y: index * 100,
                 rotateZ: index * 5 - 5,
                 scale: 1 + index * 0.06 - cards.length * 0.06,
@@ -105,35 +107,49 @@ export default function Stack({
                 width: cardDimensions.width,
                 height: cardDimensions.height
               }}
-            >
-              <div className="space-y-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[10px] uppercase tracking-[0.2em] text-stone-400">
-                  {card.orgLogo ? (
-                    <img src={card.orgLogo} alt={card.orgName || card.title} className="h-full w-full object-contain pointer-events-none" />
-                  ) : (
-                    <span>EXP</span>
-                  )}
+            >   
+              <div
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url(${paperTextureUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  opacity: 1
+                }}
+              />
+              <div className="relative z-10 flex h-full flex-col text-black">
+                <div className="flex-1 space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-black/10 bg-black/5 text-[10px] uppercase tracking-[0.2em] text-black/70">
+                      {card.orgLogo ? (
+                        <img src={card.orgLogo} alt={card.orgName || card.title} className="h-full w-full object-contain pointer-events-none" />
+                      ) : (
+                        <span>EXP</span>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-lg leading-tight text-black">{card.title}</p>
+
+                      {card.subtitle ? (
+                        <p className="text-xs uppercase tracking-[0.18em] text-black/65">{card.subtitle}</p>
+                      ) : null}
+
+                      {card.orgName ? (
+                        <p className="text-sm leading-snug text-black/80">{card.orgName}</p>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  {card.period ? (
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-black/60">{card.period}</p>
+                  ) : null}
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-lg leading-tight text-stone-50">{card.title}</p>
+                <div className="mx-auto h-px w-full max-w-md bg-gradient-to-r from-transparent via-black/70 to-transparent" />
 
-                  {card.subtitle ? (
-                    <p className="text-xs uppercase tracking-[0.18em] text-stone-400">{card.subtitle}</p>
-                  ) : null}
-
-                  {card.orgName ? (
-                    <p className="text-sm leading-snug text-stone-300">{card.orgName}</p>
-                  ) : null}
-                  
-                </div>
+                <div className="flex-1" />
               </div>
-
-              {card.period ? (
-                <p className="text-[11px] uppercase tracking-[0.22em] text-stone-500">{card.period}</p>
-              ) : (
-                <div />
-              )}
 
             </motion.div>
           </DraggableWrapper>

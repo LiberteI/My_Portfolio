@@ -42,7 +42,7 @@ const ExperienceOverlay = () => {
                 
                 <div className="pointer-events-auto flex flex-1 items-center justify-center md:justify-end">
                     <Stack
-                        cardDimensions={{ width: 280, height: 280 }}
+                        cardDimensions={{ width: 400, height: 300 }}
                         sendToBackOnClick
                     />
                 </div>
