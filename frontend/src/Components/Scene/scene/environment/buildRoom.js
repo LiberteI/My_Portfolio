@@ -15,7 +15,7 @@ import {
 } from "./materialResponse"
 
 export const buildRoom = (scene) => {
-    const roomXStart = -30
+    const roomXStart = -40
     const roomXEnd = 30
     const roomYStart = -7.5
     const roomYEnd = 7.5

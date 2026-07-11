@@ -20,8 +20,8 @@ const cameraConfigs = {
         aspect: 1,
         near: 0.1,
         far: 500,
-        position: new THREE.Vector3(-16.55, -3.81, 14.27),
-        lookAt: new THREE.Vector3(-17.44, -4.26, 14.26)
+        position: new THREE.Vector3(-22.55, -3.81, 14.27),
+        lookAt: new THREE.Vector3(-23.44, -4.26, 14.26)
     }
 }
 
