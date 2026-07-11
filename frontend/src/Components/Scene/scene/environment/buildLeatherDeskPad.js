@@ -46,11 +46,11 @@ const createContactShadowTexture = () => {
 export const buildLeatherDeskPad = (
     scene,
     {
-        width = 2,
+        width = 1.5,
         depth = 2,
         thickness = 0.05,
         cornerRadius = 0.08,
-        xOffset = -0.6,
+        xOffset = -0.4,
         color = "#2b1f1a",
         roughness = 0.82,
         metalness = 0.01
