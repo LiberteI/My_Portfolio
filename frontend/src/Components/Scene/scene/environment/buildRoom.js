@@ -7,7 +7,7 @@ import wallRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/compress
 import floorAoMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/floor-ao.webp"
 import floorNormalMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/floor-normal.webp"
 import floorRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/floor-roughness.webp"
-import { getProjectionFrameConfig } from "../sceneConfig"
+import { getProjectionFrameConfig, getRoomBounds } from "../sceneConfig"
 import {
     applyMaterialResponse,
     cloneUvAttribute,
@@ -15,12 +15,14 @@ import {
 } from "./materialResponse"
 
 export const buildRoom = (scene) => {
-    const roomXStart = -40
-    const roomXEnd = 30
-    const roomYStart = -7.5
-    const roomYEnd = 7.5
-    const roomZStart = -7
-    const roomZEnd = 30
+    const {
+        xStart: roomXStart,
+        xEnd: roomXEnd,
+        yStart: roomYStart,
+        yEnd: roomYEnd,
+        zStart: roomZStart,
+        zEnd: roomZEnd
+    } = getRoomBounds()
     const projectionFrame = getProjectionFrameConfig()
     const projectionFrameZ = roomZStart + 0.02
 

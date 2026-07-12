@@ -1,5 +1,16 @@
 export const DEFAULT_PROJECTOR_LIGHT_COLOR = "#e4d5c4"
 
+export const getRoomBounds = () => {
+    return {
+        xStart: -31,
+        xEnd: 30,
+        yStart: -7.5,
+        yEnd: 7.5,
+        zStart: -7,
+        zEnd: 30
+    }
+}
+
 export const getProjectionFrameConfig = () => {
     return {
         xStart: -16,

@@ -7,6 +7,7 @@ import { buildLeatherDeskPad } from "./scene/environment/buildLeatherDeskPad"
 import { buildResume } from "./scene/environment/buildResume"
 import { buildTable } from "./scene/environment/buildTable"
 import { buildTableFigures } from "./scene/environment/buildTableFigures"
+import { buildRoomWallFigures } from "./scene/environment/buildRoomWallFigures"
 import { buildAmbientLight } from "./scene/lighting/buildAmbientLight"
 import { buildProjectorRig } from "./scene/lighting/buildProjectorRig"
 import { buildTableSpotLight } from "./scene/lighting/buildTableSpotLight"
@@ -37,12 +38,13 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const leatherDeskPadRef = useRef(null)
     const resumeRef = useRef(null)
     const tableFiguresRef = useRef(null)
+    const roomWallFiguresRef = useRef(null)
     const onScreenClickRef = useRef(onScreenClick)
     const routeValueRef = useRef(routeValue)
     const previousRouteValueRef = useRef(routeValue)
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = true
+    const enableCameraMovement = false
 
     useEffect(() => {
         onScreenClickRef.current = onScreenClick
@@ -141,6 +143,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         resumeRef.current = resume
         const tableFigures = buildTableFigures(scene)
         tableFiguresRef.current = tableFigures
+        const roomWallFigures = buildRoomWallFigures(scene)
+        roomWallFiguresRef.current = roomWallFigures
         const debugAxes = enableAxesDebug ? new THREE.AxesHelper(4) : null
         if (debugAxes) {
             scene.add(debugAxes)
@@ -197,6 +201,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             leatherDeskPad.dispose()
             resume.dispose()
             tableFigures.dispose()
+            roomWallFigures.dispose()
             room.dispose()
             // cameraDebugVisuals.dispose()
             if (debugAxes) {
@@ -226,6 +231,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             leatherDeskPadRef.current = null
             resumeRef.current = null
             tableFiguresRef.current = null
+            roomWallFiguresRef.current = null
         }
     }, [lightColor])
 
