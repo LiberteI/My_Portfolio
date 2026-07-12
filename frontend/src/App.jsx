@@ -1,13 +1,12 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import ProjectPageNav from './Components/ProjectPageNav'
+import { Routes, Route, useLocation } from 'react-router-dom'
+import Navbar from './Components/Navbar/Navbar'
 import Home from './Pages/Home/Home'
 import Contact from './Pages/Contact/Contact'
 import Comment from './Pages/Comment/Comment'
 import About from './Pages/About/About'
-import Project from './Pages/Project/Project'
+import ShowcaseLayout from './Pages/professional/ShowcaseLayout'
 import CommentForm from './Pages/Comment/CommentForm'
-import Experience from './Pages/Experience/Experience'
 import MusicPage from './Pages/Music/MusicPage'
 
 import invocation from './assets/Animations/invocation.gif'
@@ -18,28 +17,22 @@ const App = () => {
     <Routes>
       <Route path='/' element={<HomePage />}/>
       <Route path='/projects/knight-of-cinders' element={<KnightGame/>}/>
-      
+
       <Route path='/comment-form' element={<CommentFormPathWay/>}/>
-      <Route path='/projects' element={<Projects />} />
+      <Route element={<ProfessionalPage />}>
+        <Route path='/projects' />
+        <Route path='/experience' />
+      </Route>
       <Route path='/music' element={<MusicPathway />} />
       <Route path='/contact' element={<ContactPage />}/>
-      <Route path='experience' element={<ExperiencePage />}/>
     </Routes>
   )
 }
 
-const ExperiencePage = () => {
-  return (
-    <div className='app-container'>
-      <ProjectPageNav activeLabel='Experience' />
-      <Experience />
-    </div>
-  )
-}
 const ContactPage = () => {
   return (
     <div className='app-container'>
-      <ProjectPageNav activeLabel='Contact' />
+      <Navbar activeLabel='Contact' />
       <Contact />
     </div>
   )
@@ -48,7 +41,7 @@ const ContactPage = () => {
 const HomePage = () => {
   return (
     <div className='app-container'>
-      <ProjectPageNav activeLabel='About' />
+      <Navbar activeLabel='About' />
       <Home />
       <About />
       <Comment />
@@ -57,10 +50,15 @@ const HomePage = () => {
   )
 }
 
-const Projects = () => {
+const ProfessionalPage = () => {
+  const location = useLocation()
+  const routeValue = location.pathname === '/experience' ? 'experience' : 'projects'
+  const activeLabel = routeValue === 'experience' ? 'Experience' : 'Projects'
+
   return (
     <div className='app-container'>
-      <Project />
+      <Navbar activeLabel={activeLabel} />
+      <ShowcaseLayout routeValue={routeValue} />
     </div>
   )
 }
@@ -77,7 +75,7 @@ const MusicPathway = () => {
 const CommentFormPathWay = () => {
   return (
     <div className='app-container'>
-      <ProjectPageNav />
+      <Navbar />
       <CommentForm />
     </div>
   )
@@ -86,7 +84,7 @@ const CommentFormPathWay = () => {
 const KnightGame = () => {
   return (
     <div className='app-container'>
-      <ProjectPageNav activeLabel='Projects' />
+      <Navbar activeLabel='Projects' />
       <div className='knightGame-container'>
 
         <video src="/knightTrailer.mp4" controls playsInline poster="/images/project-thumbnails/KnightThumbnail.png"/>
