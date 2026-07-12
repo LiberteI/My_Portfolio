@@ -6,6 +6,7 @@ import { buildPedestal } from "./scene/environment/buildPedestal"
 import { buildLeatherDeskPad } from "./scene/environment/buildLeatherDeskPad"
 import { buildResume } from "./scene/environment/buildResume"
 import { buildTable } from "./scene/environment/buildTable"
+import { buildTableFigures } from "./scene/environment/buildTableFigures"
 import { buildAmbientLight } from "./scene/lighting/buildAmbientLight"
 import { buildProjectorRig } from "./scene/lighting/buildProjectorRig"
 import { buildTableSpotLight } from "./scene/lighting/buildTableSpotLight"
@@ -35,12 +36,13 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const tableRef = useRef(null)
     const leatherDeskPadRef = useRef(null)
     const resumeRef = useRef(null)
+    const tableFiguresRef = useRef(null)
     const onScreenClickRef = useRef(onScreenClick)
     const routeValueRef = useRef(routeValue)
     const previousRouteValueRef = useRef(routeValue)
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = false
+    const enableCameraMovement = true
 
     useEffect(() => {
         onScreenClickRef.current = onScreenClick
@@ -137,6 +139,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         leatherDeskPadRef.current = leatherDeskPad
         const resume = buildResume(scene)
         resumeRef.current = resume
+        const tableFigures = buildTableFigures(scene)
+        tableFiguresRef.current = tableFigures
         const debugAxes = enableAxesDebug ? new THREE.AxesHelper(4) : null
         if (debugAxes) {
             scene.add(debugAxes)
@@ -192,6 +196,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             table.dispose()
             leatherDeskPad.dispose()
             resume.dispose()
+            tableFigures.dispose()
             room.dispose()
             // cameraDebugVisuals.dispose()
             if (debugAxes) {
@@ -220,6 +225,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             tableRef.current = null
             leatherDeskPadRef.current = null
             resumeRef.current = null
+            tableFiguresRef.current = null
         }
     }, [lightColor])
 

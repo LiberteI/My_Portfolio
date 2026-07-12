@@ -4,7 +4,7 @@ import { getDisplayPositions, getTableConfig } from "../sceneConfig"
 
 const RESUME_IMAGE_SIZE = {
     width: 595,
-    height: 600
+    height: 780
 }
 
 export const buildResume = (
