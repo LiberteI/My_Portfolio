@@ -92,36 +92,13 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
-    const greetingText = "Hello There!";
-    const introductionText = "I am Yiming Yang (Liberté) \na developer and Pianist \n (Click Me)";
+    const welcomeText = "Welcome to my website!";
     
     const [shouldIdle, setShouldIdle] = useState(false);
     const [typedText, setTypedText] = useState('');
 
     const idleInterval = 8000;
     const waveInterval = 1700;
-    const [currentText, setCurrentText] = useState(greetingText);
-
-    useEffect(() => {
-        const curDelay = shouldIdle ? idleInterval : waveInterval;
-        // toggle shouldIdle every 3 seconds
-        const toggleShouldIdle = setTimeout(() => {
-            setShouldIdle(shouldIdle => !shouldIdle);
-        }, curDelay);
-
-        // zero out current interval
-        return () => clearTimeout(toggleShouldIdle);
-    }, [shouldIdle]);
-
-    // change current text when shouldIdle changes and synchronise npc-bubble width with text's width
-    useEffect(() => {
-        if(shouldIdle){
-            setCurrentText(introductionText);
-        }
-        else{
-            setCurrentText(greetingText);
-        }
-    }, [shouldIdle])
 
     // Typewriter effect that replays whenever the bubble text changes
     useEffect(() => {
@@ -131,15 +108,15 @@ const Home = () => {
         const typingSpeedMs = 20;
         const intervalId = setInterval(() => {
             charIndex += 1;
-            setTypedText(currentText.slice(0, charIndex));
+            setTypedText(welcomeText.slice(0, charIndex));
 
-            if(charIndex >= currentText.length){
+            if(charIndex >= welcomeText.length){
                 clearInterval(intervalId);
             }
         }, typingSpeedMs);
 
         return () => clearInterval(intervalId);
-    }, [currentText]);
+    }, [welcomeText]);
     
     const [clicked, setClicked] = useState(false);
     const [shouldShowSocials, setShouldShowSocials] = useState(false);
