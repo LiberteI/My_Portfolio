@@ -84,7 +84,7 @@ const responsiveResizeConfigs = {
             threshold: 1280,
             ramp: 480,
             maxFov: 78,
-            backwardOffset: 6
+            backwardOffset: 0
         },
         mediumYaw: {
             maxWidth: 1280,

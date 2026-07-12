@@ -9,6 +9,17 @@ export default function Stack({
   cardDimensions = { width: 208, height: 208 }
 }) {
   const [hoveredCardId, setHoveredCardId] = useState(null);
+  const contentScale = Math.max(0.7, cardDimensions.width / 400);
+  const ornamentSize = Math.round(56 * contentScale);
+  const iconSize = Math.round(48 * contentScale);
+  const titleFontSize = 18 * contentScale;
+  const metaFontSize = 12 * contentScale;
+  const bodyFontSize = 14 * contentScale;
+  const periodFontSize = 11 * contentScale;
+  const descriptionFontSize = 14 * contentScale;
+  const descriptionLineHeight = 24 * contentScale;
+  const contentPadding = 12 * contentScale;
+  const descriptionIndent = 60 * contentScale;
   const cards = ExperienceRecords.map((experience, index) => ({
     id: `${experience.orgName || experience.title}-${index}`,
     ...experience
@@ -79,33 +90,45 @@ export default function Stack({
                 src={cornerOrnamentUrl}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute bottom-3 left-3 h-14 w-14 opacity-55"
+                className="pointer-events-none absolute bottom-3 left-3 opacity-55"
+                style={{ width: ornamentSize, height: ornamentSize }}
               />
               {/* Bottom-right ornament */}
               <img
                 src={cornerOrnamentUrl}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute bottom-3 right-3 h-14 w-14 -rotate-90 opacity-55"
+                className="pointer-events-none absolute bottom-3 right-3 -rotate-90 opacity-55"
+                style={{ width: ornamentSize, height: ornamentSize }}
               />
               {/* Top-left ornament */}
               <img
                 src={cornerOrnamentUrl}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute left-3 top-3 h-14 w-14 rotate-90 opacity-55"
+                className="pointer-events-none absolute left-3 top-3 rotate-90 opacity-55"
+                style={{ width: ornamentSize, height: ornamentSize }}
               />
               {/* Top-right ornament */}
               <img
                 src={cornerOrnamentUrl}
                 alt=""
                 aria-hidden="true"
-                className="pointer-events-none absolute right-3 top-3 h-14 w-14 rotate-180 opacity-55"
+                className="pointer-events-none absolute right-3 top-3 rotate-180 opacity-55"
+                style={{ width: ornamentSize, height: ornamentSize }}
               />
-              <div className="relative z-10 flex h-full flex-col p-3 text-black">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-black/10 bg-black/5 text-[10px] uppercase tracking-[0.2em] text-black/70">
+              <div className="relative z-10 flex h-full flex-col text-black" style={{ padding: contentPadding }}>
+                <div className="flex-1 space-y-3" style={{ rowGap: 12 * contentScale }}>
+                  <div className="flex items-start gap-3" style={{ columnGap: 12 * contentScale }}>
+                    <div
+                      className="flex shrink-0 items-center justify-center rounded-xl border border-black/10 bg-black/5 uppercase text-black/70"
+                      style={{
+                        width: iconSize,
+                        height: iconSize,
+                        fontSize: 10 * contentScale,
+                        letterSpacing: `${0.2 * contentScale}em`
+                      }}
+                    >
                       {card.orgLogo ? (
                         <img src={card.orgLogo} alt={card.orgName || card.title} className="h-full w-full object-contain pointer-events-none" />
                       ) : (
@@ -113,18 +136,18 @@ export default function Stack({
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <p className="text-lg leading-tight text-black">{card.title}</p>
+                    <div className="space-y-2" style={{ rowGap: 8 * contentScale }}>
+                      <p className="leading-tight text-black" style={{ fontSize: titleFontSize }}>{card.title}</p>
 
                       {card.subtitle ? (
-                        <p className="text-xs uppercase tracking-[0.18em] text-black/65">{card.subtitle}</p>
+                        <p className="uppercase text-black/65" style={{ fontSize: metaFontSize, letterSpacing: `${0.18 * contentScale}em` }}>{card.subtitle}</p>
                       ) : null}
 
                       {card.orgName ? (
-                        <p className="text-sm leading-snug text-black/80">{card.orgName}</p>
+                        <p className="leading-snug text-black/80" style={{ fontSize: bodyFontSize }}>{card.orgName}</p>
                       ) : null}
                       {card.period ? (
-                        <p className="text-[11px] uppercase tracking-[0.22em] text-black/60">{card.period}</p>
+                        <p className="uppercase text-black/60" style={{ fontSize: periodFontSize, letterSpacing: `${0.22 * contentScale}em` }}>{card.period}</p>
                       ) : null}
                     </div>
                   </div>
@@ -132,9 +155,9 @@ export default function Stack({
 
                 <div className="mx-auto h-px w-full max-w-md bg-gradient-to-r from-transparent via-black/70 to-transparent" />
 
-                <div className="flex flex-1 items-start pl-[3.75rem] pt-4">
+                <div className="flex flex-1 items-start pt-4" style={{ paddingLeft: descriptionIndent, paddingTop: 16 * contentScale }}>
                   {card.shortDescription ? (
-                    <p className="text-sm leading-6 text-black/80">
+                    <p className="text-black/80" style={{ fontSize: descriptionFontSize, lineHeight: `${descriptionLineHeight}px` }}>
                       {card.shortDescription}
                     </p>
                   ) : null}
