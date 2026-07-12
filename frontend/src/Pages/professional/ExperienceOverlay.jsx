@@ -1,4 +1,4 @@
-import { motion } from "framer-motion"
+import { motion as Motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import Stack from "../../Components/Stack"
 import { ExperienceRecords } from "../../data/experience/experience.data"
@@ -71,7 +71,7 @@ const ExperienceOverlay = () => {
     }, [])
 
     return(
-        <motion.section
+        <Motion.section
             className="pointer-events-none absolute inset-0 z-20 px-6 pb-8 pt-24 md:px-12 lg:px-16"
             initial="hidden"
             animate="visible"
@@ -96,25 +96,29 @@ const ExperienceOverlay = () => {
                         who I am today.
                     </p>
 
-                    <div className="h-px w-full max-w-md bg-gradient-to-r from-[#978063]/70 via-[#978063]/25 to-transparent" />
-                    
-                    <div className="flex items-center gap-3">
-                        <img
-                            className="h-10" 
-                            src="/images/icons/click.webp" alt="Click icon" />
+                    {showStackCards ? (
+                        <>
+                            <div className="h-px w-full max-w-md bg-gradient-to-r from-[#978063]/70 via-[#978063]/25 to-transparent" />
+                            
+                            <div className="flex items-center gap-3">
+                                <img
+                                    className="h-10" 
+                                    src="/images/icons/click.webp" alt="Click icon" />
 
-                        <p
-                            className="text-[11px] uppercase tracking-[0.32em]"
-                            style={{
-                                color: "#978063",
-                                textShadow: "0 0 8px rgba(151, 128, 99, 0.12)"
-                            }}
-                        >
-                            Click cards 
-                            <br />
-                            to learn more.
-                        </p>
-                    </div>
+                                <p
+                                    className="text-[11px] uppercase tracking-[0.32em]"
+                                    style={{
+                                        color: "#978063",
+                                        textShadow: "0 0 8px rgba(151, 128, 99, 0.12)"
+                                    }}
+                                >
+                                    Click cards 
+                                    <br />
+                                    to learn more.
+                                </p>
+                            </div>
+                        </>
+                    ) : null}
                 </div>
                 
                 {showStackCards ? (
@@ -143,7 +147,7 @@ const ExperienceOverlay = () => {
                     </div>
                 </div>
             ) : null}
-        </motion.section>
+        </Motion.section>
     )
 }
 

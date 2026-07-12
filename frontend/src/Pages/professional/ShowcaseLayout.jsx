@@ -46,62 +46,6 @@ const ShowcaseLayout = ({ routeValue }) => {
         projectOverlayExitTimeoutRef.current = 0
     }
 
-    const beginProjectOverlayEnter = () => {
-        clearProjectOverlayTransitionHandles()
-        setProjectOverlayState({
-            isRendered: true,
-            motion: "entering"
-        })
-
-        projectOverlayEnterFrameRef.current = window.requestAnimationFrame(() => {
-            projectOverlayEnterFrameRef.current = window.requestAnimationFrame(() => {
-                setProjectOverlayState({
-                    isRendered: true,
-                    motion: "idle"
-                })
-            })
-        })
-    }
-
-    const beginProjectOverlayExit = () => {
-        clearProjectOverlayTransitionHandles()
-        setProjectOverlayState((currentState) => {
-            if (!currentState.isRendered) {
-                return currentState
-            }
-
-            return {
-                isRendered: true,
-                motion: "exiting"
-            }
-        })
-
-        projectOverlayExitTimeoutRef.current = window.setTimeout(() => {
-            setProjectOverlayState({
-                isRendered: false,
-                motion: "idle"
-            })
-        }, PROJECT_OVERLAY_TRANSITION_MS)
-    }
-
-    const syncProjectOverlayToRoute = (previousRouteValue, nextRouteValue) => {
-        if (previousRouteValue === PROFESSIONAL_ROUTE_VALUES.experience && nextRouteValue === PROFESSIONAL_ROUTE_VALUES.projects) {
-            beginProjectOverlayEnter()
-            return
-        }
-
-        if (previousRouteValue === PROFESSIONAL_ROUTE_VALUES.projects && nextRouteValue === PROFESSIONAL_ROUTE_VALUES.experience) {
-            beginProjectOverlayExit()
-            return
-        }
-
-        clearProjectOverlayTransitionHandles()
-        setProjectOverlayState({
-            isRendered: nextRouteValue === PROFESSIONAL_ROUTE_VALUES.projects,
-            motion: "idle"
-        })
-    }
-
     useEffect(() => {
         if (!isProfessionalRouteValue(routeValue)) {
             console.log("[ShowcaseLayout] onExitProfessional:", {
@@ -128,7 +72,49 @@ const ShowcaseLayout = ({ routeValue }) => {
             previousRouteValue: professionalState.routeValue,
             nextRouteValue: routeValue
         })
-        syncProjectOverlayToRoute(professionalState.routeValue, routeValue)
+
+        if (professionalState.routeValue === PROFESSIONAL_ROUTE_VALUES.experience && routeValue === PROFESSIONAL_ROUTE_VALUES.projects) {
+            clearProjectOverlayTransitionHandles()
+            setProjectOverlayState({
+                isRendered: true,
+                motion: "entering"
+            })
+
+            projectOverlayEnterFrameRef.current = window.requestAnimationFrame(() => {
+                projectOverlayEnterFrameRef.current = window.requestAnimationFrame(() => {
+                    setProjectOverlayState({
+                        isRendered: true,
+                        motion: "idle"
+                    })
+                })
+            })
+        } else if (professionalState.routeValue === PROFESSIONAL_ROUTE_VALUES.projects && routeValue === PROFESSIONAL_ROUTE_VALUES.experience) {
+            clearProjectOverlayTransitionHandles()
+            setProjectOverlayState((currentState) => {
+                if (!currentState.isRendered) {
+                    return currentState
+                }
+
+                return {
+                    isRendered: true,
+                    motion: "exiting"
+                }
+            })
+
+            projectOverlayExitTimeoutRef.current = window.setTimeout(() => {
+                setProjectOverlayState({
+                    isRendered: false,
+                    motion: "idle"
+                })
+            }, PROJECT_OVERLAY_TRANSITION_MS)
+        } else {
+            clearProjectOverlayTransitionHandles()
+            setProjectOverlayState({
+                isRendered: routeValue === PROFESSIONAL_ROUTE_VALUES.projects,
+                motion: "idle"
+            })
+        }
+
         setProfessionalState(createProfessionalState(routeValue))
     }, [routeValue, professionalState.routeValue, professionalState.status])
 

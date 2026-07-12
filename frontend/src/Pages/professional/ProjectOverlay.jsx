@@ -1,3 +1,5 @@
+import { motion as Motion } from "framer-motion"
+
 const ProjectScrollCard = ({ project, index, isActive, onClick }) => {
     return (
         <button
@@ -164,7 +166,7 @@ const overlayVariants = {
 
 const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelectProject, motionState = "idle" }) => {
     return (
-        <motion.div
+        <Motion.div
             className="pointer-events-none absolute inset-0 z-20 origin-center will-change-transform"
             initial={false}
             animate={motionState}
@@ -183,9 +185,8 @@ const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelec
                 projects={projects}
                 onSelectProject={onSelectProject}
             />
-        </motion.div>
+        </Motion.div>
     )
 }
 
 export default ProjectOverlay
-import { motion } from "framer-motion"

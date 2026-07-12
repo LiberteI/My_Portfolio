@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
 import { useState } from 'react';
 import cornerOrnamentUrl from '/images/cornor-ornament.svg';
 import paperTextureUrl from '/images/paper-texture.jpg';
@@ -47,7 +47,7 @@ export default function Stack({
         const idleDuration = 5.8 + index * 0.45;
 
         return (
-          <motion.div
+          <Motion.div
             key={card.id}
             className="absolute transition-transform duration-300 ease-out"
             onMouseEnter={() => setHoveredCardId(card.id)}
@@ -164,7 +164,7 @@ export default function Stack({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </Motion.div>
         );
       })}
     </div>
