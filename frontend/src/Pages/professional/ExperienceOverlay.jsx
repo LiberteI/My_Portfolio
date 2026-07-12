@@ -60,9 +60,9 @@ const ExperienceOverlay = () => {
                                 textShadow: "0 0 8px rgba(151, 128, 99, 0.12)"
                             }}
                         >
-                            Drag or click cards 
+                            Click cards 
                             <br />
-                            to cycle through roles.
+                            to learn more.
                         </p>
                     </div>
                 </div>
