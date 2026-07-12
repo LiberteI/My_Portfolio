@@ -1,3 +1,4 @@
+import { AnimatePresence } from "framer-motion"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ArtGalleryScene from "../../Components/Scene/ArtGalleryScene"
 import { projectRecords } from "../../data/projects/project.data"
@@ -159,11 +160,13 @@ const ShowcaseLayout = ({ routeValue }) => {
                     activeProjectIndex={activeProjectIndex}
                     projects={projects}
                     onSelectProject={handleSelectProject}
-                    motion={projectOverlayState.motion}
+                    motionState={projectOverlayState.motion}
                 />
             ) : null}
 
-            {activeProfessionalRoute === PROFESSIONAL_ROUTE_VALUES.experience ? <ExperienceOverlay /> : null}
+            <AnimatePresence>
+                {activeProfessionalRoute === PROFESSIONAL_ROUTE_VALUES.experience ? <ExperienceOverlay key="experience-overlay" /> : null}
+            </AnimatePresence>
         </section>
     )
 }

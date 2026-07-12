@@ -144,21 +144,35 @@ const ProjectCarouselDock = ({ activeProjectIndex, projects, onSelectProject }) 
     )
 }
 
-const motionClassByState = {
-    idle: "translate-y-0 scale-100 opacity-100",
-    entering: "translate-y-4 scale-[1.06] opacity-0",
-    exiting: "-translate-y-4 scale-[1.08] opacity-0"
+const overlayVariants = {
+    idle: {
+        opacity: 1,
+        y: 0,
+        scale: 1
+    },
+    entering: {
+        opacity: 0,
+        y: 16,
+        scale: 1.06
+    },
+    exiting: {
+        opacity: 0,
+        y: -16,
+        scale: 1.08
+    }
 }
 
-const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelectProject, motion = "idle" }) => {
-    const motionClassName = motionClassByState[motion] ?? motionClassByState.idle
-
+const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelectProject, motionState = "idle" }) => {
     return (
-        <div
-            className={[
-                "pointer-events-none absolute inset-0 z-20 origin-center transition-[opacity,transform] duration-450 ease-out will-change-transform",
-                motionClassName
-            ].join(" ")}
+        <motion.div
+            className="pointer-events-none absolute inset-0 z-20 origin-center will-change-transform"
+            initial={false}
+            animate={motionState}
+            variants={overlayVariants}
+            transition={{
+                duration: 0.45,
+                ease: "easeOut"
+            }}
         >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(228,213,196,0.18),transparent_50%),linear-gradient(90deg,rgba(0,0,0,0.82)_0%,rgba(0,0,0,0.46)_34%,rgba(0,0,0,0.14)_62%,rgba(0,0,0,0.52)_100%)]" />
 
@@ -169,8 +183,9 @@ const ProjectOverlay = ({ featuredProject, activeProjectIndex, projects, onSelec
                 projects={projects}
                 onSelectProject={onSelectProject}
             />
-        </div>
+        </motion.div>
     )
 }
 
 export default ProjectOverlay
+import { motion } from "framer-motion"

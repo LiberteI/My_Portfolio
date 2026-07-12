@@ -1,10 +1,37 @@
-
+import { motion } from "framer-motion"
 import Stack from "../../Components/Stack"
 
-const ExperienceOverlay = () => {
+const experienceOverlayVariants = {
+    hidden: {
+        opacity: 0,
+        y: 18,
+        scale: 1.03
+    },
+    visible: {
+        opacity: 1,
+        y: 0,
+        scale: 1
+    },
+    exiting: {
+        opacity: 0,
+        y: -18,
+        scale: 1.04
+    }
+}
 
+const ExperienceOverlay = () => {
     return(
-        <section className="pointer-events-none absolute inset-0 z-20 px-6 pb-8 pt-24 md:px-12 lg:px-16">
+        <motion.section
+            className="pointer-events-none absolute inset-0 z-20 px-6 pb-8 pt-24 md:px-12 lg:px-16"
+            initial="hidden"
+            animate="visible"
+            exit="exiting"
+            variants={experienceOverlayVariants}
+            transition={{
+                duration: 0.45,
+                ease: "easeOut"
+            }}
+        >
            <div className="flex h-full flex-col justify-between gap-8 md:flex-row md:items-start">
                 <div className="pointer-events-auto max-w-xl space-y-4">
                     <h1 className="font-serif text-4xl leading-none text-stone-50 md:text-5xl">
@@ -47,7 +74,7 @@ const ExperienceOverlay = () => {
                     />
                 </div>
            </div>
-        </section>
+        </motion.section>
     )
 }
 
