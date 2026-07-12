@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import cornerOrnamentUrl from '/images/cornor-ornament.svg';
 import paperTextureUrl from '/images/paper-texture.jpg';
@@ -32,20 +33,34 @@ export default function Stack({
         const hoverTranslateX = baseTranslateX + 24;
         const hoverTranslateY = baseTranslateY - 28;
         const hoverScale = baseScale + 0.04;
+        const idleDuration = 5.8 + index * 0.45;
 
         return (
-          <div
+          <motion.div
             key={card.id}
             className="absolute transition-transform duration-300 ease-out"
             onMouseEnter={() => setHoveredCardId(card.id)}
             onMouseLeave={() => setHoveredCardId(null)}
+            animate={{
+              x: isHovered ? hoverTranslateX : baseTranslateX,
+              y: isHovered ? hoverTranslateY : [baseTranslateY, baseTranslateY - 5, baseTranslateY, baseTranslateY + 3, baseTranslateY],
+              rotate: isHovered ? baseRotate : [baseRotate, baseRotate + 0.35, baseRotate, baseRotate - 0.25, baseRotate],
+              scale: isHovered ? hoverScale : baseScale
+            }}
+            transition={{
+              x: { duration: 0.28, ease: 'easeOut' },
+              y: isHovered
+                ? { duration: 0.28, ease: 'easeOut' }
+                : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
+              rotate: isHovered
+                ? { duration: 0.28, ease: 'easeOut' }
+                : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
+              scale: { duration: 0.28, ease: 'easeOut' }
+            }}
             style={{
               zIndex: isHovered ? cards.length + 10 : index + 1,
               width: cardDimensions.width,
               height: cardDimensions.height,
-              transform: isHovered
-                ? `translate(${hoverTranslateX}px, ${hoverTranslateY}px) rotate(${baseRotate}deg) scale(${hoverScale})`
-                : `translate(${baseTranslateX}px, ${baseTranslateY}px) rotate(${baseRotate}deg) scale(${baseScale})`,
               transformOrigin: 'center center'
             }}
           >
@@ -126,7 +141,7 @@ export default function Stack({
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </div>
