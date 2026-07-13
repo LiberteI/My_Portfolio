@@ -1,7 +1,6 @@
 import * as THREE from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import pianoModelUrl from "../../../../assets/Meshes/dusty_old_piano.glb"
-import clockModelUrl from "../../../../assets/Meshes/clock.glb"
 import shelfModelUrl from "../../../../assets/Meshes/shelf.glb"
 import titanicLampModelUrl from "../../../../assets/Meshes/titanic_lamp.glb"
 import { getRoomBounds } from "../sceneConfig"
@@ -10,7 +9,7 @@ const roomWallFigureConfigs = [
     {
         name: "piano",
         modelUrl: pianoModelUrl,
-        zOffset: 18,
+        zOffset: 20,
         yOffset: 0,
         xInset: 2,
         targetHeight: 4,
@@ -19,25 +18,16 @@ const roomWallFigureConfigs = [
     {
         name: "shelf",
         modelUrl: shelfModelUrl,
-        zOffset: 12,
+        zOffset: 14,
         yOffset: 0,
         xInset: 1,
         targetHeight: 8,
         rotationY: 0
     },
     {
-        name: "clock",
-        modelUrl: clockModelUrl,
-        zOffset: 21,
-        yOffset: 0,
-        xInset: 1,
-        targetHeight: 6,
-        rotationY: Math.PI * 0.5
-    },
-    {
         name: "titanicLamp",
         modelUrl: titanicLampModelUrl,
-        zOffset: 17,
+        zOffset: 20,
         yOffset: 4,
         xInset: 0.7,
         targetHeight: 0.7,
