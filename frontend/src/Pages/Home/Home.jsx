@@ -94,11 +94,8 @@ const Home = () => {
 
     const welcomeText = "Welcome to my website!\n Click me!";
     
-    const [shouldIdle, setShouldIdle] = useState(false);
+    const [shouldIdle] = useState(false);
     const [typedText, setTypedText] = useState('');
-
-    const idleInterval = 8000;
-    const waveInterval = 1700;
 
     // Typewriter effect that replays whenever the bubble text changes
     useEffect(() => {
