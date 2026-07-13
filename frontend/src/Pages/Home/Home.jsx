@@ -92,7 +92,7 @@ const Home = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [])
 
-    const welcomeText = "Welcome to my website!";
+    const welcomeText = "Welcome to my website!\n Click me!";
     
     const [shouldIdle, setShouldIdle] = useState(false);
     const [typedText, setTypedText] = useState('');
@@ -131,17 +131,10 @@ const Home = () => {
 
     const handleClick = () => {
         setClicked(true);
-        setShouldShowSocials(true);
+        setShouldShowSocials((current) => !current);
         setTimeout(() => {
             setClicked(false);
-            
         }, 830);
-        
-        setTimeout(() => {
-            setShouldShowSocials(false);
-
-        }, 6000);
-        // console.log(shouldShowSocials);
     };
 
     const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -196,16 +189,27 @@ const Home = () => {
                 <img className='home-bg-building-near' ref={nearRef} src={buildingNear} alt="Near skyline" style={{ display: getLayerDisplay('near') }} />
                 <img className='home-tile' src={tile} alt="tilemap" style={{ display: getLayerDisplay('tile') }} />
 
-                {!shouldShowSocials && layerVisibility.bubble && (
-                    <div className='npc-bubble'>{typedText}</div>
-                )}
+                <div
+                    className={`npc-bubble ${!shouldShowSocials ? 'is-visible' : 'is-hidden'}`}
+                    style={{ display: getLayerDisplay('bubble') }}
+                >
+                    {typedText}
+                </div>
 
-                <div className={`socials ${shouldShowSocials ? 'is-visible' : ''}`} style={{ display: getLayerDisplay('socials') }}>
+                <div className={`socials ${shouldShowSocials ? 'is-visible' : 'is-hidden'}`} style={{ display: getLayerDisplay('socials') }}>
                         <a href="https://www.youtube.com/@Liberteeeee-hd7zg"><img src={youtubeIcon} alt="" /></a>
                         
                         <a href="https://github.com/LiberteI"><img src={githubIcon} alt="" /></a>
                         <a href="https://www.linkedin.com/in/yiming-yang-89a0102a0/"><img src={linkedinIcon} alt="" /></a>
                         
+                </div>
+
+                <div
+                    className={`npc-indicator ${!shouldShowSocials ? 'is-visible' : 'is-hidden'}`}
+                    style={{ display: getLayerDisplay('homepageNpc') }}
+                    aria-hidden="true"
+                >
+                    ▼
                 </div>
                 
                 <button className="homepage-npc-button" onClick={handleClick} style={{ display: getLayerDisplay('homepageNpc') }}>
