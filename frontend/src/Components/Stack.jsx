@@ -69,7 +69,6 @@ export default function Stack({
               scale: { duration: 0.28, ease: 'easeOut' }
             }}
             style={{
-              zIndex: isHovered ? cards.length + 10 : index + 1,
               width: cardDimensions.width,
               height: cardDimensions.height,
               transformOrigin: 'center center'
