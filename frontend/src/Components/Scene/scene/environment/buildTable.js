@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import tableTextureUrl from "../../../../assets/Museum/table-texture.jpg"
+import tableTextureUrl from "../../../../assets/Museum/compressed-img/table-texture.webp"
 import wallAoMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-ao.webp"
 import wallNormalMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-normal.webp"
 import wallRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-roughness.webp"

@@ -1,7 +1,7 @@
 import { motion as Motion } from 'framer-motion';
 import { useState } from 'react';
 import cornerOrnamentUrl from '/images/cornor-ornament.svg';
-import paperTextureUrl from '/images/paper-texture.jpg';
+import paperTextureUrl from '/images/compressed-img/paper-texture.webp';
 import { ExperienceRecords } from '../data/experience/experience.data';
 
 export default function Stack({

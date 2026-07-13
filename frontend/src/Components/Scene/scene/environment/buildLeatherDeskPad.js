@@ -1,8 +1,8 @@
 import * as THREE from "three"
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js"
-import leatherColorTextureUrl from "../../../../assets/Museum/Leather026_1K-JPG_Color.jpg"
-import leatherRoughnessTextureUrl from "../../../../assets/Museum/Leather026_1K-JPG_Roughness.jpg"
-import leatherNormalTextureUrl from "../../../../assets/Museum/Leather026_1K-JPG_NormalGL.jpg"
+import leatherColorTextureUrl from "../../../../assets/Museum/compressed-img/Leather026_1K-JPG_Color.webp"
+import leatherRoughnessTextureUrl from "../../../../assets/Museum/compressed-img/Leather026_1K-JPG_Roughness.webp"
+import leatherNormalTextureUrl from "../../../../assets/Museum/compressed-img/Leather026_1K-JPG_NormalGL.webp"
 import { getDisplayPositions, getTableConfig } from "../sceneConfig"
 import { cloneUvAttribute, configureRepeatingTexture } from "./materialResponse"
 
