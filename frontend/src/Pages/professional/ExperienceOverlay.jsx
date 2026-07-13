@@ -2,6 +2,7 @@ import { motion as Motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import Stack from "../../Components/Stack"
 import { ExperienceRecords } from "../../data/experience/experience.data"
+import handTapGif from "../../assets/Animations/hand-tap.gif"
 
 const experienceOverlayVariants = {
     hidden: {
@@ -44,6 +45,7 @@ const ExperienceDeckCard = ({ experience, index }) => {
 const ExperienceOverlay = () => {
     const [cardDimensions, setCardDimensions] = useState({ width: 400, height: 300 })
     const [showStackCards, setShowStackCards] = useState(true)
+    const [handTapCycle, setHandTapCycle] = useState(0)
 
     useEffect(() => {
         const resizeCards = () => {
@@ -69,6 +71,20 @@ const ExperienceOverlay = () => {
             window.removeEventListener("resize", resizeCards)
         }
     }, [])
+
+    useEffect(() => {
+        if (!showStackCards) {
+            return undefined
+        }
+
+        const handTapInterval = window.setInterval(() => {
+            setHandTapCycle((currentCycle) => currentCycle + 1)
+        }, 8000)
+
+        return () => {
+            window.clearInterval(handTapInterval)
+        }
+    }, [showStackCards])
 
     return(
         <Motion.section
@@ -96,35 +112,32 @@ const ExperienceOverlay = () => {
                         who I am today.
                     </p>
 
-                    {showStackCards ? (
-                        <>
-                            <div className="h-px w-full max-w-md bg-gradient-to-r from-[#978063]/70 via-[#978063]/25 to-transparent" />
-                            
-                            <div className="flex items-center gap-3">
-                                <img
-                                    className="h-10" 
-                                    src="/images/icons/click.webp" alt="Click icon" />
-
-                                <p
-                                    className="text-[11px] uppercase tracking-[0.32em]"
-                                    style={{
-                                        color: "#978063",
-                                        textShadow: "0 0 8px rgba(151, 128, 99, 0.12)"
-                                    }}
-                                >
-                                    Click cards 
-                                    <br />
-                                    to learn more.
-                                </p>
-                            </div>
-                        </>
-                    ) : null}
                 </div>
                 
                 {showStackCards ? (
-                    <div className="pointer-events-auto flex flex-1 items-center justify-center md:justify-end">
+                    <div className="pointer-events-auto relative flex flex-1 items-center justify-center md:justify-end">
                         <Stack
                             cardDimensions={cardDimensions}
+                        />
+                        <Motion.img
+                            key={handTapCycle}
+                            src={handTapGif}
+                            alt=""
+                            aria-hidden="true"
+                            className="pointer-events-none absolute right-14 top-1/2 z-20 h-24 -translate-y-1/2"
+                            initial={{ opacity: 0, scale: 0.92 }}
+                            animate={{
+                                opacity: [0, 1, 1, 0],
+                                scale: [0.92, 1, 1, 0.96]
+                            }}
+                            transition={{
+                                duration: 2.8,
+                                times: [0, 0.18, 0.68, 1],
+                                ease: "easeOut"
+                            }}
+                            style={{
+                                filter: "drop-shadow(0 0 16px rgba(241, 214, 160, 0.45)) drop-shadow(0 0 28px rgba(241, 214, 160, 0.2))"
+                            }}
                         />
                     </div>
                 ) : null}

@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
-const navItems = [
-    { label: "Projects", type: "route", to: "/projects" },
-    { label: "Experience", type: "route", to: "/experience" },
-    { label: "Music", type: "route", to: "/music" },
+const leftNavItems = [
     { label: "About", type: "scroll", target: "about" },
     { label: "Contact", type: "route", to: "/contact" }
 ]
+
+const rightNavItems = [
+    { label: "Projects", type: "route", to: "/projects" },
+    { label: "Experience", type: "route", to: "/experience" },
+    { label: "Music", type: "route", to: "/music" }
+]
+
+const navItems = [...leftNavItems, ...rightNavItems]
 
 const activeLabelByPathname = {
     "/": "About",
@@ -69,14 +74,33 @@ const Navbar = ({ activeLabel, className = "" }) => {
     return (
         <nav className={`absolute inset-x-0 top-0 px-6 py-8 md:px-12 lg:px-16 ${isExpanded ? "z-50" : "z-30"} ${className}`}>
             <div className="flex items-center justify-between">
-                <a
-                    href="/"
-                    onClick={navigateHome}
-                    className="pointer-events-auto hidden items-center rounded-full px-3 py-2 text-sm uppercase tracking-[0.34em] text-stone-200 transition hover:text-white min-[553px]:inline-flex"
-                    aria-label="Go to home"
-                >
-                    Home
-                </a>
+                <div className="pointer-events-auto hidden items-center gap-4 text-[11px] uppercase tracking-[0.28em] text-stone-400 min-[553px]:flex md:gap-6">
+                    <a
+                        href="/"
+                        onClick={navigateHome}
+                        className={[
+                            "pointer-events-auto inline-flex items-center rounded-full px-3 py-2 text-sm uppercase tracking-[0.34em]",
+                            selectedLabel === "About" && location.pathname === "/" ? "text-stone-100" : "text-stone-200 transition hover:text-white"
+                        ].join(" ")}
+                        aria-label="Go to home"
+                    >
+                        Home
+                    </a>
+                    {leftNavItems.map((item) => (
+                        <a
+                            key={item.label}
+                            href={item.type === "scroll" ? `/#${item.target}` : item.to}
+                            onClick={(event) => handleNavItemClick(event, item)}
+                            className={[
+                                "pointer-events-auto inline-flex items-center rounded-full px-3 py-2",
+                                item.label === selectedLabel ? "text-stone-100" : "transition hover:text-stone-200"
+                            ].join(" ")}
+                            aria-label={`Go to ${item.label.toLowerCase()}`}
+                        >
+                            {item.label}
+                        </a>
+                    ))}
+                </div>
                 <button
                     type="button"
                     onClick={() => setIsExpanded((current) => !current)}
@@ -91,7 +115,7 @@ const Navbar = ({ activeLabel, className = "" }) => {
                     </span>
                 </button>
                 <div className="pointer-events-auto hidden items-center gap-4 text-[11px] uppercase tracking-[0.28em] text-stone-400 min-[553px]:flex md:gap-6">
-                    {navItems.map((item) => (
+                    {rightNavItems.map((item) => (
                         <a
                             key={item.label}
                             href={item.type === "scroll" ? `/#${item.target}` : item.to}
