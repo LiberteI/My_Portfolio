@@ -1,13 +1,17 @@
 import * as THREE from "three"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import projectorModelUrl from "../../../assets/Meshes/generic_white_digital_projector.glb"
+import projectorModelUrl from "../../../assets/Meshes/texture-compressed/tc-dc-generic_white_digital_projector.glb"
 import { getDisplayPositions } from "./sceneConfig"
 
 export const createProjectorModel = (scene) => {
     const { projectorPosition } = getDisplayPositions()
     const projectorScale = 0.25
     const projectorRotationY = Math.PI
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath("/draco/")
     const loader = new GLTFLoader()
+    loader.setDRACOLoader(dracoLoader)
     let projector = null
     let disposed = false
 
@@ -98,6 +102,8 @@ export const createProjectorModel = (scene) => {
                 scene.remove(projector)
                 disposeProjector(projector)
             }
+
+            dracoLoader.dispose()
         }
     }
 }

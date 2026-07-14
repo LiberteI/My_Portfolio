@@ -1,8 +1,9 @@
 import * as THREE from "three"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import pianoModelUrl from "../../../../assets/Meshes/dusty_old_piano.glb"
-import shelfModelUrl from "../../../../assets/Meshes/shelf.glb"
-import titanicLampModelUrl from "../../../../assets/Meshes/titanic_lamp.glb"
+import pianoModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-dusty_old_piano.glb"
+import shelfModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-shelf.glb"
+import titanicLampModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-titanic_lamp.glb"
 import { getRoomBounds } from "../sceneConfig"
 
 const roomWallFigureConfigs = [
@@ -99,7 +100,10 @@ const createNormalizedWallPivotGroup = (model, config) => {
 }
 
 export const buildRoomWallFigures = (scene) => {
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath("/draco/")
     const loader = new GLTFLoader()
+    loader.setDRACOLoader(dracoLoader)
     let disposed = false
     const loadedFigures = []
 
@@ -163,6 +167,8 @@ export const buildRoomWallFigures = (scene) => {
                 scene.remove(pivotGroup)
                 disposeSceneNode(model)
             })
+
+            dracoLoader.dispose()
         }
     }
 }
