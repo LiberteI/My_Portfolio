@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import projectorModelUrl from "../../../assets/Projector/generic_white_digital_projector.glb"
+import projectorModelUrl from "../../../assets/Meshes/generic_white_digital_projector.glb"
 import { getDisplayPositions } from "./sceneConfig"
 
 export const createProjectorModel = (scene) => {
