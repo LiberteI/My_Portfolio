@@ -1,304 +1,329 @@
-# Persistent Showcase Architecture
+# ArtGalleryScene Performance Optimization Plan
 
 ## Goal
 
-Create a seamless transition between **Projects** and **Experience** without tearing down the 3D scene.
+Refactor the scene into independently loadable layers so that:
 
-The portfolio should feel like a single continuous environment rather than multiple independent webpages.
-
----
-
-# Design Philosophy
-
-Projects and Experience are **different views of the same exhibition**, not separate pages.
-
-The transition should feel cinematic:
-
-1. Current page UI moves outward and disappears.
-2. Camera rotates to the next viewpoint (approximately 180°).
-3. Destination UI moves inward and appears.
-4. The underlying 3D world never remounts.
+- First paint only loads assets required for the current route.
+- Decorative assets never block initial rendering.
+- Scene initialization happens only once.
+- Route switching becomes instant through camera transitions and layer visibility changes.
+- Heavy assets are loaded lazily and reused.
 
 ---
 
-# Persistent Scene
+# 1. Scene Layer Architecture
 
-The following components should remain mounted for the lifetime of the showcase.
+Split the scene into four independent layers.
 
-- Navigation
-- ArtGalleryScene
+```
+ArtGalleryScene
+├── CoreLayer
+├── ExperienceLayer
+├── ProjectLayer
+└── DecorativeLayer
+```
+
+---
+
+## CoreLayer
+
+Loaded immediately during scene initialization.
+
+Contents:
+
+- Room
 - Camera
-- Camera Controller
-- Lighting
-- Models
-- Environment
-- Animation System
+- Renderer
+- Responsive Controller
+- Base Lighting
+- Table
 
-These should **never** be recreated when switching between sections.
+Purpose:
 
----
-
-# Replaceable UI Layer
-
-Only the page-specific overlay changes.
-
-Examples:
-
-## Projects
-
-- Project title
-- Description
-- Tech stack
-- Navigation arrows
-- Project cards
-- View Project button
-
-## Experience
-
-- Timeline
-- Experience cards
-- Resume button
-- Skills
-- Company information
-
-The overlay should sit above the scene using absolute positioning.
+Provide the minimum environment required for every route.
 
 ---
 
-# Transition Flow
+## ExperienceLayer
 
-## 1. User initiates navigation
+Loaded only when the Experience page is visited.
 
+Contents:
+
+- Leather desk pad
+- Resume
+- Experience-specific desk objects
+
+Purpose:
+
+Contains only assets required by the Experience camera view.
+
+---
+
+## ProjectLayer
+
+Loaded only when the Projects page is visited.
+
+Contents:
+
+- Projector rig
+- Projection screen
+- Pedestal
+- Project-specific assets
+
+Purpose:
+
+Contains only assets visible from the Project camera.
+
+---
+
+## DecorativeLayer
+
+Contains all atmosphere-only assets.
+
+Move these models here:
+
+- President Xi
+- Beethoven
+- Winnie the Pooh
+- Flower pot
+- Piano
+- Bookshelf
+- Lamp
+
+These assets should **never block first paint**.
+
+Load after:
+
+- route settles
+- camera transition completes
+- or `requestIdleCallback()`
+
+---
+
+# 2. Separate Loading From Visibility
+
+Each layer should maintain two independent states.
+
+```ts
+loaded: boolean
+visible: boolean
 ```
-Projects → Experience
-```
 
-Lock user interaction during the transition.
+Meaning:
+
+- **loaded** → assets already exist in memory.
+- **visible** → assets are currently rendered.
+
+Route changes should only modify visibility.
+
+Never recreate layers once loaded.
 
 ---
 
-## 2. Exit Animation
+# 3. Layer Loader
 
-Current UI moves outward while fading.
+Each layer exposes:
+
+```ts
+ensureLoaded()
+```
+
+Behavior:
+
+- Already loaded → immediately show.
+- Currently loading → reuse existing Promise.
+- Not loaded → load assets once.
+
+Avoid duplicate requests.
+
+---
+
+# 4. Route-specific Initial Loading
+
+Only load assets required for the first visited route.
 
 Example:
 
-- translateZ away from camera
-- scale down
-- fade opacity
+### First visit `/experience`
+
+Load:
+
+- CoreLayer
+- ExperienceLayer
+
+Do NOT load:
+
+- ProjectLayer
+- Project decorations
 
 ---
 
-## 3. Camera Transition
+### First visit `/projects`
 
-Animate camera to the next preset.
+Load:
 
-Instead of instantly changing camera values:
+- CoreLayer
+- ProjectLayer
 
-```
-camera.position
-camera.rotation
-camera.lookAt
-```
+Do NOT load:
 
-interpolate smoothly.
-
-The camera may:
-
-- rotate roughly 180°
-- slightly move position
-- update look target
-
-to create a natural cinematic movement.
+- Experience decorations
 
 ---
 
-## 4. Overlay Swap
+# 5. Decorative Asset Deferral
 
-Once the previous UI has fully exited (or around the midpoint of the camera movement):
+DecorativeLayer should load only after the page becomes usable.
+
+Possible triggers:
+
+- Camera transition finished
+- `requestIdleCallback`
+- Short timeout after first interaction
+
+Decorative assets should never delay LCP.
+
+---
+
+# 6. GLB Optimization
+
+Immediately optimize the largest models.
+
+Priority:
+
+1. `president_xi_jing_ping.glb`
+2. `ludwig_van_beethoven.glb`
+3. `shelf.glb`
+4. `winnie_the_pooh.glb`
+5. `dusty_old_piano.glb`
+
+For each model:
+
+- Check embedded textures
+- Reduce texture resolution
+- Compress textures
+- Compress GLB
+
+Texture optimization usually produces larger gains than geometry compression.
+
+---
+
+# 7. Prioritize Visible Content
+
+Professional routes should render UI immediately.
+
+Display order:
 
 ```
-Projects UI
+Overlay Text
 ↓
 
-Experience UI
+Scene
+↓
+
+Decorative Assets
 ```
 
-Replace only the overlay.
-
-The scene remains untouched.
+The overlay should never wait for all 3D assets.
 
 ---
 
-## 5. Enter Animation
+# 8. Route Transition Optimization
 
-Animate the new UI into place.
+Switching between Project and Experience should only perform:
 
-Example:
+- Camera transition
+- Overlay transition
+- Layer visibility changes
 
-- start slightly compressed
-- move inward
-- fade to full opacity
+Never:
 
----
-
-# Routing Strategy
-
-Do **not** let routing own the scene lifecycle.
-
-Instead:
-
-```
-ShowcaseLayout
-├── Navbar
-├── ArtGalleryScene
-├── Camera Controller
-└── Overlay
-```
-
-The overlay changes based on the current route or view.
-
-Possible routes:
-
-```
-/projects
-/experience
-```
-
-Both routes render the same persistent layout.
-
-Only the overlay content changes.
+- Destroy renderer
+- Recreate scene
+- Reload GLBs
 
 ---
 
-# Scene State
+# 9. Heavy Layer Loading State
 
-Instead of treating pages as independent React trees:
+Heavy layers should display a lightweight loading indicator.
 
-```
-Projects Page
-Experience Page
-```
+Goal:
 
-treat them as scene states.
-
-Example:
-
-```ts
-type SceneView =
-    | "projects"
-    | "experience";
-```
-
-The current scene state determines:
-
-- active overlay
-- camera preset
-- interaction logic
+- Page becomes interactive immediately.
+- User receives feedback while assets stream in.
 
 ---
 
-# Camera Presets
+# 10. Background Prefetch
 
-Define reusable camera presets.
+Once the current route is stable:
 
-Example:
+### After entering Experience
 
-```ts
-cameraPresets = {
-    projects: {
-        position,
-        target
-    },
-    experience: {
-        position,
-        target
-    }
-}
+Idle preload:
+
 ```
-
-The camera controller simply animates between presets.
+ProjectLayer
+```
 
 ---
 
-# Transition State Machine
+### After entering Projects
 
-A small transition state machine keeps animations predictable.
+Idle preload:
 
 ```
-Idle
-    ↓
-Exiting
-    ↓
-Camera Moving
-    ↓
-Overlay Swap
-    ↓
-Entering
-    ↓
-Idle
+ExperienceLayer
 ```
 
-During any non-idle state:
-
-- disable navigation
-- ignore repeated clicks
+This keeps future transitions instant without affecting first paint.
 
 ---
 
-# Component Structure
+# Recommended Implementation Order
 
-```
-ShowcaseLayout
-│
-├── Navbar
-├── ArtGalleryScene
-├── CameraController
-├── OverlayManager
-│     ├── ProjectsOverlay
-│     └── ExperienceOverlay
-└── TransitionController
-```
+## Phase 1
 
-Responsibilities:
-
-**ArtGalleryScene**
-
-- renders the world
-- stays mounted
-
-**CameraController**
-
-- owns camera presets
-- animates camera
-
-**OverlayManager**
-
-- renders page-specific UI
-
-**TransitionController**
-
-- orchestrates transitions
-- controls timing
-- locks input
-- swaps overlays
+- [ ] Split scene into independent layers
+- [ ] Add Layer Manager
+- [ ] Implement `ensureLoaded()`
+- [ ] Separate `loaded` and `visible`
 
 ---
 
-# Benefits
+## Phase 2
 
-- No expensive scene remounts
-- Camera remains alive
-- Models stay loaded
-- Animations continue uninterrupted
-- Smooth cinematic transitions
-- Better perceived performance
-- Easier to add future sections (Music, About, Contact) using the same transition system
+- [ ] Delay DecorativeLayer loading
+- [ ] Route-specific minimal asset loading
+- [ ] Prevent scene reinitialization
 
 ---
 
-# Core Principle
+## Phase 3
 
-> The scene is permanent.
->
-> Pages are simply different viewpoints and UI overlays within the same interactive environment.
+- [ ] Compress largest GLBs
+- [ ] Reduce texture resolutions
+- [ ] Remove unnecessary embedded textures
+
+---
+
+## Phase 4
+
+- [ ] Add route-specific idle prefetch
+- [ ] Add loading states for heavy layers
+- [ ] Polish transition timing
+
+---
+
+# Expected Benefits
+
+- Faster Largest Contentful Paint (LCP)
+- Smaller initial network payload
+- Reduced GPU and CPU work on first load
+- No repeated GLB downloads
+- Instant Project ↔ Experience transitions
+- Better memory reuse
+- Cleaner, more maintainable scene architecture

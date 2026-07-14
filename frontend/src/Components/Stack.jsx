@@ -1,7 +1,7 @@
 import { motion as Motion } from 'framer-motion';
 import { useState } from 'react';
 import cornerOrnamentUrl from '/images/cornor-ornament.svg';
-import paperTextureUrl from '/images/paper-texture.jpg';
+import paperTextureUrl from '/images/compressed-img/paper-texture.webp';
 import { ExperienceRecords } from '../data/experience/experience.data';
 
 export default function Stack({
@@ -69,7 +69,6 @@ export default function Stack({
               scale: { duration: 0.28, ease: 'easeOut' }
             }}
             style={{
-              zIndex: isHovered ? cards.length + 10 : index + 1,
               width: cardDimensions.width,
               height: cardDimensions.height,
               transformOrigin: 'center center'

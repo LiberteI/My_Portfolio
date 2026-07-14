@@ -1,9 +1,10 @@
 import * as THREE from "three"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import winnieThePoohModelUrl from "../../../../assets/Meshes/winnie_the_pooh.glb"
-import presidentXiJingPingModelUrl from "../../../../assets/Meshes/president_xi_jing_ping.glb"
-import beethovenModelUrl from "../../../../assets/Meshes/ludwig_van_beethoven.glb"
-import flowerPotModelUrl from "../../../../assets/Meshes/flower_pot.glb"
+import winnieThePoohModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-winnie_the_pooh.glb"
+import presidentXiJingPingModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-president_xi_jing_ping.glb"
+import beethovenModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-ludwig_van_beethoven.glb"
+import flowerPotModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-flower_pot.glb"
 import { getDisplayPositions, getTableConfig } from "../sceneConfig"
 
 const tableFigureConfigs = [
@@ -105,7 +106,10 @@ const createNormalizedPivotGroup = (model, config) => {
 }
 
 export const buildTableFigures = (scene) => {
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath("/draco/")
     const loader = new GLTFLoader()
+    loader.setDRACOLoader(dracoLoader)
     let disposed = false
     const loadedFigures = []
 
@@ -153,6 +157,8 @@ export const buildTableFigures = (scene) => {
                 scene.remove(pivotGroup)
                 disposeSceneNode(model)
             })
+
+            dracoLoader.dispose()
         }
     }
 }

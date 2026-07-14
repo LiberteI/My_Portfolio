@@ -1,16 +1,16 @@
 import * as THREE from "three"
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import pianoModelUrl from "../../../../assets/Meshes/dusty_old_piano.glb"
-import clockModelUrl from "../../../../assets/Meshes/clock.glb"
-import shelfModelUrl from "../../../../assets/Meshes/shelf.glb"
-import titanicLampModelUrl from "../../../../assets/Meshes/titanic_lamp.glb"
+import pianoModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-dusty_old_piano.glb"
+import shelfModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-shelf.glb"
+import titanicLampModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-titanic_lamp.glb"
 import { getRoomBounds } from "../sceneConfig"
 
 const roomWallFigureConfigs = [
     {
         name: "piano",
         modelUrl: pianoModelUrl,
-        zOffset: 18,
+        zOffset: 20,
         yOffset: 0,
         xInset: 2,
         targetHeight: 4,
@@ -19,25 +19,16 @@ const roomWallFigureConfigs = [
     {
         name: "shelf",
         modelUrl: shelfModelUrl,
-        zOffset: 12,
+        zOffset: 14,
         yOffset: 0,
         xInset: 1,
         targetHeight: 8,
         rotationY: 0
     },
     {
-        name: "clock",
-        modelUrl: clockModelUrl,
-        zOffset: 21,
-        yOffset: 0,
-        xInset: 1,
-        targetHeight: 6,
-        rotationY: Math.PI * 0.5
-    },
-    {
         name: "titanicLamp",
         modelUrl: titanicLampModelUrl,
-        zOffset: 17,
+        zOffset: 20,
         yOffset: 4,
         xInset: 0.7,
         targetHeight: 0.7,
@@ -109,7 +100,10 @@ const createNormalizedWallPivotGroup = (model, config) => {
 }
 
 export const buildRoomWallFigures = (scene) => {
+    const dracoLoader = new DRACOLoader()
+    dracoLoader.setDecoderPath("/draco/")
     const loader = new GLTFLoader()
+    loader.setDRACOLoader(dracoLoader)
     let disposed = false
     const loadedFigures = []
 
@@ -173,6 +167,8 @@ export const buildRoomWallFigures = (scene) => {
                 scene.remove(pivotGroup)
                 disposeSceneNode(model)
             })
+
+            dracoLoader.dispose()
         }
     }
 }
