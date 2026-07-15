@@ -5,8 +5,7 @@ const DECORATIVE_VIEWPORT = {
 }
 
 const EXPERIENCE_DECORATIVE_VIEWPORT_BREAKPOINTS = {
-    mobileMaxWidth: 799,
-    tabletMaxWidth: 1279
+    mobileMaxWidth: 399
 }
 
 const EXPERIENCE_DECORATIVE_RULES = {
@@ -14,11 +13,6 @@ const EXPERIENCE_DECORATIVE_RULES = {
         tableFigureNames: [],
         roomWallFigureNames: ["shelf"],
         notes: "Minimum decorative payload only."
-    },
-    [DECORATIVE_VIEWPORT.tablet]: {
-        tableFigureNames: ["winnieThePooh", "flowerPot"],
-        roomWallFigureNames: ["shelf"],
-        notes: "Reduced decorative payload."
     },
     [DECORATIVE_VIEWPORT.desktop]: {
         tableFigureNames: ["winnieThePooh", "presidentXiJingPing", "beethoven", "flowerPot"],
@@ -30,10 +24,6 @@ const EXPERIENCE_DECORATIVE_RULES = {
 export const getDecorativeViewportCategory = (viewportWidth) => {
     if (viewportWidth <= EXPERIENCE_DECORATIVE_VIEWPORT_BREAKPOINTS.mobileMaxWidth) {
         return DECORATIVE_VIEWPORT.mobile
-    }
-
-    if (viewportWidth <= EXPERIENCE_DECORATIVE_VIEWPORT_BREAKPOINTS.tabletMaxWidth) {
-        return DECORATIVE_VIEWPORT.tablet
     }
 
     return DECORATIVE_VIEWPORT.desktop

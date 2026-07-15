@@ -20,31 +20,25 @@ import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./confi
 import { createProjectorModel } from "./route/project/core/loadProjectorModel"
 import { createRouteLayerTransitionController } from "./route/createRouteLayerTransitionController"
 import { CAMERA_VIEW, getResponsiveCameraState, interpolateCameraPosition } from "./config/cameraConfig"
+import {
+    beginLayerLoad,
+    completeLayerLoad,
+    createLayerState,
+    createResolvedLayerPromise,
+    deactivateLayer,
+    disposeLayerRuntime,
+    isLayerLoaded,
+    isLayerLoading,
+    setLayerVisibility,
+    LAYER_LOAD_STATE,
+    LAYER_VISIBILITY_STATE
+} from "./runtime/layerRuntime"
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
 const CAMERA_TRANSITION_DURATION_MS = 700
 const EXPERIENCE_DECORATIVE_LOAD_DELAY_MS = 220
 const ROUTE_LAYER_HIDE_DELAY_MS = CAMERA_TRANSITION_DURATION_MS
-
-const LAYER_LOAD_STATE = {
-    notLoaded: "not_loaded",
-    loading: "loading",
-    loaded: "loaded"
-}
-
-const LAYER_VISIBILITY_STATE = {
-    hidden: "hidden",
-    visible: "visible"
-}
-
-const createLayerState = () => ({
-    group: null,
-    loadState: LAYER_LOAD_STATE.notLoaded,
-    visibilityState: LAYER_VISIBILITY_STATE.hidden,
-    loadingPromise: null,
-    handles: {}
-})
 
 const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, routeValue }) => {
     const canvasRef = useRef(null)
@@ -106,8 +100,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const scheduleExperienceRouteHide = () => {
         window.clearTimeout(hideExperienceRouteTimeoutRef.current)
         hideExperienceRouteTimeoutRef.current = window.setTimeout(() => {
-            setLayerVisibility(experienceCoreLayerRef, false)
-            setLayerVisibility(experienceDecorativeLayerRef, false)
+            deactivateLayer(experienceCoreLayerRef)
+            deactivateLayer(experienceDecorativeLayerRef)
             hideExperienceRouteTimeoutRef.current = 0
         }, ROUTE_LAYER_HIDE_DELAY_MS)
     }
@@ -115,40 +109,9 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const scheduleProjectRouteHide = () => {
         window.clearTimeout(hideProjectRouteTimeoutRef.current)
         hideProjectRouteTimeoutRef.current = window.setTimeout(() => {
-            setLayerVisibility(projectCoreLayerRef, false)
+            deactivateLayer(projectCoreLayerRef)
             hideProjectRouteTimeoutRef.current = 0
         }, ROUTE_LAYER_HIDE_DELAY_MS)
-    }
-
-    const setLayerVisibility = (layerRef, isVisible) => {
-        const layerState = layerRef.current
-        layerState.visibilityState = isVisible
-            ? LAYER_VISIBILITY_STATE.visible
-            : LAYER_VISIBILITY_STATE.hidden
-
-        if (!layerState.group) {
-            return
-        }
-
-        layerState.group.visible = isVisible
-    }
-
-    const beginLayerLoad = (layerRef) => {
-        layerRef.current.loadState = LAYER_LOAD_STATE.loading
-    }
-
-    const completeLayerLoad = (layerRef) => {
-        layerRef.current.loadState = LAYER_LOAD_STATE.loaded
-    }
-
-    const isLayerLoaded = (layerRef) => layerRef.current.loadState === LAYER_LOAD_STATE.loaded
-
-    const isLayerLoading = (layerRef) => layerRef.current.loadState === LAYER_LOAD_STATE.loading
-
-    const createResolvedLayerPromise = (layerRef) => {
-        completeLayerLoad(layerRef)
-        layerRef.current.loadingPromise = Promise.resolve()
-        return layerRef.current.loadingPromise
     }
 
     const markSharedCoreReady = () => {
@@ -357,7 +320,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         resetRouteReadiness,
         activateExperienceRouteLayer,
         activateProjectRouteLayer,
-        setLayerVisibility,
+        deactivateLayer,
         experienceCoreLayerRef,
         experienceDecorativeLayerRef,
         projectCoreLayerRef,
@@ -530,17 +493,11 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             responsiveCameraController.dispose()
             pointerInteractionController.dispose()
             projectionScreenRef.current?.dispose()
-            sharedCoreLayerRef.current.handles.ambientLight?.dispose?.()
-            sharedCoreLayerRef.current.handles.room?.dispose?.()
-            experienceCoreLayerRef.current.handles.tableSpotLight?.dispose?.()
-            experienceCoreLayerRef.current.handles.resume?.dispose?.()
-            experienceCoreLayerRef.current.handles.leatherDeskPad?.dispose?.()
-            experienceCoreLayerRef.current.handles.table?.dispose?.()
-            experienceDecorativeLayerRef.current.handles.tableFigures?.dispose?.()
-            experienceDecorativeLayerRef.current.handles.roomWallFigures?.dispose?.()
-            projectCoreLayerRef.current.handles.projectorModel?.dispose?.()
-            projectCoreLayerRef.current.handles.projectorRig?.dispose?.()
-            projectCoreLayerRef.current.handles.pedestal?.dispose?.()
+            projectionScreenRef.current = null
+            disposeLayerRuntime(sharedCoreLayerRef)
+            disposeLayerRuntime(experienceCoreLayerRef)
+            disposeLayerRuntime(experienceDecorativeLayerRef)
+            disposeLayerRuntime(projectCoreLayerRef)
 
             if (debugAxes) {
                 scene.remove(debugAxes)
@@ -578,10 +535,6 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
                 routeUsableFor: null,
                 decorativeEligibleFor: null
             }
-            sharedCoreLayerRef.current = createLayerState()
-            experienceCoreLayerRef.current = createLayerState()
-            experienceDecorativeLayerRef.current = createLayerState()
-            projectCoreLayerRef.current = createLayerState()
         }
     }, [lightColor])
 

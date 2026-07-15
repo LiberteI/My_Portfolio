@@ -5,7 +5,7 @@ export const createRouteLayerTransitionController = ({
     resetRouteReadiness,
     activateExperienceRouteLayer,
     activateProjectRouteLayer,
-    setLayerVisibility,
+    deactivateLayer,
     experienceCoreLayerRef,
     experienceDecorativeLayerRef,
     projectCoreLayerRef,
@@ -23,7 +23,7 @@ export const createRouteLayerTransitionController = ({
             activateExperienceRouteLayer()
 
             if (!isRouteTransition) {
-                setLayerVisibility(projectCoreLayerRef, false)
+                deactivateLayer(projectCoreLayerRef)
             } else if (previousRouteValue === cameraView.projects) {
                 scheduleProjectRouteHide()
             }
@@ -35,8 +35,8 @@ export const createRouteLayerTransitionController = ({
             activateProjectRouteLayer()
 
             if (!isRouteTransition) {
-                setLayerVisibility(experienceCoreLayerRef, false)
-                setLayerVisibility(experienceDecorativeLayerRef, false)
+                deactivateLayer(experienceCoreLayerRef)
+                deactivateLayer(experienceDecorativeLayerRef)
             } else if (previousRouteValue === cameraView.experience) {
                 scheduleExperienceRouteHide()
             }

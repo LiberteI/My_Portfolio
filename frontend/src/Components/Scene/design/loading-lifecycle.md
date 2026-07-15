@@ -169,7 +169,7 @@ Expected result:
 
 Status:
 
-- partially implemented
+- implemented
 
 Responsibility:
 
@@ -183,8 +183,8 @@ Tasks:
    - experience core
    - experience decorative
    - project core
-3. separate "hide", "deactivate", and "dispose" as three different lifecycle actions
-4. define what memory-reduction path should exist if explicit layer unloading is introduced later
+3. separate `hide`, `deactivate`, and `dispose` as three different lifecycle actions
+4. leave room for an explicit future unload path without making ordinary route changes dispose assets
 
 Expected result:
 
