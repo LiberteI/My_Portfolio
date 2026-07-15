@@ -26,9 +26,21 @@ const EXPERIENCE_DECORATIVE_LOAD_DELAY_MS = 220
 const MOBILE_DECORATIVE_VIEWPORT_WIDTH = 800
 const ROUTE_LAYER_HIDE_DELAY_MS = CAMERA_TRANSITION_DURATION_MS
 
+const LAYER_LOAD_STATE = {
+    notLoaded: "not_loaded",
+    loading: "loading",
+    loaded: "loaded"
+}
+
+const LAYER_VISIBILITY_STATE = {
+    hidden: "hidden",
+    visible: "visible"
+}
+
 const createLayerState = () => ({
     group: null,
-    loaded: false,
+    loadState: LAYER_LOAD_STATE.notLoaded,
+    visibilityState: LAYER_VISIBILITY_STATE.hidden,
     loadingPromise: null,
     handles: {}
 })
@@ -97,11 +109,34 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     }
 
     const setLayerVisibility = (layerRef, isVisible) => {
-        if (!layerRef.current.group) {
+        const layerState = layerRef.current
+        layerState.visibilityState = isVisible
+            ? LAYER_VISIBILITY_STATE.visible
+            : LAYER_VISIBILITY_STATE.hidden
+
+        if (!layerState.group) {
             return
         }
 
-        layerRef.current.group.visible = isVisible
+        layerState.group.visible = isVisible
+    }
+
+    const beginLayerLoad = (layerRef) => {
+        layerRef.current.loadState = LAYER_LOAD_STATE.loading
+    }
+
+    const completeLayerLoad = (layerRef) => {
+        layerRef.current.loadState = LAYER_LOAD_STATE.loaded
+    }
+
+    const isLayerLoaded = (layerRef) => layerRef.current.loadState === LAYER_LOAD_STATE.loaded
+
+    const isLayerLoading = (layerRef) => layerRef.current.loadState === LAYER_LOAD_STATE.loading
+
+    const createResolvedLayerPromise = (layerRef) => {
+        completeLayerLoad(layerRef)
+        layerRef.current.loadingPromise = Promise.resolve()
+        return layerRef.current.loadingPromise
     }
 
     const isMobileDecorativeViewport = () => {
@@ -114,7 +149,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         const projectorRig = projectorRigRef.current
         const projectLayerGroup = projectCoreLayerRef.current.group
 
-        if (!projectorRig || !projectLayerGroup || !projectCoreLayerRef.current.loaded) {
+        if (!projectorRig || !projectLayerGroup || !isLayerLoaded(projectCoreLayerRef)) {
             return
         }
 
@@ -135,14 +170,15 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const ensureExperienceCoreLayerLoaded = () => {
         const layerState = experienceCoreLayerRef.current
 
-        if (!sceneRef.current || layerState.loaded) {
+        if (!sceneRef.current || isLayerLoaded(experienceCoreLayerRef)) {
             return layerState.loadingPromise ?? Promise.resolve()
         }
 
-        if (layerState.loadingPromise) {
+        if (isLayerLoading(experienceCoreLayerRef) && layerState.loadingPromise) {
             return layerState.loadingPromise
         }
 
+        beginLayerLoad(experienceCoreLayerRef)
         const group = layerState.group
         const table = buildTable(group)
         const leatherDeskPad = buildLeatherDeskPad(group)
@@ -155,23 +191,22 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             resume,
             tableSpotLight
         }
-        layerState.loaded = true
-        layerState.loadingPromise = Promise.resolve()
 
-        return layerState.loadingPromise
+        return createResolvedLayerPromise(experienceCoreLayerRef)
     }
 
     const ensureExperienceDecorativeLayerLoaded = () => {
         const layerState = experienceDecorativeLayerRef.current
 
-        if (!sceneRef.current || layerState.loaded) {
+        if (!sceneRef.current || isLayerLoaded(experienceDecorativeLayerRef)) {
             return layerState.loadingPromise ?? Promise.resolve()
         }
 
-        if (layerState.loadingPromise) {
+        if (isLayerLoading(experienceDecorativeLayerRef) && layerState.loadingPromise) {
             return layerState.loadingPromise
         }
 
+        beginLayerLoad(experienceDecorativeLayerRef)
         const group = layerState.group
         const isMobileViewport = isMobileDecorativeViewport()
         const tableFigures = isMobileViewport
@@ -189,7 +224,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             tableFigures?.loadPromise ?? Promise.resolve(),
             roomWallFigures.loadPromise
         ]).finally(() => {
-            layerState.loaded = true
+            completeLayerLoad(experienceDecorativeLayerRef)
         })
 
         return layerState.loadingPromise
@@ -198,14 +233,15 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const ensureProjectCoreLayerLoaded = () => {
         const layerState = projectCoreLayerRef.current
 
-        if (!sceneRef.current || layerState.loaded) {
+        if (!sceneRef.current || isLayerLoaded(projectCoreLayerRef)) {
             return layerState.loadingPromise ?? Promise.resolve()
         }
 
-        if (layerState.loadingPromise) {
+        if (isLayerLoading(projectCoreLayerRef) && layerState.loadingPromise) {
             return layerState.loadingPromise
         }
 
+        beginLayerLoad(projectCoreLayerRef)
         const group = layerState.group
         const pedestal = buildPedestal(group)
         const projectorRig = buildProjectorRig(group, lightColor)
@@ -220,7 +256,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         layerState.loadingPromise = Promise.all([
             projectorModel.loadPromise
         ]).finally(() => {
-            layerState.loaded = true
+            completeLayerLoad(projectCoreLayerRef)
             syncProjectionScreen()
         })
 
@@ -311,7 +347,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         sharedCoreLayerRef.current = {
             ...createLayerState(),
             group: sharedCoreGroup,
-            loaded: true,
+            loadState: LAYER_LOAD_STATE.loaded,
+            visibilityState: LAYER_VISIBILITY_STATE.visible,
             loadingPromise: Promise.resolve()
         }
         experienceCoreLayerRef.current = { ...createLayerState(), group: experienceCoreGroup }
