@@ -42,11 +42,15 @@ That means:
 
 ## 5. Detailed Implementation Plan
 
-The loading lifecycle should be implemented in phases so behavior remains stable while the architecture is being refactored.
+The loading lifecycle should be implemented in phases. Each phase should own one concern only.
 
 ### Phase 1. Establish a Persistent Professional Scene Host
 
-Goal:
+Status:
+
+- implemented
+
+Responsibility:
 
 - keep the professional Three.js scene mounted outside individual professional pages
 - avoid destroying the scene when navigating away from `/experience` or `/projects`
@@ -65,21 +69,21 @@ Expected result:
 
 ### Phase 2. Separate Load State From Visibility State
 
-Goal:
+Status:
+
+- in progress
+
+Responsibility:
 
 - make layer caching explicit
 - prevent route transitions from triggering accidental rebuilds
 
 Tasks:
 
-1. give each layer its own runtime state object
-2. track at minimum:
-   - `loaded`
-   - `loading`
-   - `visible`
-   - `handles`
-3. keep the layer's `THREE.Group` alive after first load
-4. toggle `group.visible` instead of disposing the layer on ordinary route changes
+1. add an explicit `visible` state to the layer runtime model instead of relying only on `group.visible`
+2. make `loading` an explicit tracked state rather than an implicit `loadingPromise` convention
+3. standardize one layer-state shape across every layer so shared, experience, and project layers follow the same runtime contract
+4. move layer state handling out of the main scene file into dedicated layer runtime helpers
 
 Expected result:
 
@@ -88,17 +92,24 @@ Expected result:
 
 ### Phase 3. Enforce Ordered Loading
 
-Goal:
+Status:
+
+- partially implemented
+
+Responsibility:
 
 - make scene setup predictable
 - keep critical render path short
 
 Tasks:
 
-1. load shared scene elements first
-2. once shared is ready, load the active route's core layer
-3. render the page as soon as the active core layer is usable
-4. defer decorative layer loading until after the active core layer is visible
+1. formalize ordered loading as a dedicated orchestration flow instead of leaving it inline inside `ArtGalleryScene.jsx`
+2. define readiness checkpoints for:
+   - shared core ready
+   - active route core ready
+   - decorative safe to start
+3. make decorative loading start from an explicit lifecycle signal instead of ad hoc timeout timing only
+4. document or encode which assets are allowed to block route usability and which are always deferred
 
 Expected result:
 
@@ -107,27 +118,23 @@ Expected result:
 
 ### Phase 4. Route-Driven Layer Activation
 
-Goal:
+Status:
+
+- implemented, with room for polish
+
+Responsibility:
 
 - ensure route value is the source of truth for which layer should be active
 
 Tasks:
 
-1. entering `/experience`
-   - show shared layer
-   - ensure experience core is loaded
-   - show experience core
-   - hide project core
-   - schedule experience decorative loading
-2. entering `/projects`
-   - show shared layer
-   - ensure project core is loaded
-   - show project core
-   - hide experience core
-   - hide experience decorative
-3. leaving the professional section
-   - hide scene host
-   - keep already loaded layers cached
+1. replace simple delayed hide with a transition-aware visibility policy that can support fade, stagger, or per-layer timing
+2. isolate route activation logic from `ArtGalleryScene.jsx` into a dedicated route/layer transition controller
+3. define a stable contract for:
+   - entering a route
+   - leaving a route
+   - switching directly between `/experience` and `/projects`
+4. ensure route activation rules stay correct if more project-only or experience-only sublayers are added later
 
 Expected result:
 
@@ -136,56 +143,48 @@ Expected result:
 
 ### Phase 5. Add Mobile-Specific Decorative Gating
 
-Goal:
+Status:
+
+- partially implemented
+
+Responsibility:
 
 - reduce mobile load cost without affecting desktop composition
 
 Tasks:
 
-1. define a mobile viewport cutoff in scene runtime logic
-2. under mobile viewport:
-   - skip desk decoration meshes
-   - skip `piano`
-   - skip `titanicLamp`
-   - skip `titanicLamp` point light
-3. keep only the minimum decorative background payload if necessary
+1. move mobile gating rules into a single configuration source instead of hardcoding them directly in decorative loaders
+2. define which decorative assets are:
+   - always desktop-only
+   - optional on tablet
+   - always allowed on mobile
+3. add a clearer fallback policy for what the minimum mobile decorative payload actually is
+4. ensure mobile gating can be reused by future decorative layers without duplicating logic
 
 Expected result:
 
 - mobile viewport avoids paying for non-essential decorative assets
 
-### Phase 6. Protect Projection Timing
+### Phase 6. Cleanup Policy
 
-Goal:
+Status:
 
-- make sure project projection appears correctly on first project entry
+- partially implemented
 
-Tasks:
-
-1. keep projection screen creation dependent on both:
-   - valid project texture
-   - loaded project core layer
-2. if the texture arrives before project core finishes loading, resync projection after project core resolves
-3. replace existing projection screen safely when the active featured project changes
-
-Expected result:
-
-- first project thumbnail projects correctly
-- switching projects updates projection without duplicating scene setup
-
-### Phase 7. Cleanup Policy
-
-Goal:
+Responsibility:
 
 - define when resources should and should not be disposed
 
 Tasks:
 
-1. do not dispose layers during normal route changes
-2. dispose layer resources only when:
-   - the professional scene host is truly being unmounted
-   - there is an explicit memory-reduction decision
-3. keep cleanup ownership inside each layer module
+1. move cleanup ownership out of the monolithic scene file and into per-layer runtime units
+2. define a single disposal contract for:
+   - shared core
+   - experience core
+   - experience decorative
+   - project core
+3. separate "hide", "deactivate", and "dispose" as three different lifecycle actions
+4. define what memory-reduction path should exist if explicit layer unloading is introduced later
 
 Expected result:
 
