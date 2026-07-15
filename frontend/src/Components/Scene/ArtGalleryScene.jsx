@@ -17,6 +17,7 @@ import { createPointerInteractionController } from "./controllers/createPointerI
 import { createMovementController } from "./controllers/createMovementController"
 import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./config/sceneConfig"
 import { createProjectorModel } from "./route/project/core/loadProjectorModel"
+import { createRouteLayerTransitionController } from "./route/createRouteLayerTransitionController"
 import { CAMERA_VIEW, getResponsiveCameraState, interpolateCameraPosition } from "./config/cameraConfig"
 
 /* eslint-disable react-hooks/exhaustive-deps */
@@ -344,6 +345,21 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         })
     }
 
+    const routeLayerTransitionController = createRouteLayerTransitionController({
+        cameraView: CAMERA_VIEW,
+        clearDecorativeLoadTimeout,
+        clearRouteHideTimeouts,
+        resetRouteReadiness,
+        activateExperienceRouteLayer,
+        activateProjectRouteLayer,
+        setLayerVisibility,
+        experienceCoreLayerRef,
+        experienceDecorativeLayerRef,
+        projectCoreLayerRef,
+        scheduleExperienceRouteHide,
+        scheduleProjectRouteHide
+    })
+
     useEffect(() => {
         const camera = cameraRef.current
         const responsiveCameraController = responsiveCameraControllerRef.current
@@ -569,35 +585,13 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             return
         }
 
-        clearDecorativeLoadTimeout()
-        clearRouteHideTimeouts()
-        const previousRouteValue = previousRouteValueRef.current
-        const isRouteTransition = previousRouteValue && previousRouteValue !== routeValue
-        resetRouteReadiness()
-
-        if (routeValue === CAMERA_VIEW.experience) {
-            activateExperienceRouteLayer()
-            if (!isRouteTransition) {
-                setLayerVisibility(projectCoreLayerRef, false)
-            } else if (previousRouteValue === CAMERA_VIEW.projects) {
-                scheduleProjectRouteHide()
-            }
-            return
-        }
-
-        if (routeValue === CAMERA_VIEW.projects) {
-            activateProjectRouteLayer()
-            if (!isRouteTransition) {
-                setLayerVisibility(experienceCoreLayerRef, false)
-                setLayerVisibility(experienceDecorativeLayerRef, false)
-            } else if (previousRouteValue === CAMERA_VIEW.experience) {
-                scheduleExperienceRouteHide()
-            }
-        }
+        routeLayerTransitionController.activate({
+            routeValue,
+            previousRouteValue: previousRouteValueRef.current
+        })
 
         return () => {
-            clearDecorativeLoadTimeout()
-            clearRouteHideTimeouts()
+            routeLayerTransitionController.dispose()
         }
     }, [routeValue, lightColor])
 
