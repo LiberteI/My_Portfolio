@@ -71,7 +71,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const validScreenTextureUrlRef = useRef(getValidScreenTextureUrl(screenTextureUrl))
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
-    const enableCameraMovement = true
+    const enableCameraMovement = false
 
     useEffect(() => {
         onScreenClickRef.current = onScreenClick
