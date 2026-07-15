@@ -21,7 +21,7 @@ body{
     margin: 0 auto;
     border-left: 2px solid rgba(107, 114, 128, 0.35);
     border-right: 2px solid rgba(107, 114, 128, 0.35);
-    min-height: 100vh;
+    min-height: 100svh;
     background-color: #010110;
     color: inherit;
 }
@@ -29,7 +29,7 @@ body{
 .knightGame-container{
     max-width: 1200px;
     margin: 0 auto;
-    padding: 6vh 1.5rem;
+    padding: 6svh 1.5rem;
     display: grid;
     gap: 1.2rem;
     grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.45fr);

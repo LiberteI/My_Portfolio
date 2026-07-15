@@ -44,7 +44,7 @@ const ProjectMetadata = ({ label, value }) => {
 
 const FeaturedProjectPanel = ({ featuredProject }) => {
     return (
-        <div className="pointer-events-none absolute inset-x-0 top-20 z-20 h-[70vh] px-6 md:top-10 md:px-12 lg:px-16">
+        <div className="pointer-events-none absolute inset-x-0 top-20 z-20 h-[70svh] px-6 md:top-10 md:px-12 lg:px-16">
             <div className="flex h-full w-full max-w-[35rem] items-start">
                 <div className="pointer-events-auto max-h-full overflow-y-auto rounded-[2rem] bg-black/0 p-6 md:p-8">
                     <div className="space-y-4">
@@ -95,7 +95,7 @@ const FeaturedProjectPanel = ({ featuredProject }) => {
 
 const ProjectCarouselDock = ({ activeProjectIndex, projects, onSelectProject }) => {
     return (
-        <div className="absolute inset-x-0 bottom-0 z-20 flex h-[20vh] min-h-[12rem] flex-col justify-end px-4 pb-6 md:px-8 md:pb-8 lg:px-10">
+        <div className="absolute inset-x-0 bottom-0 z-20 flex h-[20svh] min-h-[12rem] flex-col justify-end px-4 pb-6 md:px-8 md:pb-8 lg:px-10">
             <div className="mx-auto flex w-full max-w-7xl shrink-0 items-end gap-3 p-3 md:gap-4 md:p-4">
                 <button
                     type="button"
