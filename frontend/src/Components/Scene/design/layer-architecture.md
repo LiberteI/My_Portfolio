@@ -1,33 +1,35 @@
-# Scene Loading Design
+# Layer Architecture
 
-## Current Problem
+## 1. Separate Shared Scene From Route-Specific Scene
 
-The current scene architecture mixes `experience` and `project` content into one build path.
-
-When the user enters either professional page:
-
-- the full scene starts building
-- page-specific meshes load even when they are not visible
-- decorative assets load too early
-- route transitions pay for work they do not need
-
-This is expensive and directly hurts perceived performance, especially LCP and first-time entry to the professional section.
-
-## Design Goal
-
-The scene should load in layers, not all at once.
-
-High-level goals:
-
-1. Load only what the current route needs.
-2. Keep the shared room persistent once initialized.
-3. Separate scene loading from scene visibility.
-4. Make route state the source of truth for page-specific content.
-5. Delay decorative and non-critical assets until after the base scene is usable.
-
-## Architectural Direction
-
-### 1. Separate Shared Scene From Route-Specific Scene
+```text
+professional scene
+├── shared layer
+│   └── core layer
+│       ├── room
+│       └── ambient light
+└── route layer
+    ├── experience
+    │   ├── core layer
+    │   │   ├── table
+    │   │   ├── desk pad
+    │   │   ├── resume
+    │   │   └── table spotlight
+    │   └── decorative layer
+    │       ├── desk decorations
+    │       ├── piano
+    │       ├── shelf
+    │       ├── titanic lamp
+    │       └── titanic lamp point light
+    └── project
+        ├── core layer
+        │   ├── pedestal
+        │   ├── projector
+        │   ├── projection screen
+        │   └── projector lighting rig
+        └── decorative layer
+            └── reserved for future project-only secondary props
+```
 
 The professional scene should be split into:
 
@@ -44,11 +46,14 @@ Load hierarchy:
 
 - `shared layer`: first render, always required once the professional scene is entered
 - `route layer`: load only the currently active page payload
-- `decorative layer`: load later, never part of the critical path
 
-#### `shared layer`
+### `shared layer`
 
-This layer is the minimum scene shell required to make the professional scene readable.
+This layer contains assets shared by both `/experience` and `/projects`.
+
+#### `core layer`
+
+This is the minimum shared scene shell required to make the professional scene readable.
 
 Mesh:
 
@@ -108,7 +113,15 @@ Why this belongs in shared:
 - these assets define scene context
 - rebuilding the room shell per route would be wasteful
 
-#### `experience layer`
+There is currently no separate shared decorative payload. Shared content is limited to the shared core shell.
+
+### `route layer`
+
+This layer contains page-specific payloads. Route assets should load only when the matching page is active.
+
+#### `experience`
+
+##### `core layer`
 
 This layer should load only for the experience page.
 
@@ -119,7 +132,6 @@ Mesh:
   - contains:
     - tabletop box
     - four table leg boxes
-
 - `leather desk pad`
   - built procedurally with `RoundedBoxGeometry`
   - centered on the table with an x-offset
@@ -155,7 +167,6 @@ Textures:
   - reused by the table material response
 - `assets/Museum/prebaked-tex/compressed-img/wall-roughness.webp`
   - reused by the table material response
-
 - `assets/Museum/compressed-img/Leather026_1K-JPG_Color.webp`
   - leather albedo / base color
 - `assets/Museum/compressed-img/Leather026_1K-JPG_Roughness.webp`
@@ -176,7 +187,51 @@ Why this belongs in experience:
 - these assets are the main tabletop storytelling content for `/experience`
 - they are not needed for `/projects`
 
-#### `project layer`
+##### `decorative layer`
+
+This layer should never block first render. It exists for scene richness only and should load after the experience core layer becomes usable.
+
+Mobile viewport clause:
+
+- on mobile viewport, do not load desk decoration meshes
+- on mobile viewport, do not load `piano`
+- on mobile viewport, do not load `titanicLamp`
+- on mobile viewport, do not load the point light attached to `titanicLamp`
+- on mobile viewport, the decorative payload may be reduced to only the minimum background dressing that is still visually necessary
+
+Decorative tabletop meshes:
+
+- `assets/Meshes/texture-compressed/tc-dc-winnie_the_pooh.glb`
+- `assets/Meshes/texture-compressed/tc-dc-president_xi_jing_ping.glb`
+- `assets/Meshes/texture-compressed/tc-dc-ludwig_van_beethoven.glb`
+- `assets/Meshes/texture-compressed/tc-dc-flower_pot.glb`
+
+Decorative room-wall meshes:
+
+- `assets/Meshes/texture-compressed/tc-dc-dusty_old_piano.glb`
+- `assets/Meshes/texture-compressed/tc-dc-shelf.glb`
+- `assets/Meshes/texture-compressed/tc-dc-titanic_lamp.glb`
+
+Decorative lighting:
+
+- point light attached to `titanicLamp`
+  - warm accent light for the lamp model
+
+Runtime behavior:
+
+- all decorative GLBs are Draco-loaded through `GLTFLoader + DRACOLoader`
+- models are normalized into pivot groups after load
+- placement is derived from room bounds or table bounds
+
+Why this belongs in the experience decorative layer:
+
+- these props enrich the room but do not define page function
+- the user can understand the page without them
+- they should be delayed until after the active route is already usable
+
+#### `project`
+
+##### `core layer`
 
 This layer should load only for the project page.
 
@@ -231,10 +286,10 @@ Textures:
 
 Shaders:
 
-- `shaders/projectionShaders/projection.vert.glsl`
-- `shaders/projectionShaders/projection.frag.glsl`
-- `shaders/beamShaders/beam.vert.glsl`
-- `shaders/beamShaders/beam.frag.glsl`
+- `shaders/projection/projection.vert.glsl`
+- `shaders/projection/projection.frag.glsl`
+- `shaders/beam/beam.vert.glsl`
+- `shaders/beam/beam.frag.glsl`
 
 Procedural helpers:
 
@@ -247,41 +302,11 @@ Why this belongs in project:
 - none of these assets are necessary for the experience page
 - projector setup is one of the most expensive route-specific subsystems
 
-#### `decorative layer`
+##### `decorative layer`
 
-This layer should never block first render. It exists for scene richness only.
+There is currently no dedicated project decorative layer beyond the projector system itself. If project-only secondary props are added later, they should be documented here rather than introduced as a new top-level hierarchy.
 
-Decorative tabletop meshes:
-
-- `assets/Meshes/texture-compressed/tc-dc-winnie_the_pooh.glb`
-- `assets/Meshes/texture-compressed/tc-dc-president_xi_jing_ping.glb`
-- `assets/Meshes/texture-compressed/tc-dc-ludwig_van_beethoven.glb`
-- `assets/Meshes/texture-compressed/tc-dc-flower_pot.glb`
-
-Decorative room-wall meshes:
-
-- `assets/Meshes/texture-compressed/tc-dc-dusty_old_piano.glb`
-- `assets/Meshes/texture-compressed/tc-dc-shelf.glb`
-- `assets/Meshes/texture-compressed/tc-dc-titanic_lamp.glb`
-
-Decorative lighting:
-
-- point light attached to `titanicLamp`
-  - warm accent light for the lamp model
-
-Runtime behavior:
-
-- all decorative GLBs are Draco-loaded through `GLTFLoader + DRACOLoader`
-- models are normalized into pivot groups after load
-- placement is derived from room bounds or table bounds
-
-Why this belongs in decorative:
-
-- these props enrich the room but do not define page function
-- the user can understand the page without them
-- they should be delayed until after the active route is already usable
-
-#### Asset Classification Summary
+## Asset Classification Summary
 
 Critical on first professional render:
 
@@ -316,103 +341,3 @@ Non-critical / deferrable:
 - titanic lamp accent light
 
 Only the `shared layer` should be considered mandatory for initial scene setup.
-
-### 2. Route Controls What Loads
-
-The route should decide which scene layer is needed.
-
-That means:
-
-- entering `/experience` should not preload project-only assets
-- entering `/projects` should not preload experience-only assets
-- leaving the professional section should hide the scene, not necessarily destroy it
-- returning to the professional section should reuse the shared scene host when possible
-
-The scene should respond to route intent, rather than eagerly loading everything up front.
-
-### 3. Load Order Must Be Explicit
-
-Loading order should be intentional:
-
-1. initialize renderer, camera, room, and base lights
-2. load the active route layer
-3. render the page in a usable state
-4. load decorative assets later
-
-This keeps first paint focused on what the user actually needs to see.
-
-### 4. Load vs Visible
-
-`loaded` and `visible` must be treated as different states.
-
-#### Core Rule
-
-Once a route-specific asset has been loaded at least once, leaving the professional section must not cause it to reload by default.
-
-That means:
-
-- if the user enters `/experience`, the experience layer may load once
-- if the user later leaves to another route, the experience layer should become hidden, not unloaded
-- if the user comes back to `/experience`, the already loaded experience layer should be shown again without rebuilding it
-- the same rule applies to `/projects`
-
-#### Expected Behavior
-
-First visit:
-
-- route enters `/experience` or `/projects`
-- required layer loads
-- layer becomes visible
-
-Leave professional section:
-
-- scene host may become hidden
-- loaded route layers remain in memory
-- no automatic teardown of already loaded professional assets
-
-Return later:
-
-- scene host becomes visible again
-- previously loaded route layer is reused
-- no second network fetch
-- no second GLTF parse
-- no second texture decode
-- no second scene construction for the same layer
-
-#### State Model
-
-Each layer should be tracked with at least two independent concerns:
-
-- `load state`
-  - `not_loaded`
-  - `loading`
-  - `loaded`
-- `visibility state`
-  - `hidden`
-  - `visible`
-
-These states must not be collapsed into one boolean.
-
-For example:
-
-- a layer can be `loaded + hidden`
-- a layer can be `loaded + visible`
-- a layer should not return to `not_loaded` just because the route changed
-
-#### Why This Matters
-
-If route exit destroys already loaded assets, then returning to `/experience` or `/projects` will:
-
-- trigger duplicate network work
-- trigger duplicate model parsing
-- trigger duplicate texture creation
-- increase transition cost
-- make the professional section feel unstable and expensive
-
-The correct behavior is:
-
-- load once when first needed
-- keep cached while the app session is alive
-- toggle visibility as the user navigates
-
-Unload should happen only when there is an explicit memory-management reason, not as a default response to ordinary route changes.
