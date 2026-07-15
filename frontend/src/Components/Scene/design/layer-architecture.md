@@ -286,10 +286,10 @@ Textures:
 
 Shaders:
 
-- `shaders/projectionShaders/projection.vert.glsl`
-- `shaders/projectionShaders/projection.frag.glsl`
-- `shaders/beamShaders/beam.vert.glsl`
-- `shaders/beamShaders/beam.frag.glsl`
+- `shaders/projection/projection.vert.glsl`
+- `shaders/projection/projection.frag.glsl`
+- `shaders/beam/beam.vert.glsl`
+- `shaders/beam/beam.frag.glsl`
 
 Procedural helpers:
 

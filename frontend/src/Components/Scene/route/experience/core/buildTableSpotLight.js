@@ -1,6 +1,6 @@
 import * as THREE from "three"
-import { lightParam } from "../lightingConfig"
-import { getDisplayPositions } from "../sceneConfig"
+import { lightParam } from "../../../config/lightingConfig"
+import { getDisplayPositions } from "../../../config/sceneConfig"
 
 export const buildTableSpotLight = (scene) => {
     const lighting = lightParam()

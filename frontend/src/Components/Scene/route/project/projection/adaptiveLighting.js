@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { lightParam } from "../lightingConfig"
+import { lightParam } from "../../../config/lightingConfig"
 import { getAdaptiveProjectionLightingConfig } from "./projectionAnalysis"
 
 export const buildAdaptiveLightingState = (analysis, featuredProjectLightColor) => {

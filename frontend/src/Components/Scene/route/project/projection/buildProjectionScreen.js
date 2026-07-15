@@ -1,6 +1,6 @@
 import * as THREE from "three"
-import createProjectionMaterial from "../../shaders/projectionShaders/createProjectionMaterial"
-import { getProjectionFrameConfig, getProjectionRenderConfig } from "../sceneConfig"
+import createProjectionMaterial from "../../../shaders/projection/createProjectionMaterial"
+import { getProjectionFrameConfig, getProjectionRenderConfig } from "../../../config/sceneConfig"
 import { analyzeProjectionTexture, getAdaptiveProjectionLightingConfig } from "./projectionAnalysis"
 
 export const buildProjectionScreen = (scene, screenTextureUrl, options = {}) => {

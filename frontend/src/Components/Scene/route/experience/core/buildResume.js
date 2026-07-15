@@ -1,6 +1,6 @@
 import * as THREE from "three"
-import resumeTextureUrl from "../../../../assets/resume.png"
-import { getDisplayPositions, getTableConfig } from "../sceneConfig"
+import resumeTextureUrl from "../../../../../assets/resume.png"
+import { getDisplayPositions, getTableConfig } from "../../../config/sceneConfig"
 
 const RESUME_IMAGE_SIZE = {
     width: 595,

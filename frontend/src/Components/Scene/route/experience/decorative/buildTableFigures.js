@@ -1,47 +1,48 @@
 import * as THREE from "three"
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import pianoModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-dusty_old_piano.glb"
-import shelfModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-shelf.glb"
-import titanicLampModelUrl from "../../../../assets/Meshes/texture-compressed/tc-dc-titanic_lamp.glb"
-import { getRoomBounds } from "../sceneConfig"
+import winnieThePoohModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-winnie_the_pooh.glb"
+import presidentXiJingPingModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-president_xi_jing_ping.glb"
+import beethovenModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-ludwig_van_beethoven.glb"
+import flowerPotModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-flower_pot.glb"
+import { getDisplayPositions, getTableConfig } from "../../../config/sceneConfig"
 
-const roomWallFigureConfigs = [
+const tableFigureConfigs = [
     {
-        name: "piano",
-        modelUrl: pianoModelUrl,
-        zOffset: 20,
+        name: "winnieThePooh",
+        modelUrl: winnieThePoohModelUrl,
+        xOffset: 0,
         yOffset: 0,
-        xInset: 2,
-        targetHeight: 4,
-        rotationY: 0
+        zOffset: 1.2,
+        targetHeight: 0.3,
+        rotationY: Math.PI * 0.6
     },
     {
-        name: "shelf",
-        modelUrl: shelfModelUrl,
-        zOffset: 14,
-        yOffset: 0,
-        xInset: 1,
-        targetHeight: 8,
-        rotationY: 0
+        name: "presidentXiJingPing",
+        modelUrl: presidentXiJingPingModelUrl,
+        xOffset: -0.2,
+        yOffset: 0.22,
+        zOffset: 1.5,
+        targetHeight: 0.6,
+        rotationY: Math.PI * 0.7
     },
     {
-        name: "titanicLamp",
-        modelUrl: titanicLampModelUrl,
-        zOffset: 20,
-        yOffset: 4,
-        xInset: 0.7,
-        targetHeight: 0.7,
-        rotationY: Math.PI * 0.15,
-        pointLight: {
-            color: "#ffd59a",
-            intensity: 2.8,
-            distance: 7,
-            decay: 1.5,
-            xOffset: 0,
-            yOffset: 0.75,
-            zOffset: 0
-        }
+        name: "beethoven",
+        modelUrl: beethovenModelUrl,
+        xOffset: -1,
+        yOffset: 0,
+        zOffset: 1.4,
+        targetHeight: 1.6,
+        rotationY: Math.PI * 0.7
+    },
+    {
+        name: "flowerPot",
+        modelUrl: flowerPotModelUrl,
+        xOffset: -0.2,
+        yOffset: 0,
+        zOffset: 1.5,
+        targetHeight: 0.42,
+        rotationY: Math.PI * 0.1
     }
 ]
 
@@ -61,12 +62,15 @@ const disposeSceneNode = (sceneNode) => {
     })
 }
 
-const createNormalizedWallPivotGroup = (model, config) => {
+const createNormalizedPivotGroup = (model, config) => {
     const pivotGroup = new THREE.Group()
-    const roomBounds = getRoomBounds()
+    const { tablePosition } = getDisplayPositions()
+    const tableConfig = getTableConfig()
     const box = new THREE.Box3().setFromObject(model)
     const size = new THREE.Vector3()
+    const center = new THREE.Vector3()
     box.getSize(size)
+    box.getCenter(center)
 
     if (size.y > 0) {
         const scale = config.targetHeight / size.y
@@ -81,7 +85,9 @@ const createNormalizedWallPivotGroup = (model, config) => {
     scaledBox.getCenter(scaledCenter)
     scaledBox.getSize(scaledSize)
 
+    const tableTopSurfaceY = tablePosition.y + tableConfig.height + tableConfig.topThickness * 0.5
     const bottomY = scaledCenter.y - scaledSize.y * 0.5
+
     model.position.set(
         -scaledCenter.x,
         -bottomY,
@@ -89,9 +95,9 @@ const createNormalizedWallPivotGroup = (model, config) => {
     )
 
     pivotGroup.position.set(
-        roomBounds.xStart + config.xInset,
-        roomBounds.yStart + (config.yOffset ?? 0),
-        config.zOffset
+        tablePosition.x + config.xOffset,
+        tableTopSurfaceY + 0.01 + (config.yOffset ?? 0),
+        tablePosition.z + config.zOffset
     )
     pivotGroup.rotation.y = config.rotationY
     pivotGroup.add(model)
@@ -99,7 +105,10 @@ const createNormalizedWallPivotGroup = (model, config) => {
     return pivotGroup
 }
 
-export const buildRoomWallFigures = (scene) => {
+export const buildTableFigures = (scene, options = {}) => {
+    const selectedConfigs = options.includeNames
+        ? tableFigureConfigs.filter((config) => options.includeNames.includes(config.name))
+        : tableFigureConfigs
     const dracoLoader = new DRACOLoader()
     dracoLoader.setDecoderPath("/draco/")
     const loader = new GLTFLoader()
@@ -108,7 +117,7 @@ export const buildRoomWallFigures = (scene) => {
     const loadedFigures = []
 
     const loadPromise = Promise.all(
-        roomWallFigureConfigs.map((config) => (
+        selectedConfigs.map((config) => (
             loader.loadAsync(config.modelUrl)
                 .then((gltf) => {
                     if (disposed) {
@@ -128,31 +137,15 @@ export const buildRoomWallFigures = (scene) => {
                         child.receiveShadow = true
                     })
 
-                    const pivotGroup = createNormalizedWallPivotGroup(model, config)
-                    pivotGroup.name = `${config.name}WallPivot`
-
-                    if (config.pointLight) {
-                        const pointLight = new THREE.PointLight(
-                            config.pointLight.color,
-                            config.pointLight.intensity,
-                            config.pointLight.distance,
-                            config.pointLight.decay
-                        )
-                        pointLight.position.set(
-                            config.pointLight.xOffset ?? 0,
-                            config.pointLight.yOffset ?? 0,
-                            config.pointLight.zOffset ?? 0
-                        )
-                        pivotGroup.add(pointLight)
-                    }
-
+                    const pivotGroup = createNormalizedPivotGroup(model, config)
+                    pivotGroup.name = `${config.name}Pivot`
                     scene.add(pivotGroup)
                     loadedFigures.push({ pivotGroup, model })
 
                     return pivotGroup
                 })
                 .catch((error) => {
-                    console.error(`Failed to load room wall figure: ${config.name}`, error)
+                    console.error(`Failed to load table figure: ${config.name}`, error)
                     return null
                 })
         ))

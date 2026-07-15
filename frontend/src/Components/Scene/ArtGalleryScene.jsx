@@ -1,26 +1,36 @@
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
-import { createCamera } from "./scene/createCamera"
-import { buildRoom } from "./scene/environment/buildRoom"
-import { buildPedestal } from "./scene/environment/buildPedestal"
-import { buildLeatherDeskPad } from "./scene/environment/buildLeatherDeskPad"
-import { buildResume } from "./scene/environment/buildResume"
-import { buildTable } from "./scene/environment/buildTable"
-import { buildTableFigures } from "./scene/environment/buildTableFigures"
-import { buildRoomWallFigures } from "./scene/environment/buildRoomWallFigures"
-import { buildAmbientLight } from "./scene/lighting/buildAmbientLight"
-import { buildProjectorRig } from "./scene/lighting/buildProjectorRig"
-import { buildTableSpotLight } from "./scene/lighting/buildTableSpotLight"
-import { buildProjectionScreen } from "./scene/projection/buildProjectionScreen"
-import { createResponsiveCameraController } from "./scene/createResponsiveCameraController"
-import { createPointerInteractionController } from "./scene/createPointerInteractionController"
-import { createMovementController } from "./scene/createMovementController"
-// import { createCameraDebugVisuals } from "./scene/createCameraDebugVisuals"
-import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./scene/sceneConfig"
-import { createProjectorModel } from "./scene/loadProjectorModel"
-import { CAMERA_VIEW, getResponsiveCameraState, interpolateCameraPosition } from "./scene/cameraConfig"
+import { createCamera } from "./controllers/createCamera"
+import { buildRoom } from "./shared/core/buildRoom"
+import { buildPedestal } from "./route/project/core/buildPedestal"
+import { buildLeatherDeskPad } from "./route/experience/core/buildLeatherDeskPad"
+import { buildResume } from "./route/experience/core/buildResume"
+import { buildTable } from "./route/experience/core/buildTable"
+import { buildTableFigures } from "./route/experience/decorative/buildTableFigures"
+import { buildRoomWallFigures } from "./route/experience/decorative/buildRoomWallFigures"
+import { buildAmbientLight } from "./shared/core/buildAmbientLight"
+import { buildProjectorRig } from "./route/project/lighting/buildProjectorRig"
+import { buildTableSpotLight } from "./route/experience/core/buildTableSpotLight"
+import { buildProjectionScreen } from "./route/project/projection/buildProjectionScreen"
+import { createResponsiveCameraController } from "./controllers/createResponsiveCameraController"
+import { createPointerInteractionController } from "./controllers/createPointerInteractionController"
+import { createMovementController } from "./controllers/createMovementController"
+import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./config/sceneConfig"
+import { createProjectorModel } from "./route/project/core/loadProjectorModel"
+import { CAMERA_VIEW, getResponsiveCameraState, interpolateCameraPosition } from "./config/cameraConfig"
+
+/* eslint-disable react-hooks/exhaustive-deps */
 
 const CAMERA_TRANSITION_DURATION_MS = 700
+const EXPERIENCE_DECORATIVE_LOAD_DELAY_MS = 220
+const MOBILE_DECORATIVE_VIEWPORT_WIDTH = 800
+
+const createLayerState = () => ({
+    group: null,
+    loaded: false,
+    loadingPromise: null,
+    handles: {}
+})
 
 const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, routeValue }) => {
     const canvasRef = useRef(null)
@@ -33,15 +43,15 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const projectionScreenRef = useRef(null)
     const responsiveCameraControllerRef = useRef(null)
     const cameraTransitionFrameRef = useRef(0)
-    const pedestalRef = useRef(null)
-    const tableRef = useRef(null)
-    const leatherDeskPadRef = useRef(null)
-    const resumeRef = useRef(null)
-    const tableFiguresRef = useRef(null)
-    const roomWallFiguresRef = useRef(null)
+    const decorativeLoadTimeoutRef = useRef(0)
+    const sharedCoreLayerRef = useRef(createLayerState())
+    const experienceCoreLayerRef = useRef(createLayerState())
+    const experienceDecorativeLayerRef = useRef(createLayerState())
+    const projectCoreLayerRef = useRef(createLayerState())
     const onScreenClickRef = useRef(onScreenClick)
     const routeValueRef = useRef(routeValue)
     const previousRouteValueRef = useRef(routeValue)
+    const validScreenTextureUrlRef = useRef(getValidScreenTextureUrl(screenTextureUrl))
     const lightColor = DEFAULT_PROJECTOR_LIGHT_COLOR
     const validScreenTextureUrl = getValidScreenTextureUrl(screenTextureUrl)
     const enableCameraMovement = false
@@ -51,9 +61,150 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     }, [onScreenClick])
 
     useEffect(() => {
+        validScreenTextureUrlRef.current = validScreenTextureUrl
+    }, [validScreenTextureUrl])
+
+    const clearDecorativeLoadTimeout = () => {
+        window.clearTimeout(decorativeLoadTimeoutRef.current)
+        decorativeLoadTimeoutRef.current = 0
+    }
+
+    const setLayerVisibility = (layerRef, isVisible) => {
+        if (!layerRef.current.group) {
+            return
+        }
+
+        layerRef.current.group.visible = isVisible
+    }
+
+    const isMobileDecorativeViewport = () => {
+        const viewportWidth = canvasRef.current?.clientWidth ?? window.innerWidth
+        return viewportWidth < MOBILE_DECORATIVE_VIEWPORT_WIDTH
+    }
+
+    const syncProjectionScreen = () => {
+        const nextScreenTextureUrl = validScreenTextureUrlRef.current
+        const projectorRig = projectorRigRef.current
+        const projectLayerGroup = projectCoreLayerRef.current.group
+
+        if (!projectorRig || !projectLayerGroup || !projectCoreLayerRef.current.loaded) {
+            return
+        }
+
+        projectionScreenRef.current?.dispose()
+        projectionScreenRef.current = null
+
+        if (!nextScreenTextureUrl) {
+            return
+        }
+
+        projectionScreenRef.current = buildProjectionScreen(projectLayerGroup, nextScreenTextureUrl, {
+            onTextureAnalyzed: (analysis) => {
+                projectorRig.applyAdaptiveTargets(analysis)
+            }
+        })
+    }
+
+    const ensureExperienceCoreLayerLoaded = () => {
+        const layerState = experienceCoreLayerRef.current
+
+        if (!sceneRef.current || layerState.loaded) {
+            return layerState.loadingPromise ?? Promise.resolve()
+        }
+
+        if (layerState.loadingPromise) {
+            return layerState.loadingPromise
+        }
+
+        const group = layerState.group
+        const table = buildTable(group)
+        const leatherDeskPad = buildLeatherDeskPad(group)
+        const resume = buildResume(group)
+        const tableSpotLight = buildTableSpotLight(group)
+
+        layerState.handles = {
+            table,
+            leatherDeskPad,
+            resume,
+            tableSpotLight
+        }
+        layerState.loaded = true
+        layerState.loadingPromise = Promise.resolve()
+
+        return layerState.loadingPromise
+    }
+
+    const ensureExperienceDecorativeLayerLoaded = () => {
+        const layerState = experienceDecorativeLayerRef.current
+
+        if (!sceneRef.current || layerState.loaded) {
+            return layerState.loadingPromise ?? Promise.resolve()
+        }
+
+        if (layerState.loadingPromise) {
+            return layerState.loadingPromise
+        }
+
+        const group = layerState.group
+        const isMobileViewport = isMobileDecorativeViewport()
+        const tableFigures = isMobileViewport
+            ? null
+            : buildTableFigures(group)
+        const roomWallFigures = buildRoomWallFigures(group, {
+            includeNames: isMobileViewport ? ["shelf"] : undefined
+        })
+
+        layerState.handles = {
+            tableFigures,
+            roomWallFigures
+        }
+        layerState.loadingPromise = Promise.all([
+            tableFigures?.loadPromise ?? Promise.resolve(),
+            roomWallFigures.loadPromise
+        ]).finally(() => {
+            layerState.loaded = true
+        })
+
+        return layerState.loadingPromise
+    }
+
+    const ensureProjectCoreLayerLoaded = () => {
+        const layerState = projectCoreLayerRef.current
+
+        if (!sceneRef.current || layerState.loaded) {
+            return layerState.loadingPromise ?? Promise.resolve()
+        }
+
+        if (layerState.loadingPromise) {
+            return layerState.loadingPromise
+        }
+
+        const group = layerState.group
+        const pedestal = buildPedestal(group)
+        const projectorRig = buildProjectorRig(group, lightColor)
+        const projectorModel = createProjectorModel(group)
+
+        projectorRigRef.current = projectorRig
+        layerState.handles = {
+            pedestal,
+            projectorRig,
+            projectorModel
+        }
+        layerState.loadingPromise = Promise.all([
+            projectorModel.loadPromise
+        ]).finally(() => {
+            layerState.loaded = true
+            syncProjectionScreen()
+        })
+
+        return layerState.loadingPromise
+    }
+
+    useEffect(() => {
         const camera = cameraRef.current
         const responsiveCameraController = responsiveCameraControllerRef.current
         const previousRouteValue = previousRouteValueRef.current
+
         if (!camera || !responsiveCameraController) {
             routeValueRef.current = routeValue
             previousRouteValueRef.current = routeValue
@@ -104,10 +255,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         cameraTransitionFrameRef.current = window.requestAnimationFrame(animateCameraTransition)
     }, [routeValue])
 
-    // initialize and render the 3D scene once
     useEffect(() => {
         const enableAxesDebug = false
-
         const container = canvasRef.current
 
         if (!container) {
@@ -117,6 +266,30 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         const scene = new THREE.Scene()
         scene.background = new THREE.Color("#000000")
         sceneRef.current = scene
+
+        const sharedCoreGroup = new THREE.Group()
+        const experienceCoreGroup = new THREE.Group()
+        const experienceDecorativeGroup = new THREE.Group()
+        const projectCoreGroup = new THREE.Group()
+
+        experienceCoreGroup.visible = false
+        experienceDecorativeGroup.visible = false
+        projectCoreGroup.visible = false
+
+        scene.add(sharedCoreGroup)
+        scene.add(experienceCoreGroup)
+        scene.add(experienceDecorativeGroup)
+        scene.add(projectCoreGroup)
+
+        sharedCoreLayerRef.current = {
+            ...createLayerState(),
+            group: sharedCoreGroup,
+            loaded: true,
+            loadingPromise: Promise.resolve()
+        }
+        experienceCoreLayerRef.current = { ...createLayerState(), group: experienceCoreGroup }
+        experienceDecorativeLayerRef.current = { ...createLayerState(), group: experienceDecorativeGroup }
+        projectCoreLayerRef.current = { ...createLayerState(), group: projectCoreGroup }
 
         const camera = createCamera(routeValueRef.current)
         cameraRef.current = camera
@@ -128,28 +301,18 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         container.appendChild(renderer.domElement)
         rendererRef.current = renderer
 
-        const room = buildRoom(scene)
-        const ambientLight = buildAmbientLight(scene)
-        const tableSpotLight = buildTableSpotLight(scene)
-        const projectorRig = buildProjectorRig(scene, lightColor)
-        projectorRigRef.current = projectorRig
-        const pedestal = buildPedestal(scene)
-        pedestalRef.current = pedestal
-        const table = buildTable(scene)
-        tableRef.current = table
-        const leatherDeskPad = buildLeatherDeskPad(scene)
-        leatherDeskPadRef.current = leatherDeskPad
-        const resume = buildResume(scene)
-        resumeRef.current = resume
-        const tableFigures = buildTableFigures(scene)
-        tableFiguresRef.current = tableFigures
-        const roomWallFigures = buildRoomWallFigures(scene)
-        roomWallFiguresRef.current = roomWallFigures
+        const room = buildRoom(sharedCoreGroup)
+        const ambientLight = buildAmbientLight(sharedCoreGroup)
+        sharedCoreLayerRef.current.handles = {
+            room,
+            ambientLight
+        }
+
         const debugAxes = enableAxesDebug ? new THREE.AxesHelper(4) : null
         if (debugAxes) {
             scene.add(debugAxes)
         }
-        // const cameraDebugVisuals = createCameraDebugVisuals(scene)
+
         const pressedKeys = pressedKeysRef.current
         const initialForward = new THREE.Vector3()
         camera.getWorldDirection(initialForward)
@@ -157,8 +320,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             yaw: Math.atan2(-initialForward.x, -initialForward.z),
             pitch: Math.asin(THREE.MathUtils.clamp(initialForward.y, -1, 1))
         }
+
         let animationFrameId = 0
-        const projectorModel = createProjectorModel(scene)
         const responsiveCameraController = createResponsiveCameraController({
             camera,
             renderer,
@@ -166,6 +329,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             getView: () => routeValueRef.current
         })
         responsiveCameraControllerRef.current = responsiveCameraController
+
         const pointerInteractionController = createPointerInteractionController({
             container,
             renderer,
@@ -175,35 +339,47 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         })
 
         const animate = () => {
-            // cameraDebugVisuals.update(camera)
-            projectorRig.update()
+            projectorRigRef.current?.update()
             renderer.render(scene, camera)
             animationFrameId = window.requestAnimationFrame(animate)
         }
 
         responsiveCameraController.resize()
-        // cameraDebugVisuals.update(camera)
+
+        if (routeValueRef.current === CAMERA_VIEW.experience) {
+            ensureExperienceCoreLayerLoaded()
+            setLayerVisibility(experienceCoreLayerRef, true)
+            decorativeLoadTimeoutRef.current = window.setTimeout(() => {
+                ensureExperienceDecorativeLayerLoaded()
+                setLayerVisibility(experienceDecorativeLayerRef, true)
+            }, EXPERIENCE_DECORATIVE_LOAD_DELAY_MS)
+        } else if (routeValueRef.current === CAMERA_VIEW.projects) {
+            ensureProjectCoreLayerLoaded()
+            setLayerVisibility(projectCoreLayerRef, true)
+        }
+
         animationFrameId = window.requestAnimationFrame(animate)
 
         return () => {
             pressedKeys.clear()
             window.cancelAnimationFrame(animationFrameId)
             window.cancelAnimationFrame(cameraTransitionFrameRef.current)
+            clearDecorativeLoadTimeout()
             responsiveCameraController.dispose()
             pointerInteractionController.dispose()
-            ambientLight?.dispose()
-            tableSpotLight?.dispose()
-            projectorRig.dispose()
             projectionScreenRef.current?.dispose()
-            projectorModel.dispose()
-            pedestal.dispose()
-            table.dispose()
-            leatherDeskPad.dispose()
-            resume.dispose()
-            tableFigures.dispose()
-            roomWallFigures.dispose()
-            room.dispose()
-            // cameraDebugVisuals.dispose()
+            sharedCoreLayerRef.current.handles.ambientLight?.dispose?.()
+            sharedCoreLayerRef.current.handles.room?.dispose?.()
+            experienceCoreLayerRef.current.handles.tableSpotLight?.dispose?.()
+            experienceCoreLayerRef.current.handles.resume?.dispose?.()
+            experienceCoreLayerRef.current.handles.leatherDeskPad?.dispose?.()
+            experienceCoreLayerRef.current.handles.table?.dispose?.()
+            experienceDecorativeLayerRef.current.handles.tableFigures?.dispose?.()
+            experienceDecorativeLayerRef.current.handles.roomWallFigures?.dispose?.()
+            projectCoreLayerRef.current.handles.projectorModel?.dispose?.()
+            projectCoreLayerRef.current.handles.projectorRig?.dispose?.()
+            projectCoreLayerRef.current.handles.pedestal?.dispose?.()
+
             if (debugAxes) {
                 scene.remove(debugAxes)
                 debugAxes.geometry.dispose()
@@ -213,11 +389,16 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
                     debugAxes.material.dispose()
                 }
             }
-            renderer.dispose()
 
+            renderer.dispose()
             if (container.contains(renderer.domElement)) {
                 container.removeChild(renderer.domElement)
             }
+
+            scene.remove(sharedCoreGroup)
+            scene.remove(experienceCoreGroup)
+            scene.remove(experienceDecorativeGroup)
+            scene.remove(projectCoreGroup)
 
             cameraRef.current = null
             sceneRef.current = null
@@ -226,35 +407,46 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             projectionScreenRef.current = null
             responsiveCameraControllerRef.current = null
             cameraTransitionFrameRef.current = 0
-            pedestalRef.current = null
-            tableRef.current = null
-            leatherDeskPadRef.current = null
-            resumeRef.current = null
-            tableFiguresRef.current = null
-            roomWallFiguresRef.current = null
+            decorativeLoadTimeoutRef.current = 0
+            sharedCoreLayerRef.current = createLayerState()
+            experienceCoreLayerRef.current = createLayerState()
+            experienceDecorativeLayerRef.current = createLayerState()
+            projectCoreLayerRef.current = createLayerState()
         }
     }, [lightColor])
 
     useEffect(() => {
-        const scene = sceneRef.current
-        const projectorRig = projectorRigRef.current
-
-        if (!scene || !projectorRig) {
+        if (!sceneRef.current) {
             return
         }
 
-        projectionScreenRef.current?.dispose()
-        projectionScreenRef.current = null
+        clearDecorativeLoadTimeout()
 
-        if (!validScreenTextureUrl) {
+        if (routeValue === CAMERA_VIEW.experience) {
+            ensureExperienceCoreLayerLoaded()
+            setLayerVisibility(experienceCoreLayerRef, true)
+            setLayerVisibility(projectCoreLayerRef, false)
+            decorativeLoadTimeoutRef.current = window.setTimeout(() => {
+                ensureExperienceDecorativeLayerLoaded()
+                setLayerVisibility(experienceDecorativeLayerRef, true)
+            }, EXPERIENCE_DECORATIVE_LOAD_DELAY_MS)
             return
         }
 
-        projectionScreenRef.current = buildProjectionScreen(scene, validScreenTextureUrl, {
-            onTextureAnalyzed: (analysis) => {
-                projectorRig.applyAdaptiveTargets(analysis)
-            }
-        })
+        if (routeValue === CAMERA_VIEW.projects) {
+            ensureProjectCoreLayerLoaded()
+            setLayerVisibility(projectCoreLayerRef, true)
+            setLayerVisibility(experienceCoreLayerRef, false)
+            setLayerVisibility(experienceDecorativeLayerRef, false)
+        }
+
+        return () => {
+            clearDecorativeLoadTimeout()
+        }
+    }, [routeValue, lightColor])
+
+    useEffect(() => {
+        syncProjectionScreen()
 
         return () => {
             projectionScreenRef.current?.dispose()
@@ -262,7 +454,6 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         }
     }, [validScreenTextureUrl])
 
-    // user input handling for camera movement
     useEffect(() => {
         const container = canvasRef.current
 
@@ -291,3 +482,5 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
 }
 
 export default ArtGalleryScene
+
+/* eslint-enable react-hooks/exhaustive-deps */

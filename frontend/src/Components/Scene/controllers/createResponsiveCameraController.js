@@ -1,4 +1,4 @@
-import { getResponsiveCameraState } from "./cameraConfig"
+import { getResponsiveCameraState } from "../config/cameraConfig"
 
 export const createResponsiveCameraController = ({ camera, renderer, container, getView }) => {
     const resize = () => {

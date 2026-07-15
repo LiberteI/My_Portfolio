@@ -1,8 +1,8 @@
 import * as THREE from "three"
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
-import projectorModelUrl from "../../../assets/Meshes/texture-compressed/tc-dc-generic_white_digital_projector.glb"
-import { getDisplayPositions } from "./sceneConfig"
+import projectorModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-generic_white_digital_projector.glb"
+import { getDisplayPositions } from "../../../config/sceneConfig"
 
 export const createProjectorModel = (scene) => {
     const { projectorPosition } = getDisplayPositions()

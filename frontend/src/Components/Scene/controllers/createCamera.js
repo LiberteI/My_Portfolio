@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { getCameraConfig } from "./cameraConfig"
+import { getCameraConfig } from "../config/cameraConfig"
 
 export const createCamera = (view) => {
     const cameraConfig = getCameraConfig(view)

@@ -1,8 +1,8 @@
 import * as THREE from "three"
-import createBeamMaterial from "../../shaders/beamShaders/createBeamMaterial"
-import { lightParam } from "../lightingConfig"
-import { getDisplayPositions, getProjectionFrameConfig, DEFAULT_PROJECTOR_LIGHT_COLOR } from "../sceneConfig"
-import { getRgbaColor } from "../utils/color"
+import createBeamMaterial from "../../../shaders/beam/createBeamMaterial"
+import { lightParam } from "../../../config/lightingConfig"
+import { getDisplayPositions, getProjectionFrameConfig, DEFAULT_PROJECTOR_LIGHT_COLOR } from "../../../config/sceneConfig"
+import { getRgbaColor } from "../../../utils/color"
 import { createPointLightDebugger, createSpotLightDebugger } from "./debugLightHelpers"
 import {
     applyAdaptiveLightingTargets,

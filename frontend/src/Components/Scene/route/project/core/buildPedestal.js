@@ -1,14 +1,14 @@
 import * as THREE from "three"
-import museumWallTextureUrl from "../../../../assets/Museum/compressed-img/wall-texture.webp"
-import wallAoMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-ao.webp"
-import wallNormalMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-normal.webp"
-import wallRoughnessMapUrl from "../../../../assets/Museum/prebaked-tex/compressed-img/wall-roughness.webp"
-import { getDisplayPositions } from "../sceneConfig"
+import museumWallTextureUrl from "../../../../../assets/Museum/compressed-img/wall-texture.webp"
+import wallAoMapUrl from "../../../../../assets/Museum/prebaked-tex/compressed-img/wall-ao.webp"
+import wallNormalMapUrl from "../../../../../assets/Museum/prebaked-tex/compressed-img/wall-normal.webp"
+import wallRoughnessMapUrl from "../../../../../assets/Museum/prebaked-tex/compressed-img/wall-roughness.webp"
+import { getDisplayPositions } from "../../../config/sceneConfig"
 import {
     applyMaterialResponse,
     cloneUvAttribute,
     configureRepeatingTexture
-} from "./materialResponse"
+} from "../../../materials/materialResponse"
 
 export const buildPedestal = (scene) => {
     const boxWidth = 1
