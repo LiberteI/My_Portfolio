@@ -10,7 +10,7 @@
     color: inherit;
     position: relative;
     overflow: hidden;
-    min-height: 60vh;
+    min-height: 60svh;
 }
 
 .comment-container::before{

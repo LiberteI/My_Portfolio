@@ -53,7 +53,7 @@ const MusicPage = () => {
         <HamburgerIcon open={isSidebarOpen} />
       </button>
 
-      <main className='flex min-h-screen flex-col items-center gap-12 bg-black px-6 py-10 text-neutral-100 max-[1279px]:pt-24 lg:pl-[116px]'>
+      <main className='flex min-h-svh flex-col items-center gap-12 bg-black px-6 py-10 text-neutral-100 max-[1279px]:pt-24 lg:pl-[116px]'>
         <header className='relative flex w-full max-w-6xl items-end justify-between gap-8'>
           <div className='relative z-20 flex min-h-[100px] flex-col justify-end pb-2 translate-x-10'>
             <div className='flex items-center gap-3'>

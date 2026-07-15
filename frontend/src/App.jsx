@@ -11,7 +11,7 @@ const ProfessionalPage = lazy(() => import('./Pages/professional/ProfessionalPag
 const MusicPathway = lazy(() => import('./Pages/Music/MusicPathway'))
 const KnightGame = lazy(() => import('./Pages/projects/KnightGame'))
 
-const RouteFallback = () => <div className='min-h-screen bg-black' />
+const RouteFallback = () => <div className='min-h-svh bg-black' />
 
 const withSuspense = (element) => (
   <Suspense fallback={<RouteFallback />}>

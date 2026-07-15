@@ -146,7 +146,7 @@ const ExperienceOverlay = () => {
             {!showStackCards ? (
                 <div className="pointer-events-auto absolute inset-x-6 bottom-6 z-20 md:inset-x-12 lg:inset-x-16">
                     <div className="rounded-[1.75rem] border border-white/10 bg-black/30 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-md">
-                        <div className="custom-scrollbar-dark max-h-[25vh] overflow-y-auto pr-1">
+                        <div className="custom-scrollbar-dark max-h-[25svh] overflow-y-auto pr-1">
                             <div className="flex flex-col gap-3">
                                 {ExperienceRecords.map((experience, index) => (
                                     <ExperienceDeckCard
