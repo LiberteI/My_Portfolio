@@ -6,13 +6,23 @@ const PROFESSIONAL_ACTIVE_LABELS = {
     experience: "Experience"
 }
 
-const ProfessionalPage = ({ routeValue = "projects" }) => {
+const ProfessionalPage = ({
+    routeValue = "projects",
+    projects = [],
+    activeProjectIndex = 0,
+    onSelectProject
+}) => {
     const activeLabel = PROFESSIONAL_ACTIVE_LABELS[routeValue] ?? PROFESSIONAL_ACTIVE_LABELS.projects
 
     return (
-        <div className="app-container">
+        <div className="pointer-events-none relative z-10 min-h-screen text-inherit">
             <Navbar activeLabel={activeLabel} />
-            <ShowcaseLayout routeValue={routeValue} />
+            <ShowcaseLayout
+                routeValue={routeValue}
+                projects={projects}
+                activeProjectIndex={activeProjectIndex}
+                onSelectProject={onSelectProject}
+            />
         </div>
     )
 }

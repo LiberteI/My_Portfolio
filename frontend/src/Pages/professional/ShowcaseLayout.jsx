@@ -1,8 +1,5 @@
 import { AnimatePresence } from "framer-motion"
-import { useEffect, useMemo, useRef, useState } from "react"
-import ArtGalleryScene from "../../Components/Scene/ArtGalleryScene"
-import { projectRecords } from "../../data/projects/project.data"
-import { mapProjectsToDisplayModels } from "../../data/projects/project.mapper"
+import { useEffect, useRef, useState } from "react"
 import ProjectOverlay from "./ProjectOverlay"
 import ExperienceOverlay from "./ExperienceOverlay"
 
@@ -20,9 +17,12 @@ const createProfessionalState = (routeValue = null) => ({
 
 const PROJECT_OVERLAY_TRANSITION_MS = 450
 
-const ShowcaseLayout = ({ routeValue }) => {
-    const projects = useMemo(() => mapProjectsToDisplayModels(projectRecords), [])
-    const [activeProjectIndex, setActiveProjectIndex] = useState(0)
+const ShowcaseLayout = ({
+    routeValue,
+    projects,
+    activeProjectIndex,
+    onSelectProject
+}) => {
     const [professionalState, setProfessionalState] = useState(() => (
         createProfessionalState(isProfessionalRouteValue(routeValue) ? routeValue : null)
     ))
@@ -33,11 +33,6 @@ const ShowcaseLayout = ({ routeValue }) => {
     const projectOverlayEnterFrameRef = useRef(0)
     const projectOverlayExitTimeoutRef = useRef(0)
     const featuredProject = projects[activeProjectIndex] ?? projects[0]
-
-    const handleSelectProject = (nextIndex) => {
-        const boundedIndex = (nextIndex + projects.length) % projects.length
-        setActiveProjectIndex(boundedIndex)
-    }
 
     const clearProjectOverlayTransitionHandles = () => {
         window.cancelAnimationFrame(projectOverlayEnterFrameRef.current)
@@ -128,24 +123,15 @@ const ShowcaseLayout = ({ routeValue }) => {
     }, [])
 
     const activeProfessionalRoute = professionalState.routeValue
-    const resolvedProfessionalRoute = isProfessionalRouteValue(routeValue)
-        ? routeValue
-        : activeProfessionalRoute
 
     return (
-        <section className="relative h-svh overflow-hidden bg-black text-stone-100" data-project-count={projects.length}>
-            <ArtGalleryScene
-                className="absolute inset-0 h-full w-full bg-black"
-                routeValue={resolvedProfessionalRoute}
-                screenTextureUrl={featuredProject?.projectionImage}
-            />
-
+        <section className="pointer-events-none relative h-svh overflow-hidden text-stone-100" data-project-count={projects.length}>
             {projectOverlayState.isRendered ? (
                 <ProjectOverlay
                     featuredProject={featuredProject}
                     activeProjectIndex={activeProjectIndex}
                     projects={projects}
-                    onSelectProject={handleSelectProject}
+                    onSelectProject={onSelectProject}
                     motionState={projectOverlayState.motion}
                 />
             ) : null}
