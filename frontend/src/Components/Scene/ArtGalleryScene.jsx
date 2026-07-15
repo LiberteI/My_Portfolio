@@ -24,6 +24,7 @@ import { CAMERA_VIEW, getResponsiveCameraState, interpolateCameraPosition } from
 const CAMERA_TRANSITION_DURATION_MS = 700
 const EXPERIENCE_DECORATIVE_LOAD_DELAY_MS = 220
 const MOBILE_DECORATIVE_VIEWPORT_WIDTH = 800
+const ROUTE_LAYER_HIDE_DELAY_MS = CAMERA_TRANSITION_DURATION_MS
 
 const createLayerState = () => ({
     group: null,
@@ -44,6 +45,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const responsiveCameraControllerRef = useRef(null)
     const cameraTransitionFrameRef = useRef(0)
     const decorativeLoadTimeoutRef = useRef(0)
+    const hideExperienceRouteTimeoutRef = useRef(0)
+    const hideProjectRouteTimeoutRef = useRef(0)
     const sharedCoreLayerRef = useRef(createLayerState())
     const experienceCoreLayerRef = useRef(createLayerState())
     const experienceDecorativeLayerRef = useRef(createLayerState())
@@ -67,6 +70,30 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     const clearDecorativeLoadTimeout = () => {
         window.clearTimeout(decorativeLoadTimeoutRef.current)
         decorativeLoadTimeoutRef.current = 0
+    }
+
+    const clearRouteHideTimeouts = () => {
+        window.clearTimeout(hideExperienceRouteTimeoutRef.current)
+        window.clearTimeout(hideProjectRouteTimeoutRef.current)
+        hideExperienceRouteTimeoutRef.current = 0
+        hideProjectRouteTimeoutRef.current = 0
+    }
+
+    const scheduleExperienceRouteHide = () => {
+        window.clearTimeout(hideExperienceRouteTimeoutRef.current)
+        hideExperienceRouteTimeoutRef.current = window.setTimeout(() => {
+            setLayerVisibility(experienceCoreLayerRef, false)
+            setLayerVisibility(experienceDecorativeLayerRef, false)
+            hideExperienceRouteTimeoutRef.current = 0
+        }, ROUTE_LAYER_HIDE_DELAY_MS)
+    }
+
+    const scheduleProjectRouteHide = () => {
+        window.clearTimeout(hideProjectRouteTimeoutRef.current)
+        hideProjectRouteTimeoutRef.current = window.setTimeout(() => {
+            setLayerVisibility(projectCoreLayerRef, false)
+            hideProjectRouteTimeoutRef.current = 0
+        }, ROUTE_LAYER_HIDE_DELAY_MS)
     }
 
     const setLayerVisibility = (layerRef, isVisible) => {
@@ -365,6 +392,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             window.cancelAnimationFrame(animationFrameId)
             window.cancelAnimationFrame(cameraTransitionFrameRef.current)
             clearDecorativeLoadTimeout()
+            clearRouteHideTimeouts()
             responsiveCameraController.dispose()
             pointerInteractionController.dispose()
             projectionScreenRef.current?.dispose()
@@ -408,6 +436,8 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             responsiveCameraControllerRef.current = null
             cameraTransitionFrameRef.current = 0
             decorativeLoadTimeoutRef.current = 0
+            hideExperienceRouteTimeoutRef.current = 0
+            hideProjectRouteTimeoutRef.current = 0
             sharedCoreLayerRef.current = createLayerState()
             experienceCoreLayerRef.current = createLayerState()
             experienceDecorativeLayerRef.current = createLayerState()
@@ -421,11 +451,18 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         }
 
         clearDecorativeLoadTimeout()
+        clearRouteHideTimeouts()
+        const previousRouteValue = previousRouteValueRef.current
+        const isRouteTransition = previousRouteValue && previousRouteValue !== routeValue
 
         if (routeValue === CAMERA_VIEW.experience) {
             ensureExperienceCoreLayerLoaded()
             setLayerVisibility(experienceCoreLayerRef, true)
-            setLayerVisibility(projectCoreLayerRef, false)
+            if (!isRouteTransition) {
+                setLayerVisibility(projectCoreLayerRef, false)
+            } else if (previousRouteValue === CAMERA_VIEW.projects) {
+                scheduleProjectRouteHide()
+            }
             decorativeLoadTimeoutRef.current = window.setTimeout(() => {
                 ensureExperienceDecorativeLayerLoaded()
                 setLayerVisibility(experienceDecorativeLayerRef, true)
@@ -436,12 +473,17 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         if (routeValue === CAMERA_VIEW.projects) {
             ensureProjectCoreLayerLoaded()
             setLayerVisibility(projectCoreLayerRef, true)
-            setLayerVisibility(experienceCoreLayerRef, false)
-            setLayerVisibility(experienceDecorativeLayerRef, false)
+            if (!isRouteTransition) {
+                setLayerVisibility(experienceCoreLayerRef, false)
+                setLayerVisibility(experienceDecorativeLayerRef, false)
+            } else if (previousRouteValue === CAMERA_VIEW.experience) {
+                scheduleExperienceRouteHide()
+            }
         }
 
         return () => {
             clearDecorativeLoadTimeout()
+            clearRouteHideTimeouts()
         }
     }, [routeValue, lightColor])
 
