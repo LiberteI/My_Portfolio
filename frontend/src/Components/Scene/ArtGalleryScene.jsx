@@ -15,6 +15,7 @@ import { buildProjectionScreen } from "./route/project/projection/buildProjectio
 import { createResponsiveCameraController } from "./controllers/createResponsiveCameraController"
 import { createPointerInteractionController } from "./controllers/createPointerInteractionController"
 import { createMovementController } from "./controllers/createMovementController"
+import { getExperienceDecorativeRuleSet } from "./config/decorativeConfig"
 import { DEFAULT_PROJECTOR_LIGHT_COLOR, getValidScreenTextureUrl } from "./config/sceneConfig"
 import { createProjectorModel } from "./route/project/core/loadProjectorModel"
 import { createRouteLayerTransitionController } from "./route/createRouteLayerTransitionController"
@@ -24,7 +25,6 @@ import { CAMERA_VIEW, getResponsiveCameraState, interpolateCameraPosition } from
 
 const CAMERA_TRANSITION_DURATION_MS = 700
 const EXPERIENCE_DECORATIVE_LOAD_DELAY_MS = 220
-const MOBILE_DECORATIVE_VIEWPORT_WIDTH = 800
 const ROUTE_LAYER_HIDE_DELAY_MS = CAMERA_TRANSITION_DURATION_MS
 
 const LAYER_LOAD_STATE = {
@@ -173,9 +173,12 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         sceneReadinessRef.current.decorativeEligibleFor = null
     }
 
-    const isMobileDecorativeViewport = () => {
-        const viewportWidth = canvasRef.current?.clientWidth ?? window.innerWidth
-        return viewportWidth < MOBILE_DECORATIVE_VIEWPORT_WIDTH
+    const getDecorativeViewportWidth = () => {
+        return canvasRef.current?.clientWidth ?? window.innerWidth
+    }
+
+    const getExperienceDecorativeRuleSetForViewport = () => {
+        return getExperienceDecorativeRuleSet(getDecorativeViewportWidth())
     }
 
     const syncProjectionScreen = () => {
@@ -242,12 +245,14 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
 
         beginLayerLoad(experienceDecorativeLayerRef)
         const group = layerState.group
-        const isMobileViewport = isMobileDecorativeViewport()
-        const tableFigures = isMobileViewport
-            ? null
-            : buildTableFigures(group)
+        const decorativeRuleSet = getExperienceDecorativeRuleSetForViewport()
+        const tableFigures = decorativeRuleSet.tableFigureNames.length > 0
+            ? buildTableFigures(group, {
+                includeNames: decorativeRuleSet.tableFigureNames
+            })
+            : null
         const roomWallFigures = buildRoomWallFigures(group, {
-            includeNames: isMobileViewport ? ["shelf"] : undefined
+            includeNames: decorativeRuleSet.roomWallFigureNames
         })
 
         layerState.handles = {
