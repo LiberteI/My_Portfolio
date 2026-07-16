@@ -6,7 +6,7 @@ const KnightGame = () => {
         <div className="app-container">
             <Navbar activeLabel="Projects" />
             <div className="knightGame-container">
-                <video src="/knightTrailer.mp4" controls playsInline poster="/images/project-thumbnails/KnightThumbnail.png" />
+                <video src="/knightTrailer.mp4" controls playsInline poster="/images/project-thumbnails/knight-thumbnail.png" />
 
                 <div className="knightGame-content">
                     <img className="knightGame-gif" src={invocation} alt="Knight of Cinders invocation animation" />
