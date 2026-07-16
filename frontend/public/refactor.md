@@ -39,13 +39,6 @@ proposed structure tree:
 
 ```text
 public/images
-  branding
-    logo.png
-    logo-dark.png
-    compressed-img
-      logo.webp
-      logo-dark.webp
-
   home
     layers
       moon.png
@@ -93,10 +86,10 @@ public/images
       click.webp
 
   company-icons
+    quest-logo.svg
     dal-logo.png
     dmls-logo.png
-    curioseed-logo.png
-    compressed-img
+    curioseed-logo.webp
 
   framework-icons
     react.png
@@ -149,7 +142,6 @@ public/images
   music
     music-header.jpeg
     fire-streak.gif
-    compressed-img
 
   project-thumbnails
     knight-thumbnail.png
@@ -169,13 +161,6 @@ public/images
       supervised-learning.webp
 
   project-projections
-    knight-thumbnail.png
-    bubble.png
-    agent.png
-    dal-tutor.png
-    ice-spy.png
-    portfolio.png
-    supervised-learning.png
     compressed-img
       knight-thumbnail.webp
       bubble.webp
@@ -228,7 +213,7 @@ examples:
 - project thumbnails
 - project projection images
 - social icons
-- branding
+- company icons
 - fallback avatars
 - music page images
 
