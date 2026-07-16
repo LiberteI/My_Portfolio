@@ -1,6 +1,6 @@
 export const ExperienceRecords = [
     {
-        orgLogo: null,
+        orgLogo: "/images/company-icons/vintage/dal-logo.png",
         title: "Bachelor of Computer Science",
         subtitle: "Education",
         shortDescription: "Focus on CS and Music Composition",
@@ -8,27 +8,27 @@ export const ExperienceRecords = [
         period: "2023/09-2027/09",
     },
     {
-        orgLogo: null,
+        orgLogo: "/images/company-icons/vintage/dmls-logo.png",
         title: "Full Stack Developer",
         subtitle: "",
         shortDescription: "",
         orgName: "Dalhousie Machine Learning Society",
-        period: "",
+        period: "2026/04-2026/07",
     },
     {
-        orgLogo: null,
+        orgLogo: "/images/company-icons/vintage/curioseed-logo.png",
         title: "Full Stack Developer",
         subtitle: "",
         shortDescription: "",
         orgName: "CurioSeed",
-        period: "",
+        period: "2026/04-current",
     },
     {
-        orgLogo: null,
+        orgLogo: "/images/company-icons/vintage/quest-logo.png",
         title: "Software Dev Intern",
         subtitle: "",
         shortDescription: "",
         orgName: "Quest Software",
-        period: "",
+        period: "2026/05-2026/08",
     },
 ]
