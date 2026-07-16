@@ -40,10 +40,10 @@ const parsePracticeDate = (value) => {
 
 const getCellTone = (practiceTime) => {
   if (!practiceTime) return 'bg-neutral-900'
-  if (practiceTime < 30) return 'bg-[#0E4429]'
-  if (practiceTime < 60) return 'bg-[#006D32]'
-  if (practiceTime < 90) return 'bg-[#26A641]'
-  return 'bg-[#39D353]'
+  if (practiceTime < 30) return 'bg-[#9FD8A8]'
+  if (practiceTime < 60) return 'bg-[#5EAF69]'
+  if (practiceTime < 90) return 'bg-[#2D7A3E]'
+  return 'bg-[#0E4429]'
 }
 
 // Renders one daily practice cell. Empty dates are placeholders used to align the
