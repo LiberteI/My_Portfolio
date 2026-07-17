@@ -25,9 +25,9 @@ const cardOrnamentPositions = [
 
 function CardPaperFrame({ ornamentSize }) {
   return (
-    <>
+    <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]">
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 rounded-[inherit]"
         style={{
           backgroundImage: `url(${paperTextureUrl})`,
           backgroundSize: 'cover',
@@ -46,7 +46,7 @@ function CardPaperFrame({ ornamentSize }) {
           style={{ width: ornamentSize, height: ornamentSize }}
         />
       ))}
-    </>
+    </div>
   );
 }
 
