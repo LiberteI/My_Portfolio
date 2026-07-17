@@ -121,6 +121,7 @@ export default function Stack({
   cardDimensions = { width: 208, height: 208 }
 }) {
   const [hoveredCardId, setHoveredCardId] = useState(null);
+  const [selectedCardId, setSelectedCardId] = useState(null);
   const contentScale = Math.max(0.7, cardDimensions.width / 400);
   const ornamentSize = Math.round(56 * contentScale);
   const iconSize = Math.round(48 * contentScale);
@@ -136,6 +137,9 @@ export default function Stack({
     id: `${experience.orgName || experience.title}-${index}`,
     ...experience
   }));
+  const handleCardClick = (cardId) => {
+    setSelectedCardId((currentCardId) => (currentCardId === cardId ? null : cardId));
+  };
 
   return (
     <div
@@ -149,6 +153,7 @@ export default function Stack({
       {cards.map((card, index) => {
         const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
         const isHovered = hoveredCardId === card.id;
+        const isSelected = selectedCardId === card.id;
         const baseTranslateX = index * 18;
         const baseTranslateY = index * 150 - 50;
         const baseRotate = index * 5 - 5 + randomRotate;
@@ -165,17 +170,25 @@ export default function Stack({
             onMouseEnter={() => setHoveredCardId(card.id)}
             onMouseLeave={() => setHoveredCardId(null)}
             animate={{
-              x: isHovered ? hoverTranslateX : baseTranslateX,
-              y: isHovered ? hoverTranslateY : [baseTranslateY, baseTranslateY - 5, baseTranslateY, baseTranslateY + 3, baseTranslateY],
-              rotate: isHovered ? baseRotate : [baseRotate, baseRotate + 0.35, baseRotate, baseRotate - 0.25, baseRotate],
-              scale: isHovered ? hoverScale : baseScale
+              x: isSelected ? -500 : isHovered ? hoverTranslateX : baseTranslateX,
+              y: isSelected
+                ? 0
+                : isHovered
+                  ? hoverTranslateY
+                  : [baseTranslateY, baseTranslateY - 5, baseTranslateY, baseTranslateY + 3, baseTranslateY],
+              rotate: isSelected
+                ? baseRotate
+                : isHovered
+                  ? baseRotate
+                  : [baseRotate, baseRotate + 0.35, baseRotate, baseRotate - 0.25, baseRotate],
+              scale: isSelected || isHovered ? hoverScale : baseScale
             }}
             transition={{
               x: { duration: 0.28, ease: 'easeOut' },
-              y: isHovered
+              y: isSelected || isHovered
                 ? { duration: 0.28, ease: 'easeOut' }
                 : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
-              rotate: isHovered
+              rotate: isSelected || isHovered
                 ? { duration: 0.28, ease: 'easeOut' }
                 : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
               scale: { duration: 0.28, ease: 'easeOut' }
@@ -186,7 +199,11 @@ export default function Stack({
               transformOrigin: 'center center'
             }}
           >
-            <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-[#171311] p-5 text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out">
+            <button
+              onClick={() => handleCardClick(card.id)}
+              type="button"
+              className="cursor-pointer relative flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl border-0 bg-[#171311] p-5 text-left text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out"
+            >
               
               <CardPaperFrame ornamentSize={ornamentSize} />
 
@@ -211,7 +228,7 @@ export default function Stack({
                   descriptionLineHeight={descriptionLineHeight}
                 />
               </div>
-            </div>
+            </button>
           </Motion.div>
         );
       })}
