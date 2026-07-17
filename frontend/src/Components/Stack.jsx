@@ -50,6 +50,72 @@ function CardPaperFrame({ ornamentSize }) {
   );
 }
 
+function ExperienceCardHeader({
+  card,
+  contentScale,
+  iconSize,
+  titleFontSize,
+  metaFontSize,
+  bodyFontSize,
+  periodFontSize
+}) {
+  return (
+    <div className="flex-1 space-y-3" style={{ rowGap: 12 * contentScale }}>
+      <div className="flex items-start gap-3" style={{ columnGap: 12 * contentScale }}>
+        <div
+          className="flex shrink-0 items-center justify-center rounded-xl border border-black/10 bg-black/5 uppercase text-black/70"
+          style={{
+            width: iconSize,
+            height: iconSize,
+            fontSize: 10 * contentScale,
+            letterSpacing: `${0.2 * contentScale}em`
+          }}
+        >
+          {card.orgLogo ? (
+            <img src={card.orgLogo} alt={card.orgName || card.title} className="h-full w-full object-contain pointer-events-none" />
+          ) : (
+            <span>EXP</span>
+          )}
+        </div>
+
+        <div className="space-y-2" style={{ rowGap: 8 * contentScale }}>
+          <p className="leading-tight text-black" style={{ fontSize: titleFontSize }}>{card.title}</p>
+
+          {card.subtitle ? (
+            <p className="uppercase text-black/65" style={{ fontSize: metaFontSize, letterSpacing: `${0.18 * contentScale}em` }}>{card.subtitle}</p>
+          ) : null}
+
+          {card.orgName ? (
+            <p className="leading-snug text-black/80" style={{ fontSize: bodyFontSize }}>{card.orgName}</p>
+          ) : null}
+
+          {card.period ? (
+            <p className="uppercase text-black/60" style={{ fontSize: periodFontSize, letterSpacing: `${0.22 * contentScale}em` }}>{card.period}</p>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExperienceCardDescription({
+  card,
+  contentScale,
+  descriptionIndent,
+  descriptionFontSize,
+  descriptionLineHeight
+}) {
+  return (
+    <div className="flex flex-1 items-start pt-4" style={{ paddingLeft: descriptionIndent, paddingTop: 16 * contentScale }}>
+      {card.shortDescription ? (
+        <p className="text-black/80" style={{ fontSize: descriptionFontSize, lineHeight: `${descriptionLineHeight}px` }}>
+          {card.shortDescription}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export default function Stack({
   randomRotation = false,
   cardDimensions = { width: 208, height: 208 }
@@ -125,50 +191,25 @@ export default function Stack({
               <CardPaperFrame ornamentSize={ornamentSize} />
 
               <div className="relative z-10 flex h-full flex-col text-black" style={{ padding: contentPadding }}>
-                <div className="flex-1 space-y-3" style={{ rowGap: 12 * contentScale }}>
-                  <div className="flex items-start gap-3" style={{ columnGap: 12 * contentScale }}>
-                    <div
-                      className="flex shrink-0 items-center justify-center rounded-xl border border-black/10 bg-black/5 uppercase text-black/70"
-                      style={{
-                        width: iconSize,
-                        height: iconSize,
-                        fontSize: 10 * contentScale,
-                        letterSpacing: `${0.2 * contentScale}em`
-                      }}
-                    >
-                      {card.orgLogo ? (
-                        <img src={card.orgLogo} alt={card.orgName || card.title} className="h-full w-full object-contain pointer-events-none" />
-                      ) : (
-                        <span>EXP</span>
-                      )}
-                    </div>
-
-                    <div className="space-y-2" style={{ rowGap: 8 * contentScale }}>
-                      <p className="leading-tight text-black" style={{ fontSize: titleFontSize }}>{card.title}</p>
-
-                      {card.subtitle ? (
-                        <p className="uppercase text-black/65" style={{ fontSize: metaFontSize, letterSpacing: `${0.18 * contentScale}em` }}>{card.subtitle}</p>
-                      ) : null}
-
-                      {card.orgName ? (
-                        <p className="leading-snug text-black/80" style={{ fontSize: bodyFontSize }}>{card.orgName}</p>
-                      ) : null}
-                      {card.period ? (
-                        <p className="uppercase text-black/60" style={{ fontSize: periodFontSize, letterSpacing: `${0.22 * contentScale}em` }}>{card.period}</p>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
+                <ExperienceCardHeader
+                  card={card}
+                  contentScale={contentScale}
+                  iconSize={iconSize}
+                  titleFontSize={titleFontSize}
+                  metaFontSize={metaFontSize}
+                  bodyFontSize={bodyFontSize}
+                  periodFontSize={periodFontSize}
+                />
 
                 <div className="mx-auto h-px w-full max-w-md bg-gradient-to-r from-transparent via-black/70 to-transparent" />
 
-                <div className="flex flex-1 items-start pt-4" style={{ paddingLeft: descriptionIndent, paddingTop: 16 * contentScale }}>
-                  {card.shortDescription ? (
-                    <p className="text-black/80" style={{ fontSize: descriptionFontSize, lineHeight: `${descriptionLineHeight}px` }}>
-                      {card.shortDescription}
-                    </p>
-                  ) : null}
-                </div>
+                <ExperienceCardDescription
+                  card={card}
+                  contentScale={contentScale}
+                  descriptionIndent={descriptionIndent}
+                  descriptionFontSize={descriptionFontSize}
+                  descriptionLineHeight={descriptionLineHeight}
+                />
               </div>
             </div>
           </Motion.div>
