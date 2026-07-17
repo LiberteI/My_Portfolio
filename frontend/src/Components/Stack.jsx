@@ -100,14 +100,24 @@ function ExperienceCardHeader({
 
 function ExperienceCardDescription({
   card,
+  isSelected,
   contentScale,
   descriptionIndent,
   descriptionFontSize,
   descriptionLineHeight
 }) {
+  const hasDetailedBulletPoints = Array.isArray(card.detailedBulletPoints) && card.detailedBulletPoints.length > 0;
+  const descriptionPaddingLeft = isSelected ? 0 : descriptionIndent;
+
   return (
-    <div className="flex flex-1 items-start pt-4" style={{ paddingLeft: descriptionIndent, paddingTop: 16 * contentScale }}>
-      {card.shortDescription ? (
+    <div className="flex flex-1 items-start pt-4" style={{ paddingLeft: descriptionPaddingLeft, paddingTop: 16 * contentScale }}>
+      {isSelected && hasDetailedBulletPoints ? (
+        <ul className="w-full list-disc text-black/80" style={{ fontSize: descriptionFontSize, lineHeight: `${descriptionLineHeight}px`, paddingLeft: 20 * contentScale }}>
+          {card.detailedBulletPoints.map((bulletPoint) => (
+            <li key={bulletPoint}>{bulletPoint}</li>
+          ))}
+        </ul>
+      ) : card.shortDescription ? (
         <p className="text-black/80" style={{ fontSize: descriptionFontSize, lineHeight: `${descriptionLineHeight}px` }}>
           {card.shortDescription}
         </p>
@@ -157,7 +167,8 @@ function getCardMotionProps({
     },
     style: {
       width: cardDimensions.width,
-      height: cardDimensions.height,
+      height: isSelected ? 'auto' : cardDimensions.height,
+      minHeight: cardDimensions.height,
       transformOrigin: 'center center'
     }
   };
@@ -254,7 +265,8 @@ export default function Stack({
             <button
               onClick={(event) => handleCardClick(card.id, event)}
               type="button"
-              className="cursor-pointer relative flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl border-0 bg-[#171311] p-5 text-left text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out"
+              className={`cursor-pointer relative flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl bg-[#171311] p-5 text-left text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out ${isSelected ? 'border border-black/20' : 'border-0'}`}
+              style={{ height: isSelected ? 'auto' : '100%', minHeight: cardDimensions.height, overflow: isSelected ? 'visible' : 'hidden' }}
             >
               
               <CardPaperFrame ornamentSize={ornamentSize} />
@@ -274,6 +286,7 @@ export default function Stack({
 
                 <ExperienceCardDescription
                   card={card}
+                  isSelected={isSelected}
                   contentScale={contentScale}
                   descriptionIndent={descriptionIndent}
                   descriptionFontSize={descriptionFontSize}
