@@ -4,6 +4,52 @@ import cornerOrnamentUrl from '/images/ui-textures/corner-ornament.svg';
 import paperTextureUrl from '/images/ui-textures/compressed-img/paper-texture.webp';
 import { ExperienceRecords } from '../data/experience/experience.data';
 
+const cardOrnamentPositions = [
+  {
+    key: 'bottom-left',
+    className: 'pointer-events-none absolute bottom-3 left-3 opacity-55'
+  },
+  {
+    key: 'bottom-right',
+    className: 'pointer-events-none absolute bottom-3 right-3 -rotate-90 opacity-55'
+  },
+  {
+    key: 'top-left',
+    className: 'pointer-events-none absolute left-3 top-3 rotate-90 opacity-55'
+  },
+  {
+    key: 'top-right',
+    className: 'pointer-events-none absolute right-3 top-3 rotate-180 opacity-55'
+  }
+];
+
+function CardPaperFrame({ ornamentSize }) {
+  return (
+    <>
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${paperTextureUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 1
+        }}
+      />
+
+      {cardOrnamentPositions.map((ornament) => (
+        <img
+          key={ornament.key}
+          src={cornerOrnamentUrl}
+          alt=""
+          aria-hidden="true"
+          className={ornament.className}
+          style={{ width: ornamentSize, height: ornamentSize }}
+        />
+      ))}
+    </>
+  );
+}
+
 export default function Stack({
   randomRotation = false,
   cardDimensions = { width: 208, height: 208 }
@@ -37,7 +83,7 @@ export default function Stack({
       {cards.map((card, index) => {
         const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
         const isHovered = hoveredCardId === card.id;
-        const baseTranslateX = index * 18 - 70;
+        const baseTranslateX = index * 18;
         const baseTranslateY = index * 150 - 50;
         const baseRotate = index * 5 - 5 + randomRotate;
         const baseScale = 1 + index * 0.06 - cards.length * 0.06;
@@ -75,47 +121,9 @@ export default function Stack({
             }}
           >
             <div className="relative flex h-full flex-col justify-between overflow-hidden rounded-2xl bg-[#171311] p-5 text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out">
-              <div
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: `url(${paperTextureUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  opacity: 1
-                }}
-              />
-              {/* Bottom-left ornament */}
-              <img
-                src={cornerOrnamentUrl}
-                alt=""
-                aria-hidden="true"
-                className="pointer-events-none absolute bottom-3 left-3 opacity-55"
-                style={{ width: ornamentSize, height: ornamentSize }}
-              />
-              {/* Bottom-right ornament */}
-              <img
-                src={cornerOrnamentUrl}
-                alt=""
-                aria-hidden="true"
-                className="pointer-events-none absolute bottom-3 right-3 -rotate-90 opacity-55"
-                style={{ width: ornamentSize, height: ornamentSize }}
-              />
-              {/* Top-left ornament */}
-              <img
-                src={cornerOrnamentUrl}
-                alt=""
-                aria-hidden="true"
-                className="pointer-events-none absolute left-3 top-3 rotate-90 opacity-55"
-                style={{ width: ornamentSize, height: ornamentSize }}
-              />
-              {/* Top-right ornament */}
-              <img
-                src={cornerOrnamentUrl}
-                alt=""
-                aria-hidden="true"
-                className="pointer-events-none absolute right-3 top-3 rotate-180 opacity-55"
-                style={{ width: ornamentSize, height: ornamentSize }}
-              />
+              
+              <CardPaperFrame ornamentSize={ornamentSize} />
+
               <div className="relative z-10 flex h-full flex-col text-black" style={{ padding: contentPadding }}>
                 <div className="flex-1 space-y-3" style={{ rowGap: 12 * contentScale }}>
                   <div className="flex items-start gap-3" style={{ columnGap: 12 * contentScale }}>
