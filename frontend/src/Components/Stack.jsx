@@ -1,5 +1,5 @@
 import { motion as Motion } from 'framer-motion';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import cornerOrnamentUrl from '/images/ui-textures/corner-ornament.svg';
 import paperTextureUrl from '/images/ui-textures/compressed-img/paper-texture.webp';
 import { ExperienceRecords } from '../data/experience/experience.data';
@@ -116,12 +116,61 @@ function ExperienceCardDescription({
   );
 }
 
+function getCardMotionProps({
+  isSelected,
+  isHovered,
+  selectedPosition,
+  hoverTranslateX,
+  baseTranslateX,
+  hoverTranslateY,
+  baseTranslateY,
+  baseRotate,
+  hoverScale,
+  baseScale,
+  idleDuration,
+  cardDimensions
+}) {
+  return {
+    animate: {
+      x: isSelected ? selectedPosition.x : isHovered ? hoverTranslateX : baseTranslateX,
+      y: isSelected
+        ? selectedPosition.y
+        : isHovered
+          ? hoverTranslateY
+          : [baseTranslateY, baseTranslateY - 5, baseTranslateY, baseTranslateY + 3, baseTranslateY],
+      rotate: isSelected
+        ? 0
+        : isHovered
+          ? baseRotate
+          : [baseRotate, baseRotate + 0.35, baseRotate, baseRotate - 0.25, baseRotate],
+      scale: isSelected || isHovered ? hoverScale : baseScale
+    },
+    transition: {
+      x: { duration: 0.28, ease: 'easeOut' },
+      y: isSelected || isHovered
+        ? { duration: 0.28, ease: 'easeOut' }
+        : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
+      rotate: isSelected || isHovered
+        ? { duration: 0.28, ease: 'easeOut' }
+        : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
+      scale: { duration: 0.28, ease: 'easeOut' }
+    },
+    style: {
+      width: cardDimensions.width,
+      height: cardDimensions.height,
+      transformOrigin: 'center center'
+    }
+  };
+}
+
 export default function Stack({
   randomRotation = false,
   cardDimensions = { width: 208, height: 208 }
 }) {
+  const stackRef = useRef(null);
   const [hoveredCardId, setHoveredCardId] = useState(null);
   const [selectedCardId, setSelectedCardId] = useState(null);
+  const [selectedPosition, setSelectedPosition] = useState({ x: 0, y: 0 });
   const contentScale = Math.max(0.7, cardDimensions.width / 400);
   const ornamentSize = Math.round(56 * contentScale);
   const iconSize = Math.round(48 * contentScale);
@@ -137,12 +186,29 @@ export default function Stack({
     id: `${experience.orgName || experience.title}-${index}`,
     ...experience
   }));
-  const handleCardClick = (cardId) => {
-    setSelectedCardId((currentCardId) => (currentCardId === cardId ? null : cardId));
+  const handleCardClick = (cardId, event) => {
+    if (selectedCardId === cardId) {
+      setSelectedCardId(null);
+      setSelectedPosition({ x: 0, y: 0 });
+      return;
+    }
+
+    if (!stackRef.current) {
+      return;
+    }
+
+    const stackRect = stackRef.current.getBoundingClientRect();
+    const cardRect = event.currentTarget.getBoundingClientRect();
+    const nextSelectedX = window.innerWidth / 2 - stackRect.left - cardRect.width / 2;
+    const nextSelectedY = window.innerHeight / 2 - stackRect.top - cardRect.height / 2;
+
+    setSelectedCardId(cardId);
+    setSelectedPosition({ x: nextSelectedX, y: nextSelectedY });
   };
 
   return (
     <div
+      ref={stackRef}
       className="relative"
       style={{
         width: cardDimensions.width,
@@ -162,6 +228,20 @@ export default function Stack({
         const hoverTranslateY = baseTranslateY;
         const hoverScale = baseScale + 0.04;
         const idleDuration = 5.8 + index * 0.45;
+        const motionProps = getCardMotionProps({
+          isSelected,
+          isHovered,
+          selectedPosition,
+          hoverTranslateX,
+          baseTranslateX,
+          hoverTranslateY,
+          baseTranslateY,
+          baseRotate,
+          hoverScale,
+          baseScale,
+          idleDuration,
+          cardDimensions
+        });
 
         return (
           <Motion.div
@@ -169,38 +249,10 @@ export default function Stack({
             className="absolute transition-transform duration-300 ease-out"
             onMouseEnter={() => setHoveredCardId(card.id)}
             onMouseLeave={() => setHoveredCardId(null)}
-            animate={{
-              x: isSelected ? -500 : isHovered ? hoverTranslateX : baseTranslateX,
-              y: isSelected
-                ? 0
-                : isHovered
-                  ? hoverTranslateY
-                  : [baseTranslateY, baseTranslateY - 5, baseTranslateY, baseTranslateY + 3, baseTranslateY],
-              rotate: isSelected
-                ? baseRotate
-                : isHovered
-                  ? baseRotate
-                  : [baseRotate, baseRotate + 0.35, baseRotate, baseRotate - 0.25, baseRotate],
-              scale: isSelected || isHovered ? hoverScale : baseScale
-            }}
-            transition={{
-              x: { duration: 0.28, ease: 'easeOut' },
-              y: isSelected || isHovered
-                ? { duration: 0.28, ease: 'easeOut' }
-                : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
-              rotate: isSelected || isHovered
-                ? { duration: 0.28, ease: 'easeOut' }
-                : { duration: idleDuration, repeat: Infinity, ease: 'easeInOut' },
-              scale: { duration: 0.28, ease: 'easeOut' }
-            }}
-            style={{
-              width: cardDimensions.width,
-              height: cardDimensions.height,
-              transformOrigin: 'center center'
-            }}
+            {...motionProps}
           >
             <button
-              onClick={() => handleCardClick(card.id)}
+              onClick={(event) => handleCardClick(card.id, event)}
               type="button"
               className="cursor-pointer relative flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl border-0 bg-[#171311] p-5 text-left text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out"
             >
