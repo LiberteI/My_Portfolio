@@ -37,12 +37,12 @@ export default function Stack({
       {cards.map((card, index) => {
         const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
         const isHovered = hoveredCardId === card.id;
-        const baseTranslateX = index * 18 - 60;
-        const baseTranslateY = index * 100;
+        const baseTranslateX = index * 18 - 70;
+        const baseTranslateY = index * 150 - 50;
         const baseRotate = index * 5 - 5 + randomRotate;
         const baseScale = 1 + index * 0.06 - cards.length * 0.06;
-        const hoverTranslateX = baseTranslateX + 24;
-        const hoverTranslateY = baseTranslateY - 28;
+        const hoverTranslateX = baseTranslateX - 80;
+        const hoverTranslateY = baseTranslateY;
         const hoverScale = baseScale + 0.04;
         const idleDuration = 5.8 + index * 0.45;
 
