@@ -1,6 +1,6 @@
 import ArtGalleryScene from "./ArtGalleryScene"
 
-const ProfessionalSceneHost = ({ isActive, routeValue, featuredProject }) => {
+const ProfessionalSceneHost = ({ isActive, routeValue, featuredProject, onResumeClick }) => {
     return (
         <div
             className={[
@@ -13,6 +13,7 @@ const ProfessionalSceneHost = ({ isActive, routeValue, featuredProject }) => {
                 className="h-full w-full"
                 routeValue={routeValue}
                 screenTextureUrl={featuredProject?.projectionImage}
+                onResumeClick={onResumeClick}
             />
         </div>
     )

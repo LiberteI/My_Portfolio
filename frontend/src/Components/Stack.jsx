@@ -1,5 +1,5 @@
 import { motion as Motion } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import cornerOrnamentUrl from '/images/ui-textures/corner-ornament.svg';
 import paperTextureUrl from '/images/ui-textures/compressed-img/paper-texture.webp';
 import { ExperienceRecords } from '../data/experience/experience.data';
@@ -140,11 +140,13 @@ function getCardMotionProps({
   idleDuration,
   cardDimensions
 }) {
+  const selectedWidth = cardDimensions.width * 1.2;
+
   return {
     animate: {
       x: isSelected ? selectedPosition.x : isHovered ? hoverTranslateX : baseTranslateX,
       y: isSelected
-        ? selectedPosition.y
+        ? selectedPosition.y - 100
         : isHovered
           ? hoverTranslateY
           : [baseTranslateY, baseTranslateY - 5, baseTranslateY, baseTranslateY + 3, baseTranslateY],
@@ -166,7 +168,7 @@ function getCardMotionProps({
       scale: { duration: 0.28, ease: 'easeOut' }
     },
     style: {
-      width: cardDimensions.width,
+      width: isSelected ? selectedWidth : cardDimensions.width,
       height: isSelected ? 'auto' : cardDimensions.height,
       minHeight: cardDimensions.height,
       transformOrigin: 'center center'
@@ -174,14 +176,19 @@ function getCardMotionProps({
   };
 }
 
-export default function Stack({
-  randomRotation = false,
-  cardDimensions = { width: 208, height: 208 }
+export const getExperienceCards = () => ExperienceRecords.map((experience, index) => ({
+  id: `${experience.orgName || experience.title}-${index}`,
+  ...experience
+}));
+
+export function ExperienceCardSurface({
+  card,
+  isSelected,
+  cardDimensions,
+  onClick,
+  className = '',
+  style = {}
 }) {
-  const stackRef = useRef(null);
-  const [hoveredCardId, setHoveredCardId] = useState(null);
-  const [selectedCardId, setSelectedCardId] = useState(null);
-  const [selectedPosition, setSelectedPosition] = useState({ x: 0, y: 0 });
   const contentScale = Math.max(0.7, cardDimensions.width / 400);
   const ornamentSize = Math.round(56 * contentScale);
   const iconSize = Math.round(48 * contentScale);
@@ -193,10 +200,70 @@ export default function Stack({
   const descriptionLineHeight = 24 * contentScale;
   const contentPadding = 12 * contentScale;
   const descriptionIndent = 60 * contentScale;
-  const cards = ExperienceRecords.map((experience, index) => ({
-    id: `${experience.orgName || experience.title}-${index}`,
-    ...experience
-  }));
+
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className={`cursor-pointer relative flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl bg-[#171311] p-5 text-left text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out ${isSelected ? 'border border-black/20' : 'border-0'} ${className}`.trim()}
+      style={{ height: isSelected ? 'auto' : '100%', minHeight: cardDimensions.height, overflow: isSelected ? 'visible' : 'hidden', ...style }}
+    >
+      <CardPaperFrame ornamentSize={ornamentSize} />
+
+      <div className="relative z-10 flex h-full flex-col text-black" style={{ padding: contentPadding }}>
+        <ExperienceCardHeader
+          card={card}
+          contentScale={contentScale}
+          iconSize={iconSize}
+          titleFontSize={titleFontSize}
+          metaFontSize={metaFontSize}
+          bodyFontSize={bodyFontSize}
+          periodFontSize={periodFontSize}
+        />
+
+        <div className="mx-auto h-px w-full max-w-md bg-gradient-to-r from-transparent via-black/70 to-transparent" />
+
+        <ExperienceCardDescription
+          card={card}
+          isSelected={isSelected}
+          contentScale={contentScale}
+          descriptionIndent={descriptionIndent}
+          descriptionFontSize={descriptionFontSize}
+          descriptionLineHeight={descriptionLineHeight}
+        />
+      </div>
+    </button>
+  );
+}
+
+export default function Stack({
+  randomRotation = false,
+  cardDimensions = { width: 208, height: 208 },
+  selectedCardId: controlledSelectedCardId,
+  onSelectedCardChange
+}) {
+  const stackRef = useRef(null);
+  const [hoveredCardId, setHoveredCardId] = useState(null);
+  const [uncontrolledSelectedCardId, setUncontrolledSelectedCardId] = useState(null);
+  const [selectedPosition, setSelectedPosition] = useState({ x: 0, y: 0 });
+  const selectedCardId = controlledSelectedCardId ?? uncontrolledSelectedCardId;
+  const setSelectedCardId = onSelectedCardChange ?? setUncontrolledSelectedCardId;
+  const cards = getExperienceCards();
+
+  useEffect(() => {
+    if (!selectedCardId || !stackRef.current) {
+      setSelectedPosition({ x: 0, y: 0 });
+      return;
+    }
+
+    const stackRect = stackRef.current.getBoundingClientRect();
+    const selectedWidth = cardDimensions.width * 1.2;
+    const nextSelectedX = window.innerWidth / 2 - stackRect.left - selectedWidth / 2;
+    const nextSelectedY = window.innerHeight / 2 - stackRect.top - cardDimensions.height / 2;
+
+    setSelectedPosition({ x: nextSelectedX, y: nextSelectedY });
+  }, [cardDimensions.height, cardDimensions.width, selectedCardId]);
+
   const handleCardClick = (cardId, event) => {
     if (selectedCardId === cardId) {
       setSelectedCardId(null);
@@ -210,7 +277,8 @@ export default function Stack({
 
     const stackRect = stackRef.current.getBoundingClientRect();
     const cardRect = event.currentTarget.getBoundingClientRect();
-    const nextSelectedX = window.innerWidth / 2 - stackRect.left - cardRect.width / 2;
+    const selectedWidth = cardDimensions.width * 1.2;
+    const nextSelectedX = window.innerWidth / 2 - stackRect.left - selectedWidth / 2;
     const nextSelectedY = window.innerHeight / 2 - stackRect.top - cardRect.height / 2;
 
     setSelectedCardId(cardId);
@@ -262,38 +330,12 @@ export default function Stack({
             onMouseLeave={() => setHoveredCardId(null)}
             {...motionProps}
           >
-            <button
+            <ExperienceCardSurface
+              card={card}
+              isSelected={isSelected}
+              cardDimensions={cardDimensions}
               onClick={(event) => handleCardClick(card.id, event)}
-              type="button"
-              className={`cursor-pointer relative flex h-full w-full flex-col justify-between overflow-hidden rounded-2xl bg-[#171311] p-5 text-left text-stone-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] transition-shadow duration-300 ease-out ${isSelected ? 'border border-black/20' : 'border-0'}`}
-              style={{ height: isSelected ? 'auto' : '100%', minHeight: cardDimensions.height, overflow: isSelected ? 'visible' : 'hidden' }}
-            >
-              
-              <CardPaperFrame ornamentSize={ornamentSize} />
-
-              <div className="relative z-10 flex h-full flex-col text-black" style={{ padding: contentPadding }}>
-                <ExperienceCardHeader
-                  card={card}
-                  contentScale={contentScale}
-                  iconSize={iconSize}
-                  titleFontSize={titleFontSize}
-                  metaFontSize={metaFontSize}
-                  bodyFontSize={bodyFontSize}
-                  periodFontSize={periodFontSize}
-                />
-
-                <div className="mx-auto h-px w-full max-w-md bg-gradient-to-r from-transparent via-black/70 to-transparent" />
-
-                <ExperienceCardDescription
-                  card={card}
-                  isSelected={isSelected}
-                  contentScale={contentScale}
-                  descriptionIndent={descriptionIndent}
-                  descriptionFontSize={descriptionFontSize}
-                  descriptionLineHeight={descriptionLineHeight}
-                />
-              </div>
-            </button>
+            />
           </Motion.div>
         );
       })}

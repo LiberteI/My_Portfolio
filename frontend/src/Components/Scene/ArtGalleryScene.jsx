@@ -40,7 +40,7 @@ const CAMERA_TRANSITION_DURATION_MS = 700
 const EXPERIENCE_DECORATIVE_LOAD_DELAY_MS = 220
 const ROUTE_LAYER_HIDE_DELAY_MS = CAMERA_TRANSITION_DURATION_MS
 
-const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, routeValue }) => {
+const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, onResumeClick, routeValue }) => {
     const canvasRef = useRef(null)
     const cameraRef = useRef(null)
     const pressedKeysRef = useRef(new Set())
@@ -65,6 +65,7 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
         decorativeEligibleFor: null
     })
     const onScreenClickRef = useRef(onScreenClick)
+    const onResumeClickRef = useRef(onResumeClick)
     const requestedRouteValueRef = useRef(routeValue)
     const routeValueRef = useRef(routeValue)
     const previousRouteValueRef = useRef(routeValue)
@@ -76,6 +77,10 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
     useEffect(() => {
         onScreenClickRef.current = onScreenClick
     }, [onScreenClick])
+
+    useEffect(() => {
+        onResumeClickRef.current = onResumeClick
+    }, [onResumeClick])
 
     useEffect(() => {
         requestedRouteValueRef.current = routeValue
@@ -465,7 +470,9 @@ const ArtGalleryScene = ({ className = "", screenTextureUrl, onScreenClick, rout
             renderer,
             camera,
             getProjectionScreen: () => projectionScreenRef.current,
-            getOnScreenClick: () => onScreenClickRef.current
+            getOnScreenClick: () => onScreenClickRef.current,
+            getResume: () => experienceCoreLayerRef.current.handles?.resume?.resume ?? null,
+            getOnResumeClick: () => onResumeClickRef.current
         })
 
         const animate = () => {
