@@ -57,7 +57,7 @@ const ProfessionalPage = ({
                 </div>
             ) : null}
 
-            {isProjectionPreviewOpen && activeProject?.projectionImage ? (
+            {isProjectionPreviewOpen && activeProject?.modalImage ? (
                 <div className="pointer-events-auto absolute inset-0 z-40 flex items-center justify-center p-6">
                     <button
                         type="button"
@@ -76,7 +76,7 @@ const ProfessionalPage = ({
                         </button>
 
                         <img
-                            src={activeProject.projectionImage}
+                            src={activeProject.modalImage}
                             alt={`${activeProject.title} projection preview`}
                             className="h-auto max-h-[92vh] w-auto max-w-[96vw]"
                         />

@@ -1,29 +1,40 @@
 const projectThumbnailImage = "/images/project-thumbnails/compressed-img/knight-thumbnail.webp"
-const projectProjectionImage = "/images/project-projections/kight-of-cinders-projection.png"
+const projectModalImage = "/images/project-projections/kight-of-cinders-projection.png"
+const projectProjectionImage = "/images/project-projections/compressed-img/kight-of-cinders-projection.webp"
 const bubbleThumbnailImage = "/images/project-thumbnails/compressed-img/bubble.webp"
-const bubbleProjectionImage = "/images/project-projections/bubble.webp"
+const bubbleModalImage = "/images/project-projections/bubble.webp"
+const bubbleProjectionImage = "/images/project-projections/compressed-img/bubble.webp"
 const agentThumbnailImage = "/images/project-thumbnails/compressed-img/agent.webp"
-const agentProjectionImage = "/images/project-projections/agent.png"
+const agentModalImage = "/images/project-projections/agent.png"
+const agentProjectionImage = "/images/project-projections/compressed-img/agent.webp"
 const supervisedLearningThumbnailImage = "/images/project-thumbnails/compressed-img/supervised-learning.webp"
-const supervisedLearningProjectionImage = "/images/project-projections/supervise-learning.png"
+const supervisedLearningModalImage = "/images/project-projections/supervise-learning.png"
+const supervisedLearningProjectionImage = "/images/project-projections/compressed-img/supervise-learning.webp"
 const dalTutorThumbnailImage = "/images/project-thumbnails/compressed-img/dal-tutor.webp"
-const dalTutorProjectionImage = "/images/project-projections/dal-tutor.png"
+const dalTutorModalImage = "/images/project-projections/dal-tutor.png"
+const dalTutorProjectionImage = "/images/project-projections/compressed-img/dal-tutor.webp"
 const iceSpyThumbnailImage = "/images/project-thumbnails/compressed-img/ice-spy.webp"
-const iceSpyProjectionImage = "/images/project-projections/ice-spy.png"
+const iceSpyModalImage = "/images/project-projections/ice-spy.png"
+const iceSpyProjectionImage = "/images/project-projections/compressed-img/ice-spy.webp"
 const portfolioThumbnailImage = "/images/project-thumbnails/compressed-img/portfolio.webp"
-const portfolioProjectionImage = "/images/project-projections/portfolio-projection.png"
+const portfolioModalImage = "/images/project-projections/portfolio-projection.png"
+const portfolioProjectionImage = "/images/project-projections/compressed-img/portfolio-projection.webp"
 const shapeMorphingGif = "/images/project-previews/shape-morphing.gif"
-const shapeMorphingProjectionImage = "/images/project-projections/shape-morphing.png"
+const shapeMorphingModalImage = "/images/project-projections/shape-morphing.png"
+const shapeMorphingProjectionImage = "/images/project-projections/compressed-img/shape-morphing.webp"
 const astronomyGif = "/images/project-previews/astronomy.gif"
-const astronomyProjectionImage = "/images/project-projections/astronomy.png"
+const astronomyModalImage = "/images/project-projections/astronomy.png"
+const astronomyProjectionImage = "/images/project-projections/compressed-img/astronomy.webp"
 const oceanGif = "/images/project-previews/ocean.gif"
-const oceanProjectionImage = "/images/project-projections/ocean-simulator.png"
+const oceanModalImage = "/images/project-projections/ocean-simulator.png"
+const oceanProjectionImage = "/images/project-projections/compressed-img/ocean-simulator.webp"
 
 export const projectRecords = [
     {
         title: "My Portfolio",
         slug: "my-portfolio",
         thumbnailImage: portfolioThumbnailImage,
+        modalImage: portfolioModalImage,
         projectionImage: portfolioProjectionImage,
         topic: "Full-Stack Development",
         skills: ["React", "Node.js", "MongoDB", "Javascript", "Full Stack"],
@@ -37,6 +48,7 @@ export const projectRecords = [
         title: "Knight of Cinders",
         slug: "knight-of-cinders",
         thumbnailImage: projectThumbnailImage,
+        modalImage: projectModalImage,
         projectionImage: projectProjectionImage,
         topic: "Game Development",
         skills: ["Unity", "Tilemap", "Cinemachine", "Physics & Raycasting", "Singleton Architecture", "State-Driven Systems"],
@@ -50,6 +62,7 @@ export const projectRecords = [
         title: "Housing Price Predictor",
         slug: "housing-price-predictor",
         thumbnailImage: supervisedLearningThumbnailImage,
+        modalImage: supervisedLearningModalImage,
         projectionImage: supervisedLearningProjectionImage,
         topic: "Supervised Learning",
         skills: ["Python", "Regression Modeling", "Data Preprocessing", "Model Evaluation", "Data Visualization"],
@@ -63,6 +76,7 @@ export const projectRecords = [
         title: "Dal Tutor",
         slug: "dal-tutor",
         thumbnailImage: dalTutorThumbnailImage,
+        modalImage: dalTutorModalImage,
         projectionImage: dalTutorProjectionImage,
         topic: "Software Development",
         skills: ["Agile Development", "Extreme Programming (XP)", "Java", "Android Studio", "Team Collaboration"],
@@ -76,6 +90,7 @@ export const projectRecords = [
         title: "Ocean Simulation",
         slug: "ocean-simulation",
         thumbnailImage: oceanGif,
+        modalImage: oceanModalImage,
         projectionImage: oceanProjectionImage,
         topic: "Computer Animation",
         skills: ["C++", "OpenGL (GLEW)", "Vertex & Fragment Shaders", "Lighting", "Camera & Input Systems", "Real-Time Animation Systems"],
@@ -89,6 +104,7 @@ export const projectRecords = [
         title: "Astronomical Simulation",
         slug: "astronomical-simulation",
         thumbnailImage: astronomyGif,
+        modalImage: astronomyModalImage,
         projectionImage: astronomyProjectionImage,
         topic: "Computer Animation",
         skills: ["C++", "OpenGL (GLUT)", "3D Graphics & Transformations", "Camera & Projection Systems", "Vertex-Based Rendering", "Double & Depth Buffering"],
@@ -102,6 +118,7 @@ export const projectRecords = [
         title: "Ice Spy",
         slug: "ice-spy",
         thumbnailImage: iceSpyThumbnailImage,
+        modalImage: iceSpyModalImage,
         projectionImage: iceSpyProjectionImage,
         topic: "Machine Learning",
         skills: ["Machine Learning", "Data Analysis", "Pathfinding", "Geospatial Mapping", "Algorithm Design"],
@@ -115,6 +132,7 @@ export const projectRecords = [
         title: "Shape Morphing",
         slug: "shape-morphing",
         thumbnailImage: shapeMorphingGif,
+        modalImage: shapeMorphingModalImage,
         projectionImage: shapeMorphingProjectionImage,
         topic: "Computer Animation",
         skills: ["C++", "OpenGL (GLUT)", "Vertex-Based Shape Morphing", "Linear Interpolation (LERP)", "Modular OOP Design", "Double-Buffered Rendering"],
@@ -128,6 +146,7 @@ export const projectRecords = [
         title: "Easy Shop",
         slug: "easy-shop",
         thumbnailImage: agentThumbnailImage,
+        modalImage: agentModalImage,
         projectionImage: agentProjectionImage,
         topic: "Agentic AI",
         skills: ["AI Agents", "Large Language Models (LLM)", "Retrieval-Augmented Generation (RAG)", "MongoDB", "n8n Automation", "Conversational System Design"],
@@ -141,6 +160,7 @@ export const projectRecords = [
         title: "Bubble Biologist",
         slug: "bubble-biologist",
         thumbnailImage: bubbleThumbnailImage,
+        modalImage: bubbleModalImage,
         projectionImage: bubbleProjectionImage,
         topic: "Game Development",
         skills: ["Unity", "Gameplay Programming", "Physics Systems", "Git Collaboration", "Rapid Iteration", "2D Game Development"],
