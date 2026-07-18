@@ -1,20 +1,23 @@
 const projectThumbnailImage = "/images/project-thumbnails/compressed-img/knight-thumbnail.webp"
-const projectProjectionImage = "/images/project-projections/compressed-img/knight-thumbnail.webp"
+const projectProjectionImage = "/images/project-projections/kight-of-cinders-projection.png"
 const bubbleThumbnailImage = "/images/project-thumbnails/compressed-img/bubble.webp"
-const bubbleProjectionImage = "/images/project-projections/compressed-img/bubble.webp"
+const bubbleProjectionImage = "/images/project-projections/bubble.webp"
 const agentThumbnailImage = "/images/project-thumbnails/compressed-img/agent.webp"
-const agentProjectionImage = "/images/project-projections/compressed-img/agent.webp"
+const agentProjectionImage = "/images/project-projections/agent.png"
 const supervisedLearningThumbnailImage = "/images/project-thumbnails/compressed-img/supervised-learning.webp"
-const supervisedLearningProjectionImage = "/images/project-projections/compressed-img/supervised-learning.webp"
+const supervisedLearningProjectionImage = "/images/project-projections/supervise-learning.png"
 const dalTutorThumbnailImage = "/images/project-thumbnails/compressed-img/dal-tutor.webp"
-const dalTutorProjectionImage = "/images/project-projections/compressed-img/dal-tutor.webp"
+const dalTutorProjectionImage = "/images/project-projections/dal-tutor.png"
 const iceSpyThumbnailImage = "/images/project-thumbnails/compressed-img/ice-spy.webp"
-const iceSpyProjectionImage = "/images/project-projections/compressed-img/ice-spy.webp"
+const iceSpyProjectionImage = "/images/project-projections/ice-spy.png"
 const portfolioThumbnailImage = "/images/project-thumbnails/compressed-img/portfolio.webp"
-const portfolioProjectionImage = "/images/project-projections/compressed-img/portfolio.webp"
+const portfolioProjectionImage = "/images/project-projections/portfolio-projection.png"
 const shapeMorphingGif = "/images/project-previews/shape-morphing.gif"
+const shapeMorphingProjectionImage = "/images/project-projections/shape-morphing.png"
 const astronomyGif = "/images/project-previews/astronomy.gif"
+const astronomyProjectionImage = "/images/project-projections/astronomy.png"
 const oceanGif = "/images/project-previews/ocean.gif"
+const oceanProjectionImage = "/images/project-projections/ocean-simulator.png"
 
 export const projectRecords = [
     {
@@ -73,7 +76,7 @@ export const projectRecords = [
         title: "Ocean Simulation",
         slug: "ocean-simulation",
         thumbnailImage: oceanGif,
-        projectionImage: oceanGif,
+        projectionImage: oceanProjectionImage,
         topic: "Computer Animation",
         skills: ["C++", "OpenGL (GLEW)", "Vertex & Fragment Shaders", "Lighting", "Camera & Input Systems", "Real-Time Animation Systems"],
         description: "A C++ OpenGL submarine simulator with lighting, fog, animated waves, and interactive navigation.",
@@ -86,7 +89,7 @@ export const projectRecords = [
         title: "Astronomical Simulation",
         slug: "astronomical-simulation",
         thumbnailImage: astronomyGif,
-        projectionImage: astronomyGif,
+        projectionImage: astronomyProjectionImage,
         topic: "Computer Animation",
         skills: ["C++", "OpenGL (GLUT)", "3D Graphics & Transformations", "Camera & Projection Systems", "Vertex-Based Rendering", "Double & Depth Buffering"],
         description: "A C++ OpenGL planetary scene with animated orbits, stars, and interactive camera controls.",
@@ -112,7 +115,7 @@ export const projectRecords = [
         title: "Shape Morphing",
         slug: "shape-morphing",
         thumbnailImage: shapeMorphingGif,
-        projectionImage: shapeMorphingGif,
+        projectionImage: shapeMorphingProjectionImage,
         topic: "Computer Animation",
         skills: ["C++", "OpenGL (GLUT)", "Vertex-Based Shape Morphing", "Linear Interpolation (LERP)", "Modular OOP Design", "Double-Buffered Rendering"],
         description: "A C++ OpenGL app that morphs custom shapes through interpolation and vertex resampling.",
