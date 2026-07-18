@@ -46,6 +46,7 @@ const App = () => {
   const [hasInitializedProfessionalScene, setHasInitializedProfessionalScene] = useState(false)
   const [lastProfessionalRouteValue, setLastProfessionalRouteValue] = useState(null)
   const [isResumePreviewOpen, setIsResumePreviewOpen] = useState(false)
+  const [isProjectionPreviewOpen, setIsProjectionPreviewOpen] = useState(false)
   const activeProfessionalRouteValue = getProfessionalRouteValue(location.pathname)
   const resolvedProfessionalRouteValue = activeProfessionalRouteValue ?? lastProfessionalRouteValue
   const featuredProject = projects[activeProjectIndex] ?? projects[0]
@@ -70,6 +71,7 @@ const App = () => {
           isActive={Boolean(activeProfessionalRouteValue)}
           routeValue={resolvedProfessionalRouteValue}
           featuredProject={featuredProject}
+          onScreenClick={() => setIsProjectionPreviewOpen(true)}
           onResumeClick={() => setIsResumePreviewOpen(true)}
         />
       ) : null}
@@ -89,6 +91,8 @@ const App = () => {
               onSelectProject={handleSelectProject}
               isResumePreviewOpen={isResumePreviewOpen}
               onCloseResumePreview={() => setIsResumePreviewOpen(false)}
+              isProjectionPreviewOpen={isProjectionPreviewOpen}
+              onCloseProjectionPreview={() => setIsProjectionPreviewOpen(false)}
             />
           )}
         />
@@ -102,6 +106,8 @@ const App = () => {
               onSelectProject={handleSelectProject}
               isResumePreviewOpen={isResumePreviewOpen}
               onCloseResumePreview={() => setIsResumePreviewOpen(false)}
+              isProjectionPreviewOpen={isProjectionPreviewOpen}
+              onCloseProjectionPreview={() => setIsProjectionPreviewOpen(false)}
             />
           )}
         />
