@@ -1,6 +1,6 @@
 export const ExperienceRecords = [
     {
-        orgLogo: "/images/company-icons/vintage/dal-logo.png",
+        orgLogo: "/images/company-icons/vintage/compressed-img/dal-logo.webp",
         title: "Bachelor of Computer Science",
         subtitle: "Education",
         shortDescription: "Focus on Computer Science and Musical Composition.",
@@ -15,7 +15,7 @@ export const ExperienceRecords = [
         period: "Sep 2023 - Sep 2027",
     },
     {
-        orgLogo: "/images/company-icons/vintage/dmls-logo.png",
+        orgLogo: "/images/company-icons/vintage/compressed-img/dmls-logo.webp",
         title: "Full Stack Developer",
         subtitle: "Work Experience",
         shortDescription: "Built internal recruitment workflows and automated CI/CD pipelines.",
@@ -29,7 +29,7 @@ export const ExperienceRecords = [
         period: "Apr 2026 - Jul 2026",
     },
     {
-        orgLogo: "/images/company-icons/vintage/curioseed-logo.png",
+        orgLogo: "/images/company-icons/vintage/compressed-img/curioseed-logo.webp",
         title: "Full Stack Developer",
         subtitle: "Work Experience",
         shortDescription: "Developing AI-powered educational web experiences with a focus on performance and UX.",
@@ -45,7 +45,7 @@ export const ExperienceRecords = [
         period: "Apr 2026 - Present",
     },
     {
-        orgLogo: "/images/company-icons/vintage/quest-logo.png",
+        orgLogo: "/images/company-icons/vintage/compressed-img/quest-logo.webp",
         title: "Software Dev Intern",
         subtitle: "Work Experience",
         shortDescription: "Designing scalable cloud services and distributed systems on Azure.",

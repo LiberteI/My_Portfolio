@@ -1,6 +1,9 @@
 const projectThumbnailImage = "/images/project-thumbnails/compressed-img/knight-thumbnail.webp"
 const projectModalImage = "/images/project-projections/kight-of-cinders-projection.png"
 const projectProjectionImage = "/images/project-projections/compressed-img/kight-of-cinders-projection.webp"
+const healthNavigatorThumbnailImage = "/images/project-thumbnails/compressed-img/health-nav.webp"
+const healthNavigatorModalImage = "/images/project-projections/health-nav.png"
+const healthNavigatorProjectionImage = "/images/project-projections/compressed-img/health-nav.webp"
 const bubbleThumbnailImage = "/images/project-thumbnails/compressed-img/bubble.webp"
 const bubbleModalImage = "/images/project-projections/bubble.webp"
 const bubbleProjectionImage = "/images/project-projections/compressed-img/bubble.webp"
@@ -42,7 +45,7 @@ export const projectRecords = [
         duration: "2025/10 - present",
         githubLink: "https://github.com/LiberteI/My_Portfolio",
         ownership: "solo",
-        projectTier: "archive"
+        projectTier: "featured"
     },
     {
         title: "Knight of Cinders",
@@ -57,6 +60,20 @@ export const projectRecords = [
         githubLink: "https://github.com/LiberteI/KnightOfCinders_firstProject",
         ownership: "solo",
         projectTier: "featured"
+    },
+    {
+        title: "NS Health Navigator",
+        slug: "health-navigator",
+        thumbnailImage: healthNavigatorThumbnailImage,
+        modalImage: healthNavigatorModalImage,
+        projectionImage: healthNavigatorProjectionImage,
+        topic: "Software development",
+        skills: ["Agentic AI", "Data processing", "Python", "FastAPI"],
+        description: "Engineered a full-stack healthcare assistant integrating ML inference, REST APIs, and workflow automation for intelligent patient triage.",
+        duration: "2026/03 - 2026/03",
+        githubLink: "https://github.com/quangphucthan/cgi-datajam-2026",
+        ownership: "team",
+        projectTier: "archive"
     },
     {
         title: "Housing Price Predictor",

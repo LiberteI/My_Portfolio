@@ -12,7 +12,6 @@ const CommentFormPathway = lazy(() => import('./Pages/Comment/CommentFormPathway
 const ProfessionalPage = lazy(() => import('./Pages/professional/ProfessionalPage'))
 const ProfessionalSceneHost = lazy(() => import('./Components/Scene/ProfessionalSceneHost'))
 const MusicPathway = lazy(() => import('./Pages/Music/MusicPathway'))
-const KnightGame = lazy(() => import('./Pages/projects/KnightGame'))
 
 const RouteFallback = () => <div className='min-h-svh bg-black' />
 
@@ -78,8 +77,6 @@ const App = () => {
 
       <Routes>
         <Route path='/' element={<HomePage />}/>
-        <Route path='/projects/knight-of-cinders' element={withSuspense(<KnightGame />)}/>
-
         <Route path='/comment-form' element={withSuspense(<CommentFormPathway />)}/>
         <Route
           path='/projects'
