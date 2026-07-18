@@ -13,7 +13,7 @@ Interactive personal portfolio site built to showcase my software projects, engi
 - GitHub: [LiberteI/My_Portfolio](https://github.com/LiberteI/My_Portfolio)
 - LinkedIn: [Yiming Yang](https://www.linkedin.com/in/yiming-yang-89a0102a0/)
 
-![Portfolio preview](docs/preview-img/portfolio-projection.png)
+![Portfolio preview](docs/preview-img/portfolio-adv.png)
 
 ## Introduction
 
