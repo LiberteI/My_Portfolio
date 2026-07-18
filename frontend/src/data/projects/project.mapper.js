@@ -29,6 +29,7 @@ export const mapProjectToDisplayModel = (project, index) => {
         title: project.title,
         description: project.description,
         thumbnailImage: project.thumbnailImage,
+        modalImage: project.modalImage,
         projectionImage: project.projectionImage,
         githubLink: project.githubLink,
         scene: {

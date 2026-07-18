@@ -3,7 +3,7 @@ import samurai from '../../assets/Animations/samurai.gif'
 const googleIcon = '/images/social/compressed-img/google.webp'
 const linkedinIcon = '/images/social/compressed-img/linkedin.webp'
 const garryImg = '/images/fallback/compressed-img/garry.webp'
-const ruiyangSuImg = '/images/fallback/compressed-img/ruiyangSu.webp'
+const ruiyangSuImg = '/images/fallback/compressed-img/ruiyang-su.webp'
 const vikrantImg = '/images/fallback/compressed-img/vikrant.webp'
 
 import './Comment.css'

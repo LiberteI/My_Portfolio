@@ -12,7 +12,6 @@ const CommentFormPathway = lazy(() => import('./Pages/Comment/CommentFormPathway
 const ProfessionalPage = lazy(() => import('./Pages/professional/ProfessionalPage'))
 const ProfessionalSceneHost = lazy(() => import('./Components/Scene/ProfessionalSceneHost'))
 const MusicPathway = lazy(() => import('./Pages/Music/MusicPathway'))
-const KnightGame = lazy(() => import('./Pages/projects/KnightGame'))
 
 const RouteFallback = () => <div className='min-h-svh bg-black' />
 
@@ -45,6 +44,8 @@ const App = () => {
   const [activeProjectIndex, setActiveProjectIndex] = useState(0)
   const [hasInitializedProfessionalScene, setHasInitializedProfessionalScene] = useState(false)
   const [lastProfessionalRouteValue, setLastProfessionalRouteValue] = useState(null)
+  const [isResumePreviewOpen, setIsResumePreviewOpen] = useState(false)
+  const [isProjectionPreviewOpen, setIsProjectionPreviewOpen] = useState(false)
   const activeProfessionalRouteValue = getProfessionalRouteValue(location.pathname)
   const resolvedProfessionalRouteValue = activeProfessionalRouteValue ?? lastProfessionalRouteValue
   const featuredProject = projects[activeProjectIndex] ?? projects[0]
@@ -69,13 +70,13 @@ const App = () => {
           isActive={Boolean(activeProfessionalRouteValue)}
           routeValue={resolvedProfessionalRouteValue}
           featuredProject={featuredProject}
+          onScreenClick={() => setIsProjectionPreviewOpen(true)}
+          onResumeClick={() => setIsResumePreviewOpen(true)}
         />
       ) : null}
 
       <Routes>
         <Route path='/' element={<HomePage />}/>
-        <Route path='/projects/knight-of-cinders' element={withSuspense(<KnightGame />)}/>
-
         <Route path='/comment-form' element={withSuspense(<CommentFormPathway />)}/>
         <Route
           path='/projects'
@@ -85,6 +86,10 @@ const App = () => {
               projects={projects}
               activeProjectIndex={activeProjectIndex}
               onSelectProject={handleSelectProject}
+              isResumePreviewOpen={isResumePreviewOpen}
+              onCloseResumePreview={() => setIsResumePreviewOpen(false)}
+              isProjectionPreviewOpen={isProjectionPreviewOpen}
+              onCloseProjectionPreview={() => setIsProjectionPreviewOpen(false)}
             />
           )}
         />
@@ -96,6 +101,10 @@ const App = () => {
               projects={projects}
               activeProjectIndex={activeProjectIndex}
               onSelectProject={handleSelectProject}
+              isResumePreviewOpen={isResumePreviewOpen}
+              onCloseResumePreview={() => setIsResumePreviewOpen(false)}
+              isProjectionPreviewOpen={isProjectionPreviewOpen}
+              onCloseProjectionPreview={() => setIsProjectionPreviewOpen(false)}
             />
           )}
         />
