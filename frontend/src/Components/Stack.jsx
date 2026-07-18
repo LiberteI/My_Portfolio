@@ -2,7 +2,7 @@ import { motion as Motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import cornerOrnamentUrl from '/images/ui-textures/corner-ornament.svg';
 import paperTextureUrl from '/images/ui-textures/compressed-img/paper-texture.webp';
-import { ExperienceRecords } from '../data/experience/experience.data';
+import { getExperienceCards } from './experienceCards';
 
 const cardOrnamentPositions = [
   {
@@ -175,11 +175,6 @@ function getCardMotionProps({
     }
   };
 }
-
-export const getExperienceCards = () => ExperienceRecords.map((experience, index) => ({
-  id: `${experience.orgName || experience.title}-${index}`,
-  ...experience
-}));
 
 export function ExperienceCardSurface({
   card,

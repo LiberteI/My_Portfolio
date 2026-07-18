@@ -1,6 +1,7 @@
 import { motion as Motion } from "framer-motion"
 import { useEffect, useMemo, useState } from "react"
-import Stack, { ExperienceCardSurface, getExperienceCards } from "../../Components/Stack"
+import Stack, { ExperienceCardSurface } from "../../Components/Stack"
+import { getExperienceCards } from "../../Components/experienceCards"
 import handTapGif from "../../assets/Animations/hand-tap.gif"
 
 const experienceOverlayVariants = {
