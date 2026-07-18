@@ -15,7 +15,7 @@ const EXPERIENCE_DECORATIVE_RULES = {
         notes: "Minimum decorative payload only."
     },
     [DECORATIVE_VIEWPORT.desktop]: {
-        tableFigureNames: ["winnieThePooh", "presidentXiJingPing", "beethoven", "flowerPot"],
+        tableFigureNames: ["winnieThePooh", "honeyPotRaised", "beethoven", "honeyPotBase"],
         roomWallFigureNames: ["piano", "shelf", "titanicLamp"],
         notes: "Full decorative payload."
     }

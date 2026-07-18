@@ -202,9 +202,9 @@ Mobile viewport clause:
 Decorative tabletop meshes:
 
 - `assets/Meshes/texture-compressed/tc-dc-winnie_the_pooh.glb`
-- `assets/Meshes/texture-compressed/tc-dc-president_xi_jing_ping.glb`
+- `assets/Meshes/texture-compressed/tc-dc-honey_pot.glb`
 - `assets/Meshes/texture-compressed/tc-dc-ludwig_van_beethoven.glb`
-- `assets/Meshes/texture-compressed/tc-dc-flower_pot.glb`
+- `assets/Meshes/texture-compressed/tc-dc-honey_pot.glb`
 
 Decorative room-wall meshes:
 
