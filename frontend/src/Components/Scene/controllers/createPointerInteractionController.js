@@ -48,15 +48,18 @@ export const createPointerInteractionController = ({
 
     const handlePointerMove = (event) => {
         const resume = getResume?.()
+        const projectionScreen = getProjectionScreen()
 
-        if (!resume) {
+        if (!resume && !projectionScreen) {
             container.style.cursor = ""
             return
         }
 
         updatePointer(event)
-        const resumeIntersections = raycaster.intersectObject(resume)
-        container.style.cursor = resumeIntersections.length > 0 ? "pointer" : ""
+        const isHoveringResume = resume ? raycaster.intersectObject(resume).length > 0 : false
+        const isHoveringProjection = projectionScreen ? raycaster.intersectObject(projectionScreen.mesh).length > 0 : false
+
+        container.style.cursor = isHoveringResume || isHoveringProjection ? "pointer" : ""
     }
 
     const handlePointerLeave = () => {
