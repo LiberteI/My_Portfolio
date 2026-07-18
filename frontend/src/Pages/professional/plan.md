@@ -193,7 +193,7 @@ Immediately optimize the largest models.
 
 Priority:
 
-1. `president_xi_jing_ping.glb`
+1. `honey_pot.glb`
 2. `ludwig_van_beethoven.glb`
 3. `shelf.glb`
 4. `winnie_the_pooh.glb`
