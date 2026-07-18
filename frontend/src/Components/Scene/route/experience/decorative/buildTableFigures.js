@@ -2,9 +2,8 @@ import * as THREE from "three"
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
 import winnieThePoohModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-winnie_the_pooh.glb"
-import presidentXiJingPingModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-president_xi_jing_ping.glb"
 import beethovenModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-ludwig_van_beethoven.glb"
-import flowerPotModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-flower_pot.glb"
+import honeyPotModelUrl from "../../../../../assets/Meshes/texture-compressed/tc-dc-honey_pot.glb"
 import { getDisplayPositions, getTableConfig } from "../../../config/sceneConfig"
 
 const tableFigureConfigs = [
@@ -18,11 +17,11 @@ const tableFigureConfigs = [
         rotationY: Math.PI * 0.6
     },
     {
-        name: "presidentXiJingPing",
-        modelUrl: presidentXiJingPingModelUrl,
-        xOffset: -0.2,
-        yOffset: 0.22,
-        zOffset: 1.5,
+        name: "honeyPotRaised",
+        modelUrl: honeyPotModelUrl,
+        xOffset: -0.25,
+        yOffset: -0.05,
+        zOffset: 1.55,
         targetHeight: 0.6,
         rotationY: Math.PI * 0.7
     },
@@ -34,15 +33,6 @@ const tableFigureConfigs = [
         zOffset: 1.4,
         targetHeight: 1.6,
         rotationY: Math.PI * 0.7
-    },
-    {
-        name: "flowerPot",
-        modelUrl: flowerPotModelUrl,
-        xOffset: -0.2,
-        yOffset: 0,
-        zOffset: 1.5,
-        targetHeight: 0.42,
-        rotationY: Math.PI * 0.1
     }
 ]
 
