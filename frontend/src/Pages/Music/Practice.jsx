@@ -88,7 +88,7 @@ const getMondayIndex = (date) => (date.getDay() + 6) % 7
 const getStartOfWeek = (date) => {
   const start = new Date(date)
   start.setHours(0, 0, 0, 0)
-  start.setDate(start.getDate() - start.getDay())
+  start.setDate(start.getDate() - getMondayIndex(start))
   return start
 }
 
@@ -99,11 +99,9 @@ const formatHours = (minutes) => {
   return Number.isInteger(hours) ? `${hours}h` : `${hours.toFixed(1)}h`
 }
 
-const getPracticeStats = (data, weeklyGoalMinutes = 600) => {
+const getPracticeStats = (data, weeklyGoalMinutes = 420) => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
 
   const normalizedEntries = Array.isArray(data)
     ? data
@@ -143,7 +141,12 @@ const getPracticeStats = (data, weeklyGoalMinutes = 600) => {
   })
 
   let streakDays = 0
-  const cursor = new Date(yesterday)
+  const hasPracticeToday = (byDate.get(getDateKey(today)) ?? 0) > 0
+  const cursor = new Date(today)
+  if (!hasPracticeToday) {
+    cursor.setDate(cursor.getDate() - 1)
+  }
+
   while ((byDate.get(getDateKey(cursor)) ?? 0) > 0) {
     streakDays += 1
     cursor.setDate(cursor.getDate() - 1)
