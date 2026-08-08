@@ -12,6 +12,7 @@ const CommentFormPathway = lazy(() => import('./Pages/Comment/CommentFormPathway
 const ProfessionalPage = lazy(() => import('./Pages/professional/ProfessionalPage'))
 const ProfessionalSceneHost = lazy(() => import('./Components/Scene/ProfessionalSceneHost'))
 const MusicPathway = lazy(() => import('./Pages/Music/MusicPathway'))
+const TempPage = lazy(() => import('./Pages/Temp/TempPage'))
 
 const RouteFallback = () => <div className='min-h-svh bg-black' />
 
@@ -110,6 +111,7 @@ const App = () => {
         />
         <Route path='/music' element={withSuspense(<MusicPathway />)} />
         <Route path='/contact' element={withSuspense(<ContactPage />)}/>
+        <Route path='/temp' element={withSuspense(<TempPage />)} />
       </Routes>
     </>
   )
