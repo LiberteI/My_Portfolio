@@ -11,6 +11,7 @@ import linkedinRoute from "./ThirdParty/LinkedinRoute.js"
 
 import commentRoute from "./Comment/CommentRoute.js"
 import userRoute from "./User/UserRoute.js"
+import tempPriceRoute from "./TempPrice/TempPriceRoute.js"
 
 import mongoose from "mongoose";
 
@@ -43,6 +44,8 @@ app.use("/auth/linkedin", linkedinRoute);
 app.use("/api/Comment", commentRoute);
 
 app.use("/api/me", userRoute);
+
+app.use("/api/temp-prices", tempPriceRoute);
 
 app.get("/api/health", (req, res) => {
     res.sendStatus(200);
