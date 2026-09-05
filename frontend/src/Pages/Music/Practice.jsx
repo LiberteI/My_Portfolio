@@ -3,7 +3,7 @@ import MusicHeader from '../../Components/Music/MusicHeader'
 
 const fireStreakGif = '/images/music/fire-streak.gif'
 const PRACTICE_DAYS_ENDPOINT =
-  'https://raw.githubusercontent.com/LiberteI/piano-log/main/practice-days.json'
+  'https://piano-logger-hfhfe8dxbhf5cgh2.canadacentral-01.azurewebsites.net/api/exports/practice-days'
 
 const CELL_BASE_CLASS =
   'h-3.5 w-3.5 rounded-[4px] border border-white/5 transition-colors duration-150'
