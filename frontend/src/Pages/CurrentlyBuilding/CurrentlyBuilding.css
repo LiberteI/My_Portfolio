@@ -1,57 +1,54 @@
 .building-section { padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 4vw, 3rem); background-color: rgba(4, 10, 26, 0.85); border-block: 1px solid #ffffff12; scroll-margin-top: 2rem; }
 .building-inner {
-    --board-pixel: 8px;
+    --board-frame-width: clamp(16px, 2vw, 24px);
     position: relative;
     isolation: isolate;
     width: 100%;
     max-width: 1080px;
     margin: auto;
-    padding: clamp(2rem, 5vw, 3.5rem);
+    padding: clamp(2.25rem, 5vw, 3.5rem);
     display: grid;
     gap: 1.75rem;
-    filter: drop-shadow(0 8px 0 #010110);
 }
 
-/* Two stepped silhouettes form a solid pixel frame without rounding its corners. */
+/* Hard-edged concrete slabs with sparse pixel grain and recessed display edges. */
 .building-inner::before,
 .building-inner::after {
     content: "";
     position: absolute;
     pointer-events: none;
-    clip-path: polygon(
-        0 calc(var(--board-pixel) * 2),
-        var(--board-pixel) calc(var(--board-pixel) * 2),
-        var(--board-pixel) var(--board-pixel),
-        calc(var(--board-pixel) * 2) var(--board-pixel),
-        calc(var(--board-pixel) * 2) 0,
-        calc(100% - var(--board-pixel) * 2) 0,
-        calc(100% - var(--board-pixel) * 2) var(--board-pixel),
-        calc(100% - var(--board-pixel)) var(--board-pixel),
-        calc(100% - var(--board-pixel)) calc(var(--board-pixel) * 2),
-        100% calc(var(--board-pixel) * 2),
-        100% calc(100% - var(--board-pixel) * 2),
-        calc(100% - var(--board-pixel)) calc(100% - var(--board-pixel) * 2),
-        calc(100% - var(--board-pixel)) calc(100% - var(--board-pixel)),
-        calc(100% - var(--board-pixel) * 2) calc(100% - var(--board-pixel)),
-        calc(100% - var(--board-pixel) * 2) 100%,
-        calc(var(--board-pixel) * 2) 100%,
-        calc(var(--board-pixel) * 2) calc(100% - var(--board-pixel)),
-        var(--board-pixel) calc(100% - var(--board-pixel)),
-        var(--board-pixel) calc(100% - var(--board-pixel) * 2),
-        0 calc(100% - var(--board-pixel) * 2)
-    );
+    border-radius: 0;
 }
 .building-inner::before {
     inset: 0;
     z-index: -2;
-    background: #94a3b8;
-    box-shadow: inset 0 8px #e2e8f0, inset 0 -8px #475569;
+    border: 4px solid #020611;
+    background-color: #14243b;
+    background-image:
+        repeating-linear-gradient(90deg, transparent 0 156px, #091323 156px 159px, #23364e 159px 160px),
+        repeating-linear-gradient(0deg, transparent 0 124px, #091323 124px 127px, #23364e 127px 128px),
+        conic-gradient(at 3px 2px, transparent 270deg, #30435a 0),
+        conic-gradient(at 2px 3px, transparent 270deg, #0c192b 0),
+        conic-gradient(at 2px 2px, transparent 270deg, #263950 0),
+        conic-gradient(at 3px 2px, transparent 270deg, #0b1729 0);
+    background-size: auto, auto, 67px 53px, 43px 61px, 79px 47px, 59px 71px;
+    background-position: 0 0, 0 0, 11px 7px, 29px 17px, 43px 31px, 19px 41px;
+    background-repeat: repeat;
+    box-shadow:
+        inset 0 3px #354962,
+        inset 3px 0 #273b54,
+        inset 0 -5px #080f1e,
+        inset -3px 0 #0c1728,
+        0 6px 0 #010510;
 }
 .building-inner::after {
-    inset: var(--board-pixel);
+    inset: var(--board-frame-width);
     z-index: -1;
     background: #040a1a;
-    box-shadow: inset 0 4px #1e293b, inset 0 -4px #1e293b;
+    border: 3px solid #070e1b;
+    border-right-color: #293b52;
+    border-bottom-color: #293b52;
+    box-shadow: inset 0 4px #010610, inset 4px 0 #020713;
 }
 .building-header { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; text-align: center; }
 .building-header h2 { font-family: 'VT323', monospace; font-weight: 600; font-size: clamp(2rem, 4vw, 2.8rem); color: #9be8ff; text-shadow: 0 0 10px rgba(155, 232, 255, 0.45); margin: .4rem 0 .8rem; }
