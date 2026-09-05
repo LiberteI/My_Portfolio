@@ -1,3 +1,4 @@
+import { createSession, logoutSession } from "../Middleware/session.js";
 import fetch from "node-fetch";
 import { findOrCreateUser } from "../CRUD/UserCRUD.js";
 import { OAuth2Client } from "google-auth-library";
@@ -74,6 +75,10 @@ export const googleAuthCallback = async (req, res) => {
         // extract data from token
         const { name, picture, sub, email, email_verified} = googlePayLoad;
 
+        if (!email || email_verified !== true) {
+            return res.status(400).send("Email not verified");
+        }
+
         const user = await findOrCreateUser({
             name,
             avatar : picture,
@@ -84,20 +89,10 @@ export const googleAuthCallback = async (req, res) => {
             email_verified
         });
         
-        if(!email_verified){
-            return res.status(400).send("Email not verified");
-        }
-
         const isProd = process.env.NODE_ENV === "production";
         const frontendOrigin = isProd ? process.env.FRONTEND_ORIGIN  : "http://localhost:5173";
         
-        res.cookie("auth", user._id.toString() ,{
-            httpOnly: true,
-            secure: isProd,
-            sameSite: "lax",
-            // persists for 10 minutes
-            maxAge: 60 * 1000 * 10 
-        });
+        await createSession(res, user);
 
         // redirect to homepage
         res.redirect(`${frontendOrigin}`);
@@ -107,12 +102,4 @@ export const googleAuthCallback = async (req, res) => {
     }
 };
 
-export const googleLogout = (req, res) => {
-    res.clearCookie("auth", { 
-        httpOnly: true, 
-        sameSite: "lax", 
-        secure: process.env.NODE_ENV === "production" 
-    });
-
-    return res.sendStatus(204);
-};
+export const googleLogout = logoutSession;

@@ -1,4 +1,4 @@
-import { findUser } from "../CRUD/UserCRUD.js";
+import { getSessionUser } from "./session.js";
 
 export const requireAuth = async(req, res, next) => {
     const id = req.cookies?.auth;
@@ -7,7 +7,7 @@ export const requireAuth = async(req, res, next) => {
         return res.sendStatus(401);
     }
 
-    const user = await findUser(id);
+    const user = await getSessionUser(id);
 
     if(!user){
         return res.sendStatus(401);

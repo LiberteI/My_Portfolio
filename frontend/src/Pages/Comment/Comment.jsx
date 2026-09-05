@@ -132,6 +132,7 @@ const Comment = () => {
                 credentials: "include",
             });
             setUserStatus({ id: null, isAdmin: false });
+            window.dispatchEvent(new Event("auth-changed"));
         } catch (error){
             console.error("logout error", error);
         }
