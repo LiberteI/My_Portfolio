@@ -1,3 +1,4 @@
+import { createSession, logoutSession } from "../Middleware/session.js";
 
 import crypto from "crypto";
 import fetch from "node-fetch";
@@ -74,6 +75,10 @@ export const linkedinAuthCallback = async (req, res) => {
         const avatar = picture || null;
         const providerId = sub;
 
+        if (!email || email_verified !== true) {
+            return res.status(400).send("Email not verified");
+        }
+
         const user = await findOrCreateUser({
             name,
             avatar,
@@ -82,15 +87,9 @@ export const linkedinAuthCallback = async (req, res) => {
             email,
             email_verified: Boolean(email_verified ?? true),
         });
-        const isProd = process.env.NODE_ENV === "production";
         const frontendOrigin = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
 
-        res.cookie("auth", user._id.toString(), {
-            httpOnly: true,
-            secure: isProd,
-            sameSite: "lax",
-            maxAge: 60 * 1000 * 10,
-        });
+        await createSession(res, user);
         res.redirect(frontendOrigin);
     } catch (error) {
         console.error("linkedinAuthCallback error", error);
@@ -98,12 +97,4 @@ export const linkedinAuthCallback = async (req, res) => {
     }
 }
 
-export const linkedinLogout = (req, res) => {
-    res.clearCookie("auth", { 
-        httpOnly: true, 
-        sameSite: "lax", 
-        secure: process.env.NODE_ENV === "production" 
-    });
-
-    return res.sendStatus(204);
-};
+export const linkedinLogout = logoutSession;

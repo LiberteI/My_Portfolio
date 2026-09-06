@@ -4,6 +4,7 @@ import Navbar from './Components/Navbar/Navbar'
 import Home from './Pages/Home/Home'
 import Comment from './Pages/Comment/Comment'
 import About from './Pages/About/About'
+import CurrentlyBuilding from './Pages/CurrentlyBuilding/CurrentlyBuilding'
 import { projectRecords } from './data/projects/project.data'
 import { mapProjectsToDisplayModels } from './data/projects/project.mapper'
 
@@ -123,6 +124,7 @@ const HomePage = () => {
       <Navbar activeLabel='About' />
       <Home />
       <About />
+      <CurrentlyBuilding />
       <Comment />
       
     </div>
