@@ -165,3 +165,129 @@ These changes improve session authentication, server-side expiry, logout revocat
 This is not a complete review of the OAuth flows. In particular, the Google flow currently has no OAuth `state` check. The LinkedIn flow generates a `state` value but does not store it or validate it in the callback, so that value currently does not establish that the callback belongs to the browser's original login attempt.
 
 This document describes the repository implementation. Live Google and LinkedIn sign-in behavior was not verified as part of writing it.
+
+
+## Flow overview
+
+### Initial sign-in
+
+```text
+Browser
+   │ Sign in with Google
+   ▼
+Backend
+   │ Redirect to Google sign-in
+   ▼
+Google
+   │ Complete sign-in and return an authorization code
+   ▼
+Backend
+   │ Exchange the code; verify the ID token and email_verified
+   ▼
+MongoDB User
+   │ Find / create the user
+   ▼
+Backend: generate a random SECRET TOKEN
+   │
+   ├── SHA-256 (hash function) ──► MongoDB Session
+   │                             ├── tokenHash
+   │                             ├── user (user ID reference)
+   │                             └── expiresAt
+   │
+   └── After saving the session ──► Browser
+                                     └── auth cookie: original token
+```
+
+### Subsequent requests
+
+```text
+Browser
+   │ GET /api/me
+   │ Cookie: auth=SECRET
+   ▼
+requireAuth middleware
+   │
+   ├── Read the token and validate its format
+   │      └── Missing / invalid format ──► 401 Unauthorized
+   │
+   ├── SHA-256(token) → tokenHash
+   │
+   ├── Find MongoDB Session (matching hash, not expired)
+   │      └── Not found / expired ──► 401 Unauthorized
+   │
+   ├── Load the associated User (_id, isAdmin)
+   │      └── User not found ──────► 401 Unauthorized
+   │
+   └── req.user = user
+          │ next()
+          ▼
+      Controller
+          │ Return req.user
+          ▼
+      Response
+          ├── { _id, isAdmin }
+          └── Cache-Control: no-store
+```
+
+### Signing in again
+
+Signing in again reuses the existing user account and creates a new session with a new random token and a new 10-minute expiration time.
+
+```text
+Browser: sign in with Google again
+   │
+   ▼
+Backend: complete provider authentication
+   │
+   ▼
+MongoDB User: find the existing account
+   │
+   ▼
+Backend: generate a new random Token B
+   │
+   ├── SHA-256(Token B) ──► New MongoDB Session
+   │                         ├── tokenHash: SHA-256(Token B)
+   │                         ├── user: same User._id
+   │                         └── expiresAt: now + 10 minutes
+   │
+   └── After saving ──► Browser auth cookie: Token B
+```
+
+The browser replaces Token A with Token B in its `auth` cookie. Signing in again does **not** delete or expire the previous session automatically:
+
+- If Token A has expired or its session was deleted during logout, it no longer works.
+- If Token A's session is still active, Token A remains valid until it expires or its session is deleted.
+- Token B authenticates a new session for the same user account.
+
+### Session lifecycle
+
+```text
+1. SIGN IN
+   │ Complete provider authentication
+   ▼
+2. CREATE SESSION
+   │ Generate a random token
+   │ Store its hash, user reference, and expiry in MongoDB
+   │ Send the original token to the browser in an auth cookie
+   ▼
+3. AUTHENTICATE REQUESTS
+   │ Read token → hash token → find unexpired session → load user
+   │ Set req.user and allow the request
+   │ Repeat for each protected request; activity does not extend expiry
+   ▼
+4. SESSION ENDS
+   │
+   ├── Expiration: 10 minutes have passed
+   │      └── Backend rejects the session, even before database cleanup
+   │
+   └── Logout: delete the current session and clear the browser cookie
+          │
+          ▼
+5. OLD TOKEN NO LONGER WORKS
+   │ Protected requests with that token receive 401 Unauthorized
+   │ Requests without a cookie also receive 401 Unauthorized
+   ▼
+6. SIGN IN AGAIN
+   │ Create a new session and token for the same user
+   └── Return to step 3
+```
