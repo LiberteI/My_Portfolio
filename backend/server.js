@@ -15,8 +15,6 @@ import tempPriceRoute from "./TempPrice/TempPriceRoute.js"
 
 import mongoose from "mongoose";
 
-import buildingRoute from "./CurrentlyBuilding/route.js";
-
 const app = express();
 
 app.use(cookieParser());
@@ -46,8 +44,6 @@ app.use("/auth/linkedin", linkedinRoute);
 app.use("/api/Comment", commentRoute);
 
 app.use("/api/me", userRoute);
-
-app.use("/api/currently-building", buildingRoute);
 
 app.use("/api/temp-prices", tempPriceRoute);
 
