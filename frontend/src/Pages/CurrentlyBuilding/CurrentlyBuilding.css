@@ -54,14 +54,38 @@
 .building-header h2 { font-family: 'VT323', monospace; font-weight: 600; font-size: clamp(2rem, 10vw, 5rem); color: #9be8ff; text-shadow: 0 0 10px rgba(155, 232, 255, 0.45); margin: .4rem 0 .8rem; }
 .building-section p { color: #cbd5e1; line-height: 1.7; }
 .building-grid {
+    --building-card-min-width: 220px;
+    grid-area: cards;
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 220px;
-    justify-content: start;
+    grid-template-columns: repeat(var(--building-columns), minmax(min(100%, var(--building-card-min-width)), 1fr));
     gap: 1.25rem;
     min-width: 0;
-    overflow-x: auto;
-    padding-bottom: .5rem;
+}
+.building-pager {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "cards cards cards" "previous status next";
+    gap: 1rem;
+    min-width: 0;
+    align-items: center;
+}
+.building-previous { grid-area: previous; justify-self: end; }
+.building-next { grid-area: next; justify-self: start; }
+.building-page-status {
+    grid-area: status;
+    color: #9be8ff;
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    text-align: center;
+}
+.building-section .building-pager > button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 0;
+    font-size: 1.5rem;
 }
 .building-card, .currently-building-card {
     display: flex;
@@ -84,6 +108,7 @@
     image-rendering: pixelated;
     align-self: center;
 }
+.currently-building-card { min-height: 340px; }
 .building-section h3 { font-size: 1.35rem; color: #f8fafc; }
 .building-card > h3, .currently-building-card > h3 {
     font-family: 'VT323', monospace;
@@ -110,3 +135,16 @@
 .building-section button:disabled { opacity: .5; cursor: default; }
 .building-section :is(button, a, input, textarea, select):focus-visible { outline: 2px solid #99f6e4; outline-offset: 4px; }
 .building-empty { padding: 2rem; border: 1px dashed #94a3b833; border-radius: 16px; text-align: center; }
+
+@media (max-width: 639px) {
+    .building-section { padding-inline: .5rem; }
+    .building-inner { padding: 2rem .5rem; }
+    .building-pager {
+        grid-template-columns: 32px minmax(0, 1fr) 32px;
+        grid-template-areas: "previous cards next" ". status .";
+        gap: 1rem .25rem;
+    }
+    .building-grid { gap: 0; }
+    .currently-building-card { padding: .75rem; }
+    .building-section .building-pager > button { width: 32px; }
+}
