@@ -28,7 +28,7 @@ const About = () => {
         <section className="about-container" id="about">
             <h1>About Me</h1>
             <article className='paragraph-container'>
-                <p>  My name is Yiming Yang (Liberte), a third-year Computer Science student at Dalhousie University.</p>
+                <p>  My name is Yiming Yang (Liberte), a fouth-year Computer Science student at Dalhousie University.</p>
 
                 <p>  I am a programmer with interests in game development, full-stack development, animation and AI & machine learning.</p>
 
