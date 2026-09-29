@@ -383,27 +383,35 @@ const BottomStats = ({ data = [] }) => {
 }
 const Practice = () => {
   const [practiceData, setPracticeData] = useState([])
+  const [status, setStatus] = useState('loading')
+  const [attempt, setAttempt] = useState(0)
 
   useEffect(() => {
     let isMounted = true
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 120_000)
 
     const loadPracticeData = async () => {
       try {
-        const response = await fetch(PRACTICE_DAYS_ENDPOINT)
+        const response = await fetch(PRACTICE_DAYS_ENDPOINT, { signal: controller.signal })
 
         if (!response.ok) {
           throw new Error(`Failed to load practice data: ${response.status}`)
         }
 
         const data = await response.json()
+        if (!Array.isArray(data)) throw new Error('Invalid practice data response')
         if (isMounted) {
-          setPracticeData(Array.isArray(data) ? data : [])
+          setStatus('ready')
+          setPracticeData(data)
         }
       } catch (error) {
         console.error('Unable to load practice data', error)
         if (isMounted) {
-          setPracticeData([])
+          setStatus('error')
         }
+      } finally {
+        clearTimeout(timeout)
       }
     }
 
@@ -411,8 +419,10 @@ const Practice = () => {
 
     return () => {
       isMounted = false
+      clearTimeout(timeout)
+      controller.abort()
     }
-  }, [])
+  }, [attempt])
 
   return (
     <section
@@ -428,15 +438,33 @@ const Practice = () => {
           />
 
           <div className='min-w-0 min-[768px]:shrink-0'>
-            <TopSummary data={practiceData} />
+            {status === 'ready' && <TopSummary data={practiceData} />}
           </div>
         </div>
 
         <div className='min-w-0'>
-          <ContributionBar data={practiceData} />
+          {status === 'ready' ? <ContributionBar data={practiceData} /> : (
+            <div className='flex min-h-48 flex-col items-center justify-center gap-3 text-center' role='status' aria-live='polite'>
+              {status === 'loading' ? (
+                <>
+                  <span className='h-6 w-6 animate-spin rounded-full border-2 border-neutral-700 border-t-[#c6942f] motion-reduce:animate-none' aria-hidden='true' />
+                  <p className='text-neutral-200'>Getting practice data…</p>
+                  <p className='text-sm text-neutral-400'>The server is waking up. This may take a moment.</p>
+                </>
+              ) : (
+                <>
+                  <p className='text-neutral-300'>Couldn’t load practice data. Please try again.</p>
+                  <button type='button' className='rounded-lg border border-neutral-600 px-4 py-2 text-sm text-neutral-200 hover:border-[#c6942f]' onClick={() => {
+                    setStatus('loading')
+                    setAttempt((value) => value + 1)
+                  }}>Try again</button>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
-        <BottomStats data={practiceData} />
+        {status === 'ready' && <BottomStats data={practiceData} />}
       </div>
     </section>
   )
